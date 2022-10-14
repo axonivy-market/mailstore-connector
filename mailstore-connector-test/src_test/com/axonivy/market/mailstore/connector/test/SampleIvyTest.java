@@ -1,4 +1,4 @@
-package com.axonivy.market.mailstore.connector.demo.test;
+package com.axonivy.market.mailstore.connector.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
