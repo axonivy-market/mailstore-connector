@@ -3,14 +3,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.axonivy.market</groupId>
-  <artifactId>mailstore-connector-demo-test</artifactId>
-  <version>10.0.0-SNAPSHOT</version>
+  <artifactId>mailstore-connector-test</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>iar</packaging>
   <dependencies>
     <dependency>
       <groupId>com.axonivy.market</groupId>
-      <artifactId>mailstore-connector-demo</artifactId>
-      <version>${project.version}</version>
+      <artifactId>mailstore-connector</artifactId>
+      <version>10.0.0-SNAPSHOT</version>
       <type>iar</type>
     </dependency>
     <dependency>
