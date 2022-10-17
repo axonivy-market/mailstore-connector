@@ -7,22 +7,61 @@
 #
 Variables:
   mailstore-connector:
-    # [enum: pop3, pop3s, imap, imaps]
-    protocol: 'imap'
-    # Host for store connection
-    host: 'localhost'
-    # Port for store connection (only needed if not default)
-    port: -1
-    # User name for store connection
-    user: 'debug@localdomain.test'
-    # Password for store connection
-    # [password]
-    password: 'pass'
-    # show debug output for connection
-    debug: true
-    # Additional properties for store connection,
-    # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
-    properties:
-        mail.imaps.ssl.checkserveridentity: false
-        mail.imaps.ssl.trust: '*'
+    localhost-imap:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imap'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: 'pass'
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'
+    localhost-imaps:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imaps'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: 'pass'
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'
+    ethereal-imaps:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imaps'
+      # Host for store connection
+      host: 'imap.ethereal.email'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'odessa.fadel@ethereal.email'
+      # Password for store connection
+      # [password]
+      password: '${encrypt:7vX2XVv2rKRjQsyp71}'
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          # mail.imaps.ssl.checkserveridentity: false
+          # mail.imaps.ssl.trust: '*'
 
