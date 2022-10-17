@@ -20,13 +20,14 @@ import ch.ivyteam.log.Logger;
 public class MailStoreService {
 	private static final MailStoreService INSTANCE = new MailStoreService();
 	private static final Logger LOG = Ivy.log();
-	private static final String MAIL_STORE_PROTOCOL_VAR = "mailstore-connector.protocol";
-	private static final String MAIL_STORE_HOST_VAR = "mailstore-connector.host";
-	private static final String MAIL_STORE_PORT_VAR = "mailstore-connector.port";
-	private static final String MAIL_STORE_USER_VAR = "mailstore-connector.user";
-	private static final String MAIL_STORE_PASSWORD_VAR = "mailstore-connector.password";
-	private static final String MAIL_STORE_DEBUG_VAR = "mailstore-connector.debug";
-	private static final String MAIL_STORE_PROPERTIES_VAR = "mailstore-connector.properties";
+	private static final String MAIL_STORE_VAR = "mailstore-connector";
+	private static final String PROTOCOL_VAR = "protocol";
+	private static final String HOST_VAR = "host";
+	private static final String PORT_VAR = "port";
+	private static final String USER_VAR = "user";
+	private static final String PASSWORD_VAR = "password";
+	private static final String DEBUG_VAR = "debug";
+	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
 
 	public static MailStoreService get() {
@@ -41,24 +42,28 @@ public class MailStoreService {
 			LOG.info("{0}: {1} {2}", variable.name(), variable.type(), variable.value());
 		}
 
-		try (Store store = openStore()) {
+		String storeName;
+		storeName = "ethereal-imaps";
+		// storeName = "localhost-imap";
+
+		try (Store store = openStore(storeName)) {
 
 		} catch (Exception e) {
 			LOG.error("Error while working with mail store.", e);
 		};
 	}
 
-	private Store openStore() {
+	private Store openStore(String storeName) {
 		Store store = null;
 
-		String protocol = Ivy.var().get(MAIL_STORE_PROTOCOL_VAR);
-		String host = Ivy.var().get(MAIL_STORE_HOST_VAR);
-		String portString = Ivy.var().get(MAIL_STORE_PORT_VAR);
-		String user = Ivy.var().get(MAIL_STORE_USER_VAR);
-		String password = Ivy.var().get(MAIL_STORE_PASSWORD_VAR);
-		String debugString = Ivy.var().get(MAIL_STORE_DEBUG_VAR);
+		String protocol = getVar(storeName, PROTOCOL_VAR);
+		String host = getVar(storeName, HOST_VAR);
+		String portString = getVar(storeName, PORT_VAR);
+		String user = getVar(storeName, USER_VAR);
+		String password = getVar(storeName, PASSWORD_VAR);
+		String debugString = getVar(storeName, DEBUG_VAR);
 
-		LOG.info("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
+		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
 				protocol, host, portString, user, StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
 
 		Properties properties = getProperties();
@@ -96,11 +101,15 @@ public class MailStoreService {
 		return store;
 	}
 
+	private String getVar(String store, String var) {
+		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
+	}
+
 	private Properties getProperties() {
 		// Properties properties = System.getProperties();
 		Properties properties = new Properties();
 
-		String propertiesPrefix = MAIL_STORE_PROPERTIES_VAR + ".";
+		String propertiesPrefix = PROPERTIES_VAR + ".";
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
 			if(name.startsWith(propertiesPrefix)) {
