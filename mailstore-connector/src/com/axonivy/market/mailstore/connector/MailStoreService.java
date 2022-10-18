@@ -2,14 +2,24 @@ package com.axonivy.market.mailstore.connector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+import javax.mail.FetchProfile;
+import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.sun.mail.imap.IMAPFolder;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
@@ -34,26 +44,198 @@ public class MailStoreService {
 		return INSTANCE;
 	}
 
-	public void test() throws NoSuchProviderException {
-		LOG.info("Test call");
+	public void test() throws MessagingException {
+		MailIterator iterator = new MailIterator("localhost-imap", "INBOX", "TestArchiv", subjectRegexFilter(".*test.*", false));
 
-		LOG.info("Variables");
-		for (Variable variable : Ivy.var().all()) {
-			LOG.info("{0}: {1} {2}", variable.name(), variable.type(), variable.value());
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			LOG.info("Got message: {0}", message.getSubject());
+			iterator.handledMessage();
 		}
+	}
 
-		String storeName;
-		storeName = "ethereal-imaps";
-		// storeName = "localhost-imap";
+	/**
+	 * Get a {@link MailIterator}.
+	 * 
+	 * @param storeName name of Email Store (Imap Configuration)
+	 * @param srcFolderName source folder name
+	 * @param dstFolderName destination folder name (if <code>null</code> then handled mails will be deleted)
+	 * @param filter a filter predicate
+	 * @return
+	 * @throws MessagingException
+	 */
+	public static MailIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
+		return new MailIterator(storeName, srcFolderName, dstFolderName, filter);
+	}
 
-		try (Store store = openStore(storeName)) {
-
-		} catch (Exception e) {
-			LOG.error("Error while working with mail store.", e);
+	/**
+	 * Get a predicate to match subjects against a regular expression.
+	 * 
+	 * Note, that the full subject must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * subjectRegexFilter(".*my matching pattern.*", false);
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @param caseSensitive
+	 * @return
+	 */
+	public static Predicate<Message> subjectRegexFilter(String pattern, boolean caseSensitive) {
+		Pattern subjectPattern = Pattern.compile(pattern, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE);
+		return m -> {
+			try {
+				return subjectPattern.matcher(m.getSubject()).matches();
+			} catch (MessagingException e) {
+				LOG.error("Could not match subject of message {0}", m, e);
+			}
+			return false;
 		};
 	}
 
-	private Store openStore(String storeName) {
+	/**
+	 * Iterate through the E-Mails of a store.
+	 * 
+	 * Additionally remove or move messages to a destination folder when they were handled.
+	 * 
+	 * Note that the {@link Iterator} will only close and return it's resources when it was
+	 * running to the end. If it is terminated earlier, the {@link #close()} method must be
+	 * called.
+	 */
+	public static class MailIterator implements Iterator<Message> {
+		private Store store;
+		private Folder srcFolder;
+		private Folder dstFolder;
+		private Message[] messages;
+		private int nextIndex;
+
+		private MailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
+			try {
+				store = MailStoreService.get().openStore(storeName);
+				srcFolder = MailStoreService.get().openFolder(store, srcFolderName, Folder.READ_WRITE);
+				if(dstFolderName != null) {
+					dstFolder = MailStoreService.get().openFolder(store, dstFolderName, Folder.READ_WRITE);
+				}
+				messages = srcFolder.getMessages();
+
+				// pre-fetch headers
+				FetchProfile fetchProfile = new FetchProfile();
+				fetchProfile.add(FetchProfile.Item.ENVELOPE);
+				srcFolder.fetch(messages, fetchProfile);
+
+				if(filter != null) {
+					messages = Stream.of(messages).filter(filter).toArray(Message[]::new);
+				}
+
+				LOG.debug("Received {0} messages.", messages.length);
+
+				nextIndex = 0;
+			} catch(Exception e) {
+				close();
+				throw buildError("iterator").withCause(e).build();
+			}
+		}
+
+		/**
+		 * Close and sync all actions to the mail server.
+		 * 
+		 * Will be called automatically after the last element is fetched.
+		 * Only call this method if you do not complete the iterator.
+		 */
+		public void close() {
+			Exception exception = null;
+			if(dstFolder != null && dstFolder.isOpen()) {
+				try {
+					dstFolder.close();
+				} catch (Exception e) {
+					LOG.error("Could not close destination folder {0}", e, dstFolder);
+					if(exception == null) {
+						exception = e;
+					}
+				}
+			}
+			if(srcFolder != null && srcFolder.isOpen()) {
+				try {
+					srcFolder.close();
+				} catch (Exception e) {
+					LOG.error("Could not close source folder {0}", e, srcFolder);
+					if(exception == null) {
+						exception = e;
+					}
+				}
+			}
+			if(store != null) {
+				try {
+					store.close();
+				} catch (Exception e) {
+					LOG.error("Could not close store {0}", e, srcFolder);
+					if(exception == null) {
+						exception = e;
+					}
+				}
+			}
+			if(exception != null) {
+				buildError("close").withCause(exception);
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			boolean hasNext = messages.length > nextIndex;
+			if(!hasNext) {
+				close();
+			}
+			return hasNext;
+		}
+
+		@Override
+		public Message next() {
+			try {
+				Message current = messages[nextIndex];
+				nextIndex += 1;
+				return current;
+			} catch (Exception e) {
+				throw new NoSuchElementException("Could not access element, index: " + nextIndex + " length: " + (messages != null ? messages.length : "null"));
+			}
+		}
+
+		/**
+		 * Call this function, when the message was handled successfully and should be deleted/moved.
+		 * 
+		 * It will then be moved to the destination folder (if there is one)
+		 * and will be deleted in the source folder. If this function is not
+		 * called, the message will be coming again in the next iterator.
+		 */
+		public void handledMessage() {
+			try {
+				Message current = messages[nextIndex-1];
+				if(dstFolder != null) {
+					LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
+					dstFolder.appendMessages(new Message[] {current});
+				}
+				LOG.debug("Deleting {0}", MailStoreService.toString(current));
+				current.setFlag(Flag.DELETED, true);
+
+				if(!hasNext()) {
+					close();
+				}
+			} catch (Exception e) {
+				throw buildError("handled").withCause(e).build();
+			}
+		}
+	}
+
+	/**
+	 * Get a mail store.
+	 * 
+	 * Note, that it is recommended to use {@link MailIterator}.
+	 * 
+	 * @param storeName
+	 * @return
+	 * @throws MessagingException
+	 */
+	public Store openStore(String storeName) throws MessagingException {
 		Store store = null;
 
 		String protocol = getVar(storeName, PROTOCOL_VAR);
@@ -85,13 +267,13 @@ public class MailStoreService {
 			}
 			store = session.getStore(protocol);
 			store.connect(host, port, user, password);
-		} catch(Exception e) {
+		} catch(MessagingException e) {
 			try {
 				store.close();
 			} catch (MessagingException closeEx) {
 				LOG.error("Closing store caused another exception. Anyway the store is closed.", closeEx);
 			}
-			throw buildError("noconnection").withCause(e).build();
+			throw (e);
 		}
 		finally {
 			if(debug) {
@@ -101,13 +283,30 @@ public class MailStoreService {
 		return store;
 	}
 
+	private IMAPFolder openFolder(Store store, String folderName, int mode) throws MessagingException {
+		LOG.debug("Opening folder {0}", folderName);
+		Folder folder = store.getFolder(folderName);
+
+		if(folder != null && folder.exists()) {
+			LOG.debug("Message count: {0} new: {1} unread: {2} deleted: {3}",
+					folder.getMessageCount(), folder.getNewMessageCount(),
+					folder.getUnreadMessageCount(), folder.getDeletedMessageCount());
+
+			folder.open(mode);
+		}
+		else {
+			throw new MessagingException("Could not open folder " + folderName);
+		}
+
+		return (IMAPFolder)folder;
+	}
+
 	private String getVar(String store, String var) {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
 	}
 
 	private Properties getProperties() {
-		// Properties properties = System.getProperties();
-		Properties properties = new Properties();
+		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
 		for (Variable variable : Ivy.var().all()) {
@@ -123,7 +322,18 @@ public class MailStoreService {
 		return properties;
 	}
 
-	private BpmPublicErrorBuilder buildError(String code) {
-		return BpmError.create(ERROR_BASE + ":" + code);
+	private static BpmPublicErrorBuilder buildError(String code) {
+		BpmPublicErrorBuilder builder = BpmError.create(ERROR_BASE + ":" + code);
+		return builder;
+	}
+
+	private static String toString(Message m) {
+		String subject = null;
+		try {
+			subject = m != null ? m.getSubject() : null;
+		} catch (MessagingException e) {
+			subject = "Exception while reading subject";
+		}
+		return String.format("Message[subject: '%s']", subject);
 	}
 }
