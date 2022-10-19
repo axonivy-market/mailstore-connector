@@ -19,8 +19,6 @@ import javax.mail.Store;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.sun.mail.imap.IMAPFolder;
-
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
 import ch.ivyteam.ivy.environment.Ivy;
@@ -44,16 +42,6 @@ public class MailStoreService {
 		return INSTANCE;
 	}
 
-	public void test() throws MessagingException {
-		MessageIterator iterator = new MessageIterator("localhost-imap", "INBOX", "TestArchiv", true, subjectRegexFilter(".*test.*", false));
-
-		while (iterator.hasNext()) {
-			Message message = iterator.next();
-			LOG.info("Got message: {0}", message.getSubject());
-			iterator.handledMessage();
-		}
-	}
-
 	/**
 	 * Get a {@link MessageIterator}.
 	 * 
@@ -65,7 +53,7 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) throws MessagingException {
+	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
 		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter);
 	}
 
@@ -137,7 +125,7 @@ public class MailStoreService {
 		private Message[] messages;
 		private int nextIndex;
 
-		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) throws MessagingException {
+		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
 			try {
 				this.delete = delete;
 				store = MailStoreService.get().openStore(storeName);
@@ -314,7 +302,7 @@ public class MailStoreService {
 		return store;
 	}
 
-	private IMAPFolder openFolder(Store store, String folderName, int mode) throws MessagingException {
+	private Folder openFolder(Store store, String folderName, int mode) throws MessagingException {
 		LOG.debug("Opening folder {0}", folderName);
 		Folder folder = store.getFolder(folderName);
 
@@ -329,7 +317,7 @@ public class MailStoreService {
 			throw new MessagingException("Could not open folder " + folderName);
 		}
 
-		return (IMAPFolder)folder;
+		return folder;
 	}
 
 	private String getVar(String store, String var) {
