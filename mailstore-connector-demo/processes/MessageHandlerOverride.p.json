@@ -40,7 +40,12 @@
       ],
       "config" : {
         "output" : {
-          "code" : "ivy.log.info(\"Override action for message ''{0}''\", in.message.subject);"
+          "code" : [
+            "import com.axonivy.market.mailstore.connector.demo.DemoService;",
+            "ivy.log.info(\"Override action for message ''{0}''\", in.message.subject);",
+            "",
+            "DemoService.handleMessage(in.message);"
+          ]
         }
       },
       "visual" : {
