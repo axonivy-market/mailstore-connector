@@ -18,7 +18,7 @@ import ch.ivyteam.ivy.environment.IvyTest;
  * </ul></p>
  * 
  * <p>Detailed guidance on writing these kind of tests can be found in our
- * <a href="https://developer.axonivy.com/doc/dev/concepts/testing/unit-testing.html">Unit Testing docs</a>
+ * <a href="https://developer.axonivy.com/doc/10.0/concepts/testing/unit-testing.html">Unit Testing docs</a>
  * </p>
  */
 @IvyTest

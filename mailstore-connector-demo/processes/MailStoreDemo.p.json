@@ -1,0 +1,51 @@
+{
+  "format" : "10.0.0",
+  "id" : "183EF4C4DA38CCD9",
+  "config" : {
+    "data" : "com.axonivy.market.mailstore.connector.demo.Data"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "start.ivp",
+      "config" : {
+        "callSignature" : "start",
+        "outLink" : "start.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f4", "to" : "f3" }
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 352, "y" : 64 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "SubProcessCall",
+      "name" : "Mail store demo",
+      "config" : {
+        "processCall" : "MailStoreConnector:handleMessages(String,String,String,java.util.function.Predicate)",
+        "call" : {
+          "params" : [
+            { "name" : "storeName", "type" : "String" },
+            { "name" : "srcFolder", "type" : "String" },
+            { "name" : "dstFolder", "type" : "String" },
+            { "name" : "filter", "type" : "java.util.function.Predicate" }
+          ],
+          "map" : {
+            "param.storeName" : "\"localhost-imap\"",
+            "param.srcFolder" : "\"INBOX\"",
+            "param.dstFolder" : "\"TestArchiv\"",
+            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectRegexFilter(\".*test.*\", false)"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}
