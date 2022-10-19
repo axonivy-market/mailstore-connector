@@ -25,7 +25,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 432, "y" : 240 },
+        "at" : { "x" : 144, "y" : 176 },
         "labelOffset" : { "x" : 49, "y" : -23 }
       },
       "connect" : { "id" : "f19", "to" : "f4" }
@@ -33,19 +33,26 @@
       "id" : "f1",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 432, "y" : 576 }
+        "at" : { "x" : 144, "y" : 512 }
       }
     }, {
       "id" : "f4",
       "type" : "Alternative",
       "name" : "has next?",
       "visual" : {
-        "at" : { "x" : 432, "y" : 304 },
+        "at" : { "x" : 144, "y" : 240 },
         "labelOffset" : { "x" : -24, "y" : -16 }
       },
       "connect" : [
-        { "id" : "f12", "to" : "f11", "condition" : "in.messageIterator.hasNext()" },
-        { "id" : "f14", "to" : "f1", "via" : [ { "x" : 512, "y" : 304 }, { "x" : 512, "y" : 536 }, { "x" : 432, "y" : 536 } ] }
+        { "id" : "f12", "to" : "f11", "label" : {
+            "name" : "yes",
+            "offset" : { "x" : 17, "y" : -3 }
+          }, "condition" : "in.messageIterator.hasNext()" },
+        { "id" : "f14", "to" : "f1", "via" : [ { "x" : 224, "y" : 240 }, { "x" : 224, "y" : 472 }, { "x" : 144, "y" : 472 } ], "label" : {
+            "name" : "no",
+            "segment" : 1.55,
+            "offset" : { "x" : -47, "y" : -113 }
+          } }
       ]
     }, {
       "id" : "f11",
@@ -66,7 +73,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 432, "y" : 384 }
+        "at" : { "x" : 144, "y" : 320 }
       },
       "boundaries" : [ {
           "id" : "f15",
@@ -77,9 +84,9 @@
             }
           },
           "visual" : {
-            "at" : { "x" : 400, "y" : 354 }
+            "at" : { "x" : 112, "y" : 290 }
           },
-          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 400, "y" : 304 } ], "color" : "error" }
+          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 112, "y" : 240 } ], "color" : "error" }
         } ],
       "connect" : { "id" : "f17", "to" : "f16" }
     }, {
@@ -92,9 +99,23 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 432, "y" : 488 }
+        "at" : { "x" : 144, "y" : 424 }
       },
-      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 352, "y" : 488 }, { "x" : 352, "y" : 304 } ] }
+      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 424 }, { "x" : 64, "y" : 240 } ] }
+    }, {
+      "id" : "f2",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Handle mails from a mail store",
+        "(like IMAP or POP3). Handled mails",
+        "can be automatically deleted or",
+        "moved to a different folder, if",
+        "the mail store supports it."
+      ],
+      "visual" : {
+        "at" : { "x" : 147, "y" : 71 },
+        "size" : { "width" : 210, "height" : 78 }
+      }
     } ],
   "layout" : {
     "colors" : {
