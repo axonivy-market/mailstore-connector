@@ -45,7 +45,7 @@ public class MailStoreService {
 	}
 
 	public void test() throws MessagingException {
-		MailIterator iterator = new MailIterator("localhost-imap", "INBOX", "TestArchiv", subjectRegexFilter(".*test.*", false));
+		MessageIterator iterator = new MessageIterator("localhost-imap", "INBOX", "TestArchiv", subjectRegexFilter(".*test.*", false));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
@@ -55,7 +55,7 @@ public class MailStoreService {
 	}
 
 	/**
-	 * Get a {@link MailIterator}.
+	 * Get a {@link MessageIterator}.
 	 * 
 	 * @param storeName name of Email Store (Imap Configuration)
 	 * @param srcFolderName source folder name
@@ -64,8 +64,8 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static MailIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
-		return new MailIterator(storeName, srcFolderName, dstFolderName, filter);
+	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
+		return new MessageIterator(storeName, srcFolderName, dstFolderName, filter);
 	}
 
 	/**
@@ -103,18 +103,18 @@ public class MailStoreService {
 	 * running to the end. If it is terminated earlier, the {@link #close()} method must be
 	 * called.
 	 */
-	public static class MailIterator implements Iterator<Message> {
+	public static class MessageIterator implements Iterator<Message> {
 		private Store store;
 		private Folder srcFolder;
 		private Folder dstFolder;
 		private Message[] messages;
 		private int nextIndex;
 
-		private MailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
+		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
 			try {
 				store = MailStoreService.get().openStore(storeName);
 				srcFolder = MailStoreService.get().openFolder(store, srcFolderName, Folder.READ_WRITE);
-				if(dstFolderName != null) {
+				if(StringUtils.isNotBlank(dstFolderName)) {
 					dstFolder = MailStoreService.get().openFolder(store, dstFolderName, Folder.READ_WRITE);
 				}
 				messages = srcFolder.getMessages();
@@ -196,7 +196,7 @@ public class MailStoreService {
 				nextIndex += 1;
 				return current;
 			} catch (Exception e) {
-				throw new NoSuchElementException("Could not access element, index: " + nextIndex + " length: " + (messages != null ? messages.length : "null"));
+				throw new NoSuchElementException("Could not access message at index: " + nextIndex + " length: " + (messages != null ? messages.length : "null"), e);
 			}
 		}
 
@@ -229,7 +229,7 @@ public class MailStoreService {
 	/**
 	 * Get a mail store.
 	 * 
-	 * Note, that it is recommended to use {@link MailIterator}.
+	 * Note, that it is recommended to use {@link MessageIterator}.
 	 * 
 	 * @param storeName
 	 * @return
