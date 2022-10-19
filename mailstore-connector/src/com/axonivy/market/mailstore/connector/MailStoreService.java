@@ -45,7 +45,7 @@ public class MailStoreService {
 	}
 
 	public void test() throws MessagingException {
-		MessageIterator iterator = new MessageIterator("localhost-imap", "INBOX", "TestArchiv", subjectRegexFilter(".*test.*", false));
+		MessageIterator iterator = new MessageIterator("localhost-imap", "INBOX", "TestArchiv", true, subjectRegexFilter(".*test.*", false));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
@@ -60,12 +60,13 @@ public class MailStoreService {
 	 * @param storeName name of Email Store (Imap Configuration)
 	 * @param srcFolderName source folder name
 	 * @param dstFolderName destination folder name (if <code>null</code> then handled mails will be deleted)
+	 * @param delete delete mail from source folder?
 	 * @param filter a filter predicate
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
-		return new MessageIterator(storeName, srcFolderName, dstFolderName, filter);
+	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) throws MessagingException {
+		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter);
 	}
 
 	/**
@@ -122,7 +123,7 @@ public class MailStoreService {
 	/**
 	 * Iterate through the E-Mails of a store.
 	 * 
-	 * Additionally remove or move messages to a destination folder when they were handled.
+	 * Optionally remove or move messages to a destination folder when they were handled.
 	 * 
 	 * Note that the {@link Iterator} will only close and return it's resources when it was
 	 * running to the end. If it is terminated earlier, the {@link #close()} method must be
@@ -132,11 +133,13 @@ public class MailStoreService {
 		private Store store;
 		private Folder srcFolder;
 		private Folder dstFolder;
+		private boolean delete;
 		private Message[] messages;
 		private int nextIndex;
 
-		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, Predicate<Message> filter) throws MessagingException {
+		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) throws MessagingException {
 			try {
+				this.delete = delete;
 				store = MailStoreService.get().openStore(storeName);
 				srcFolder = MailStoreService.get().openFolder(store, srcFolderName, Folder.READ_WRITE);
 				if(StringUtils.isNotBlank(dstFolderName)) {
@@ -153,7 +156,7 @@ public class MailStoreService {
 					messages = Stream.of(messages).filter(filter).toArray(Message[]::new);
 				}
 
-				LOG.debug("Received {0} messages.", messages.length);
+				LOG.debug("Received {0}{1} messages.", messages.length, filter != null ? " matching" : "");
 
 				nextIndex = 0;
 			} catch(Exception e) {
@@ -229,8 +232,9 @@ public class MailStoreService {
 		 * Call this function, when the message was handled successfully and should be deleted/moved.
 		 * 
 		 * It will then be moved to the destination folder (if there is one)
-		 * and will be deleted in the source folder. If this function is not
-		 * called, the message will be coming again in the next iterator.
+		 * and will be deleted in the source folder (if the delete option is set).
+		 * If this function is not called, the message will be coming again in the
+		 * next iterator.
 		 */
 		public void handledMessage() {
 			try {
@@ -239,8 +243,10 @@ public class MailStoreService {
 					LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
 					dstFolder.appendMessages(new Message[] {current});
 				}
-				LOG.debug("Deleting {0}", MailStoreService.toString(current));
-				current.setFlag(Flag.DELETED, true);
+				if(delete) {
+					LOG.debug("Deleting {0}", MailStoreService.toString(current));
+					current.setFlag(Flag.DELETED, true);
+				}
 
 				if(!hasNext()) {
 					close();
