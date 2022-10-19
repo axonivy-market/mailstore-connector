@@ -1,0 +1,51 @@
+{
+  "format" : "10.0.0",
+  "id" : "183EF82269E7D570",
+  "kind" : "CALLABLE_SUB",
+  "config" : {
+    "data" : "com.axonivy.market.mailstore.connector.MessageHandlerData"
+  },
+  "elements" : [ {
+      "id" : "f6",
+      "type" : "CallSubStart",
+      "name" : "handleMessage(Message)",
+      "config" : {
+        "callSignature" : "handleMessage",
+        "input" : {
+          "params" : [
+            { "name" : "message", "type" : "javax.mail.Message" }
+          ],
+          "map" : {
+            "out.message" : "param.message"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 80 },
+        "labelOffset" : { "x" : 17, "y" : -23 }
+      },
+      "connect" : { "id" : "f9", "to" : "f8" }
+    }, {
+      "id" : "f7",
+      "type" : "CallSubEnd",
+      "visual" : {
+        "at" : { "x" : 144, "y" : 240 }
+      }
+    }, {
+      "id" : "f8",
+      "type" : "Script",
+      "name" : [
+        "Handle single",
+        "message"
+      ],
+      "config" : {
+        "output" : {
+          "code" : "ivy.log.info(\"No action for message ''{0}''\", in.message.subject);"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 160 }
+      },
+      "connect" : { "id" : "f10", "to" : "f7" }
+    } ]
+}

@@ -69,7 +69,7 @@ public class MailStoreService {
 	}
 
 	/**
-	 * Get a predicate to match subjects against a regular expression.
+	 * Get a {@link Predicate} to match subjects against a regular expression.
 	 * 
 	 * Note, that the full subject must match. If you want a "contains"
 	 * match, use something like:
@@ -89,6 +89,31 @@ public class MailStoreService {
 				return subjectPattern.matcher(m.getSubject()).matches();
 			} catch (MessagingException e) {
 				LOG.error("Could not match subject of message {0}", m, e);
+			}
+			return false;
+		};
+	}
+
+	/**
+	 * Get a {@link Predicate} to match "from" addresses against a regular expression.
+	 * 
+	 * Note, that the full address must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * fromRegexFilter(".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> fromRegexFilter(String pattern) {
+		Pattern fromPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		return m -> {
+			try {
+				return fromPattern.matcher(m.getFrom().toString()).matches();
+			} catch (MessagingException e) {
+				LOG.error("Could not match from address of message {0}", m, e);
 			}
 			return false;
 		};

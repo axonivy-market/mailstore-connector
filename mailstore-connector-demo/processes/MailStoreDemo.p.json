@@ -25,7 +25,7 @@
     }, {
       "id" : "f3",
       "type" : "SubProcessCall",
-      "name" : "Mail store demo",
+      "name" : "Handle messages",
       "config" : {
         "processCall" : "MailStoreConnector:handleMessages(String,String,String,java.util.function.Predicate)",
         "call" : {
