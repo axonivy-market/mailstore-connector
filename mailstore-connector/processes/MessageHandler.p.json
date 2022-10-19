@@ -21,7 +21,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 80 },
+        "at" : { "x" : 136, "y" : 208 },
         "labelOffset" : { "x" : 17, "y" : -23 }
       },
       "connect" : { "id" : "f9", "to" : "f8" }
@@ -29,7 +29,7 @@
       "id" : "f7",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 144, "y" : 240 }
+        "at" : { "x" : 136, "y" : 368 }
       }
     }, {
       "id" : "f8",
@@ -44,8 +44,22 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 160 }
+        "at" : { "x" : 136, "y" : 288 }
       },
       "connect" : { "id" : "f10", "to" : "f7" }
+    }, {
+      "id" : "f0",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "This sub-process is called for",
+        "every message that",
+        "MailStoreConnector.handleMessages()",
+        "reads. Override it in your project to",
+        "handle a single mail message."
+      ],
+      "visual" : {
+        "at" : { "x" : 136, "y" : 88 },
+        "size" : { "width" : 218, "height" : 138 }
+      }
     } ]
 }
