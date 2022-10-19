@@ -1,0 +1,3 @@
+MessageHandlerData #class
+com.axonivy.market.mailstore.connector #namespace
+message javax.mail.Message #field
