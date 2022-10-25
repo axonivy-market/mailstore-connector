@@ -20,7 +20,7 @@
             { "name" : "filter", "type" : "java.util.function.Predicate", "desc" : "Predicate to filter (can be null)" }
           ],
           "map" : {
-            "out.messageIterator" : "com.axonivy.market.mailstore.connector.MailStoreService.mailIterator(param.storeName, param.srcFolder, param.#dstFolder, param.delete, param.#filter)"
+            "out.messageIterator" : "com.axonivy.market.mailstore.connector.MailStoreService.messageIterator(param.storeName, param.srcFolder, param.#dstFolder, param.delete, param.#filter)"
           }
         }
       },

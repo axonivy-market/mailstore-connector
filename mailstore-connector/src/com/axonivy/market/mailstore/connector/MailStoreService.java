@@ -53,7 +53,7 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static MessageIterator mailIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
+	public static MessageIterator messageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
 		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter);
 	}
 
@@ -71,15 +71,14 @@ public class MailStoreService {
 	 * @param caseSensitive
 	 * @return
 	 */
-	public static Predicate<Message> subjectRegexFilter(String pattern, boolean caseSensitive) {
+	public static Predicate<Message> subjectRegex(String pattern, boolean caseSensitive) {
 		Pattern subjectPattern = Pattern.compile(pattern, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE);
 		return m -> {
 			try {
 				return subjectPattern.matcher(m.getSubject()).matches();
 			} catch (MessagingException e) {
-				LOG.error("Could not match subject of message {0}", m, e);
+				throw buildError("predicate:subjectregex").build();
 			}
-			return false;
 		};
 	}
 
@@ -96,15 +95,14 @@ public class MailStoreService {
 	 * @param pattern
 	 * @return
 	 */
-	public static Predicate<Message> fromRegexFilter(String pattern) {
+	public static Predicate<Message> fromRegex(String pattern) {
 		Pattern fromPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 		return m -> {
 			try {
 				return fromPattern.matcher(m.getFrom().toString()).matches();
 			} catch (MessagingException e) {
-				LOG.error("Could not match from address of message {0}", m, e);
+				throw buildError("predicate:fromregex").build();
 			}
-			return false;
 		};
 	}
 
@@ -115,18 +113,25 @@ public class MailStoreService {
 	 * 
 	 * Note that the {@link Iterator} will only close and return it's resources when it was
 	 * running to the end. If it is terminated earlier, the {@link #close()} method must be
-	 * called.
+	 * called. It is not a problem, to call the close method on a closed object again.
 	 */
-	public static class MessageIterator implements Iterator<Message> {
+	public static class MessageIterator implements Iterator<Message>, AutoCloseable {
 		private Store store;
 		private Folder srcFolder;
 		private Folder dstFolder;
 		private boolean delete;
 		private Message[] messages;
 		private int nextIndex;
+		private ClassLoader originalClassLoader;
 
 		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
 			try {
+				// Use own classloader so that internal classes of javax.mail API are found.
+				// If they cannot be found on the classpath, then mail content will not
+				// be recognized and always be reported as IMAPInputStream
+				originalClassLoader = Thread.currentThread().getContextClassLoader();
+				Thread.currentThread().setContextClassLoader(Session.class.getClassLoader());
+
 				this.delete = delete;
 				store = MailStoreService.get().openStore(storeName);
 				srcFolder = MailStoreService.get().openFolder(store, srcFolderName, Folder.READ_WRITE);
@@ -157,8 +162,9 @@ public class MailStoreService {
 		 * Close and sync all actions to the mail server.
 		 * 
 		 * Will be called automatically after the last element is fetched.
-		 * Only call this method if you do not complete the iterator.
+		 * Must be called if the iterator does not run to the end.
 		 */
+		@Override
 		public void close() {
 			Exception exception = null;
 			if(dstFolder != null && dstFolder.isOpen()) {
@@ -194,6 +200,7 @@ public class MailStoreService {
 			if(exception != null) {
 				buildError("close").withCause(exception);
 			}
+			Thread.currentThread().setContextClassLoader(originalClassLoader);
 		}
 
 		@Override

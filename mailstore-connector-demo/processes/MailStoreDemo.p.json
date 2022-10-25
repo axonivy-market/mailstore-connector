@@ -15,7 +15,7 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 64 }
       },
-      "connect" : { "id" : "f4", "to" : "f3" }
+      "connect" : { "id" : "f7", "to" : "f3" }
     }, {
       "id" : "f1",
       "type" : "TaskEnd",
@@ -41,7 +41,7 @@
             "param.srcFolder" : "\"INBOX\"",
             "param.dstFolder" : "null",
             "param.delete" : "false",
-            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectRegexFilter(\".*test.*\", false)"
+            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectRegex(\".*test 1[03].*\", false)"
           }
         }
       },
