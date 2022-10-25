@@ -1,7 +1,11 @@
 package com.axonivy.market.mailstore.connector;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Properties;
@@ -14,8 +18,10 @@ import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,7 +77,7 @@ public class MailStoreService {
 	 * @param caseSensitive
 	 * @return
 	 */
-	public static Predicate<Message> subjectRegex(String pattern, boolean caseSensitive) {
+	public static Predicate<Message> subjectMatches(String pattern, boolean caseSensitive) {
 		Pattern subjectPattern = Pattern.compile(pattern, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE);
 		return m -> {
 			try {
@@ -95,7 +101,7 @@ public class MailStoreService {
 	 * @param pattern
 	 * @return
 	 */
-	public static Predicate<Message> fromRegex(String pattern) {
+	public static Predicate<Message> fromMatches(String pattern) {
 		Pattern fromPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 		return m -> {
 			try {
@@ -106,10 +112,20 @@ public class MailStoreService {
 		};
 	}
 
-	public static Predicate<Message> hasAttachment() {
-		// TODO implement
-		return null;
+	/**
+	 * Does this message have any attachments?
+	 * 
+	 * @param includeSubMessages also look into submessages?
+	 * @return
+	 */
+	public static Predicate<Message> hasAttachment(boolean includeSubMessages) {
+		return m -> {
+			Predicate<Part> attachmentPredicate = MessageService.isAttachment().or(MessageService.isParent(includeSubMessages));
+			Collection<Part> parts = MessageService.allParts(m, attachmentPredicate, MessageService.isAttachment());
+			return parts.size() > 0;
+		};
 	}
+
 	/**
 	 * Iterate through the E-Mails of a store.
 	 * 
@@ -258,6 +274,36 @@ public class MailStoreService {
 	}
 
 	/**
+	 * Get the raw message data e.g. for saving.
+	 * 
+	 * @param message
+	 * @return
+	 */
+	public static InputStream saveMessage(Message message) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			message.writeTo(bos);
+		} catch (IOException | MessagingException e) {
+			throw buildError("save").withCause(e).build();
+		}
+		return new ByteArrayInputStream(bos.toByteArray());
+	}
+
+	/**
+	 * Create a mail from raw message data e.g. from loading.
+	 * 
+	 * @param stream
+	 * @return
+	 */
+	public static Message loadMessage(InputStream stream) {
+		try {
+			return new MimeMessage(getSession(), stream);
+		} catch (MessagingException e) {
+			throw buildError("load").withCause(e).build();
+		}
+	}
+
+	/**
 	 * Get a mail store.
 	 * 
 	 * Note, that it is recommended to use {@link MessageIterator}.
@@ -266,7 +312,7 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public Store openStore(String storeName) throws MessagingException {
+	public static Store openStore(String storeName) throws MessagingException {
 		Store store = null;
 
 		String protocol = getVar(storeName, PROTOCOL_VAR);
@@ -279,7 +325,6 @@ public class MailStoreService {
 		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
 				protocol, host, portString, user, StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
 
-		Properties properties = getProperties();
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		PrintStream debugStream = new PrintStream(stream);
@@ -287,10 +332,11 @@ public class MailStoreService {
 		boolean debug = true;
 
 		try {
+			Session session = getSession();
+
 			debug = Boolean.parseBoolean(debugString);
 			int port = Integer.parseInt(portString);
 
-			Session session = Session.getDefaultInstance(properties, null);
 
 			if(debug) {
 				session.setDebug(debug);
@@ -314,7 +360,13 @@ public class MailStoreService {
 		return store;
 	}
 
-	private Folder openFolder(Store store, String folderName, int mode) throws MessagingException {
+	private static Session getSession() {
+		Properties properties = getProperties();
+		Session session = Session.getDefaultInstance(properties, null);
+		return session;
+	}
+
+	private static Folder openFolder(Store store, String folderName, int mode) throws MessagingException {
 		LOG.debug("Opening folder {0}", folderName);
 		Folder folder = store.getFolder(folderName);
 
@@ -332,11 +384,11 @@ public class MailStoreService {
 		return folder;
 	}
 
-	private String getVar(String store, String var) {
+	private static String getVar(String store, String var) {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
 	}
 
-	private Properties getProperties() {
+	private static Properties getProperties() {
 		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
