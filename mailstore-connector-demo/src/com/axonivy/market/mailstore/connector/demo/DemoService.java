@@ -1,7 +1,9 @@
 package com.axonivy.market.mailstore.connector.demo;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,33 +21,34 @@ public class DemoService {
 	private static final Logger LOG = Ivy.log();
 
 	public static boolean handleMessage(Message message) throws MessagingException, IOException {
-		LOG.info("Working on message {0} received at {1}", message.getSubject(), message.getReceivedDate());
-		LOG.info("Class: {0}", message.getContent().getClass());
+		LOG.info("Working on message {0} received at {1} type {2}", message.getSubject(), message.getReceivedDate(), message.getContent().getClass());
 
-		Collection<Part> parts = MessageService.allParts(message,null);
+		Predicate<Part> lookPredicate = MessageService.isImage("*").or(Predicate.not(MessageService.isMessage("*")));
+		Predicate<Part> collectPredicate = MessageService.isImage("*");
+		Collection<Part> parts = MessageService.allParts(message, lookPredicate, collectPredicate);
 		for (Part part : parts) {
-			LOG.info("Part: {0} {1} {2} {3}", part.getFileName(), part.getContentType(), part.getDisposition(), part.getContent().getClass());
+			LOG.info("Part: Filename: {0} Description: {1} ContentType: {2} Disposition: {3} Content Class: {4}",
+					part.getFileName(), part.getDescription(), part.getContentType(), part.getDisposition(), part.getContent().getClass());
 		}
-
-		//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		//		message.writeTo(bos);
-
-		//		LOG.info("Content:\n{0}", bos.toString());
 		return true;
 	}
 
 	public static void test() throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectRegex(".*test 1[03].*", false));
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*test.*", false));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
+
+			InputStream stream = MailStoreService.saveMessage(message);
+			message = MailStoreService.loadMessage(stream);
+
 			boolean handled = handleMessage(message);
 			iterator.handledMessage(handled);
 		}
 	}
 
 	public static void main(String[] args) throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectRegex(".*test 1[03].*", false));
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*", false));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();

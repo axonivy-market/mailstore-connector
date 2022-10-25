@@ -50,7 +50,6 @@
         "output" : {
           "code" : [
             "import com.axonivy.market.mailstore.connector.demo.DemoService;",
-            "ivy.log.info(\"Override action for message ''{0}''\", in.message.subject);",
             "",
             "in.handled = DemoService.handleMessage(in.message);"
           ]

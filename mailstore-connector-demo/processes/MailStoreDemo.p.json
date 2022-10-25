@@ -27,7 +27,6 @@
       "type" : "SubProcessCall",
       "name" : "Handle messages",
       "config" : {
-        "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate)",
         "call" : {
           "params" : [
             { "name" : "storeName", "type" : "String" },
@@ -40,10 +39,17 @@
             "param.storeName" : "\"localhost-imap\"",
             "param.srcFolder" : "\"INBOX\"",
             "param.dstFolder" : "null",
-            "param.delete" : "false",
-            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectRegex(\".*test 1[03].*\", false)"
-          }
-        }
+            "param.delete" : "false"
+          },
+          "code" : [
+            "import com.axonivy.market.mailstore.connector.MailStoreService;",
+            "",
+            "",
+            "param.filter = MailStoreService.subjectMatches(\".*test 1[03].*\", false);",
+            "param.filter = MailStoreService.hasAttachment(false);"
+          ]
+        },
+        "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate)"
       },
       "visual" : {
         "at" : { "x" : 224, "y" : 64 }
