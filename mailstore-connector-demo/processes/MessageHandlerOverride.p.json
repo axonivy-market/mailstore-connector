@@ -1,6 +1,6 @@
 {
   "format" : "10.0.0",
-  "id" : "183EF840311E0FFB",
+  "id" : "1840F78EA8FD1B41",
   "kind" : "CALLABLE_SUB",
   "config" : {
     "data" : "com.axonivy.market.mailstore.connector.demo.MessageHandlerOverrideData"
@@ -18,10 +18,18 @@
           "map" : {
             "out.message" : "param.message"
           }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "handled", "type" : "Boolean", "desc" : "Was the mail handled (and can be re/moved)?" }
+          ],
+          "map" : {
+            "result.handled" : "in.handled"
+          }
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 80 },
+        "at" : { "x" : 104, "y" : 64 },
         "labelOffset" : { "x" : 17, "y" : -23 }
       },
       "connect" : { "id" : "f9", "to" : "f8" }
@@ -29,7 +37,7 @@
       "id" : "f7",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 144, "y" : 240 }
+        "at" : { "x" : 104, "y" : 224 }
       }
     }, {
       "id" : "f8",
@@ -44,12 +52,12 @@
             "import com.axonivy.market.mailstore.connector.demo.DemoService;",
             "ivy.log.info(\"Override action for message ''{0}''\", in.message.subject);",
             "",
-            "DemoService.handleMessage(in.message);"
+            "in.handled = DemoService.handleMessage(in.message);"
           ]
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 160 }
+        "at" : { "x" : 104, "y" : 144 }
       },
       "connect" : { "id" : "f10", "to" : "f7" }
     } ]

@@ -63,6 +63,12 @@
       ],
       "config" : {
         "processCall" : "MessageHandler:handleMessage(javax.mail.Message)",
+        "output" : {
+          "map" : {
+            "out" : "in",
+            "out.handled" : "result.handled"
+          }
+        },
         "call" : {
           "params" : [
             { "name" : "message", "type" : "javax.mail.Message" }
@@ -95,7 +101,7 @@
       "name" : "set handled",
       "config" : {
         "output" : {
-          "code" : "in.messageIterator.handledMessage();"
+          "code" : "in.messageIterator.handledMessage(in.handled);"
         }
       },
       "visual" : {

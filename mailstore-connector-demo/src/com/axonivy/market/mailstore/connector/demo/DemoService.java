@@ -18,28 +18,39 @@ import ch.ivyteam.log.Logger;
 public class DemoService {
 	private static final Logger LOG = Ivy.log();
 
-	public static void handleMessage(Message message) throws MessagingException, IOException {
+	public static boolean handleMessage(Message message) throws MessagingException, IOException {
 		LOG.info("Working on message {0} received at {1}", message.getSubject(), message.getReceivedDate());
 		LOG.info("Class: {0}", message.getContent().getClass());
 
-		Collection<Part> parts = MessageService.allParts(message, null);
+		Collection<Part> parts = MessageService.allParts(message,null);
 		for (Part part : parts) {
-			LOG.info("Part: {0} {1}", part.getContentType(), part.getContent().getClass());
+			LOG.info("Part: {0} {1} {2} {3}", part.getFileName(), part.getContentType(), part.getDisposition(), part.getContent().getClass());
 		}
 
 		//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		//		message.writeTo(bos);
 
 		//		LOG.info("Content:\n{0}", bos.toString());
+		return true;
+	}
+
+	public static void test() throws MessagingException, IOException {
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectRegex(".*test 1[03].*", false));
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
 	}
 
 	public static void main(String[] args) throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, null);
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectRegex(".*test 1[03].*", false));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
 			showMessage(message);
-			iterator.handledMessage();
+			iterator.handledMessage(true);
 		}
 	}
 

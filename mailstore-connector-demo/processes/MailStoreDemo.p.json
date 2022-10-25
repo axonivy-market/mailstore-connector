@@ -49,5 +49,33 @@
         "at" : { "x" : 224, "y" : 64 }
       },
       "connect" : { "id" : "f2", "to" : "f1" }
+    }, {
+      "id" : "f4",
+      "type" : "RequestStart",
+      "name" : "start2.ivp",
+      "config" : {
+        "callSignature" : "start2",
+        "outLink" : "start2.ivp",
+        "startName" : "~Test: quick fetch"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 176 }
+      },
+      "connect" : { "id" : "f6", "to" : "f5" }
+    }, {
+      "id" : "f5",
+      "type" : "Script",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.market.mailstore.connector.demo.DemoService;",
+            "DemoService.test();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 208, "y" : 176 }
+      },
+      "connect" : { "id" : "f8", "to" : "f1" }
     } ]
 }
