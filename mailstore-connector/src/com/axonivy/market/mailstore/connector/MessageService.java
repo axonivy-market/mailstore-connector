@@ -1,6 +1,7 @@
 package com.axonivy.market.mailstore.connector;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +52,8 @@ public class MessageService {
 
 	private static void collectParts(List<Part> parts, Part part, int level, Predicate<Part> lookPredicate, Predicate<Part> collectPredicate) throws MessagingException, IOException {
 		if(lookPredicate == null || lookPredicate.test(part)) {
+			String what = MessageFormat.format("ContentType: ''{0}'' Disposition: ''{1}''", part.getContentType().split("\\s+")[0], part.getDisposition());
+			Ivy.log().fatal(what);
 			if(collectPredicate == null || collectPredicate.test(part)) {
 				parts.add(part);
 			}
