@@ -18,6 +18,14 @@
           "map" : {
             "out.message" : "param.message"
           }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "handled", "type" : "Boolean", "desc" : "Was the mail handled (and can be re/moved)?" }
+          ],
+          "map" : {
+            "result.handled" : "in.handled"
+          }
         }
       },
       "visual" : {
@@ -40,7 +48,11 @@
       ],
       "config" : {
         "output" : {
-          "code" : "ivy.log.info(\"No action for message ''{0}''\", in.message.subject);"
+          "code" : [
+            "ivy.log.info(\"No action for message ''{0}''\", in.message.subject);",
+            "",
+            "in.handled = true;"
+          ]
         }
       },
       "visual" : {

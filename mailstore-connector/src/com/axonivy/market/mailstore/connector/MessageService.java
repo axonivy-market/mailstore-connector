@@ -39,20 +39,20 @@ public class MessageService {
 	}
 
 	private static void collectParts(List<Part> parts, Part part, int level, Predicate<Part> predicate) throws MessagingException, IOException {
-		parts.add(part);
-		if(part.isMimeType("multipart/*")) {
-			MimeMultipart multipart = (MimeMultipart) part.getContent();
-			int count = multipart.getCount();
-			for (int i = 0; i < count; i++) {
-				BodyPart bodyPart = multipart.getBodyPart(i);
-				if(predicate == null || predicate.test(bodyPart)) {
+		if(predicate == null || predicate.test(part)) {
+			parts.add(part);
+			if(part.isMimeType("multipart/*")) {
+				MimeMultipart multipart = (MimeMultipart) part.getContent();
+				int count = multipart.getCount();
+				for (int i = 0; i < count; i++) {
+					BodyPart bodyPart = multipart.getBodyPart(i);
 					collectParts(parts, bodyPart, level+1, predicate);
 				}
 			}
-		}
-		else if(part.isMimeType("message/*")) {
-			Message message = (Message) part.getContent();
-			collectParts(parts, message, level+1, predicate);
+			else if(part.isMimeType("message/*")) {
+				Message message = (Message) part.getContent();
+				collectParts(parts, message, level+1, predicate);
+			}
 		}
 	}
 

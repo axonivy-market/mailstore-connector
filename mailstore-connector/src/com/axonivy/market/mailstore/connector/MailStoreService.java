@@ -106,6 +106,10 @@ public class MailStoreService {
 		};
 	}
 
+	public static Predicate<Message> hasAttachment() {
+		// TODO implement
+		return null;
+	}
 	/**
 	 * Iterate through the E-Mails of a store.
 	 * 
@@ -231,18 +235,19 @@ public class MailStoreService {
 		 * If this function is not called, the message will be coming again in the
 		 * next iterator.
 		 */
-		public void handledMessage() {
+		public void handledMessage(boolean handled) {
 			try {
-				Message current = messages[nextIndex-1];
-				if(dstFolder != null) {
-					LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
-					dstFolder.appendMessages(new Message[] {current});
+				if(handled) {
+					Message current = messages[nextIndex-1];
+					if(dstFolder != null) {
+						LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
+						dstFolder.appendMessages(new Message[] {current});
+					}
+					if(delete) {
+						LOG.debug("Deleting {0}", MailStoreService.toString(current));
+						current.setFlag(Flag.DELETED, true);
+					}
 				}
-				if(delete) {
-					LOG.debug("Deleting {0}", MailStoreService.toString(current));
-					current.setFlag(Flag.DELETED, true);
-				}
-
 				if(!hasNext()) {
 					close();
 				}

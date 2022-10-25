@@ -1,3 +1,4 @@
 MessageHandlerData #class
 com.axonivy.market.mailstore.connector #namespace
 message javax.mail.Message #field
+handled Boolean #field
