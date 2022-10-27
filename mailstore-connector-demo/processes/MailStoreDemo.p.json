@@ -45,7 +45,7 @@
             "import com.axonivy.market.mailstore.connector.MailStoreService;",
             "",
             "",
-            "param.filter = MailStoreService.subjectMatches(\".*test 1[03].*\", false);",
+            "param.filter = MailStoreService.subjectMatches(\".*test 1[03].*\");",
             "param.filter = MailStoreService.hasAttachment(false);"
           ]
         },
