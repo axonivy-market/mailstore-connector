@@ -1,11 +1,11 @@
 package com.axonivy.market.mailstore.connector;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -35,13 +35,13 @@ public class MessageService {
 	 * 
 	 * @param message
 	 * @param lookPredicate only look (and go into) at parts which match the predicate
-	 * @param collectPredicate only return parts matching the predicate
+	 * @param filter only return parts matching the predicate
 	 * @return
 	 */
-	public static Collection<Part> allParts(Message message, Predicate<Part> lookPredicate, Predicate<Part> collectPredicate) {
+	public static Collection<Part> getAllParts(Message message, boolean includeSubMessages, Predicate<Part> filter) {
 		List<Part> parts = new ArrayList<>();
 		try {
-			collectParts(parts, message, 1, lookPredicate, collectPredicate);
+			collectParts(parts, message, 1, includeSubMessages, filter);
 		}
 		catch(Exception e) {
 			throw buildError("iterator").withCause(e).build();
@@ -50,11 +50,9 @@ public class MessageService {
 		return parts;
 	}
 
-	private static void collectParts(List<Part> parts, Part part, int level, Predicate<Part> lookPredicate, Predicate<Part> collectPredicate) throws MessagingException, IOException {
-		if(lookPredicate == null || lookPredicate.test(part)) {
-			String what = MessageFormat.format("ContentType: ''{0}'' Disposition: ''{1}''", part.getContentType().split("\\s+")[0], part.getDisposition());
-			Ivy.log().fatal(what);
-			if(collectPredicate == null || collectPredicate.test(part)) {
+	private static void collectParts(List<Part> parts, Part part, int level, boolean includeSubMessages, Predicate<Part> filter) throws MessagingException, IOException {
+		if(includeSubMessages || level == 1 || !(part instanceof Message)) {
+			if(filter == null || filter.test(part)) {
 				parts.add(part);
 			}
 			if(isMultipart("*").test(part)) {
@@ -62,12 +60,12 @@ public class MessageService {
 				int count = multipart.getCount();
 				for (int i = 0; i < count; i++) {
 					BodyPart bodyPart = multipart.getBodyPart(i);
-					collectParts(parts, bodyPart, level+1, lookPredicate, collectPredicate);
+					collectParts(parts, bodyPart, level+1, includeSubMessages, filter);
 				}
 			}
 			else if(isMessage("*").test(part)) {
 				Message message = (Message) part.getContent();
-				collectParts(parts, message, level+1, lookPredicate, collectPredicate);
+				collectParts(parts, message, level+1, includeSubMessages, filter);
 			}
 		}
 	}
@@ -142,16 +140,16 @@ public class MessageService {
 	}
 
 	/**
-	 * Is this an attachment?
+	 * Is this the correct disposition type?
 	 * 
 	 * @return
 	 */
-	public static Predicate<Part> isAttachment() {
+	public static Predicate<Part> isDisposition(String disposition) {
 		return p -> {
 			try {
-				return Message.ATTACHMENT.equals(p.getDisposition());
+				return disposition.equals(p.getDisposition());
 			} catch (MessagingException e) {
-				throw buildError("predicate:attachment").build();
+				throw buildError("predicate:disposition").build();
 			}
 		}; 
 	}
@@ -161,12 +159,27 @@ public class MessageService {
 	 * 
 	 * @return
 	 */
+	public static Predicate<Part> isAttachment() {
+		return isDisposition(Message.ATTACHMENT); 
+	}
+
+	/**
+	 * Is this an attachment?
+	 * 
+	 * @return
+	 */
 	public static Predicate<Part> isInline() {
+		return isDisposition(Message.INLINE);
+	}
+
+	public static Predicate<Part> filenameMatches(String pattern) {
+		Pattern namePattern = createStandardPattern(pattern);
 		return p -> {
 			try {
-				return Message.INLINE.equals(p.getDisposition());
+				String fileName = p.getFileName();
+				return fileName != null ? namePattern.matcher(fileName).matches() : false;
 			} catch (MessagingException e) {
-				throw buildError("predicate:inline").build();
+				throw buildError("predicate:filename").build();
 			}
 		}; 
 	}
@@ -187,6 +200,28 @@ public class MessageService {
 	 */
 	public static Predicate<Part> isParent(boolean includeSubMessages) {
 		return includeSubMessages ? isParent() : Predicate.not(isMessage("*"));
+	}
+
+	/**
+	 * Always return true.
+	 * 
+	 * @return
+	 */
+	public static Predicate<Part> alwaysTrue() {
+		return m -> true;
+	}
+
+	/**
+	 * Always return false.
+	 * 
+	 * @return
+	 */
+	public static Predicate<Part> alwaysFalse() {
+		return m -> false;
+	}
+
+	private static Pattern createStandardPattern(String pattern) {
+		return Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	}
 
 	private static BpmPublicErrorBuilder buildError(String code) {

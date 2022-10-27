@@ -13,10 +13,12 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.mail.Address;
 import javax.mail.FetchProfile;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.Session;
@@ -43,6 +45,7 @@ public class MailStoreService {
 	private static final String DEBUG_VAR = "debug";
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
+	private static final Address[] EMPTY_ADDRESSES = new Address[0];
 
 	public static MailStoreService get() {
 		return INSTANCE;
@@ -70,20 +73,20 @@ public class MailStoreService {
 	 * match, use something like:
 	 * 
 	 * <pre>
-	 * subjectRegexFilter(".*my matching pattern.*", false);
+	 * subjectMatches(".*my matching pattern.*", false);
 	 * </pre>
 	 * 
 	 * @param pattern
 	 * @param caseSensitive
 	 * @return
 	 */
-	public static Predicate<Message> subjectMatches(String pattern, boolean caseSensitive) {
-		Pattern subjectPattern = Pattern.compile(pattern, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE);
+	public static Predicate<Message> subjectMatches(String pattern) {
+		Pattern subjectPattern = createStandardPattern(pattern);
 		return m -> {
 			try {
-				return subjectPattern.matcher(m.getSubject()).matches();
+				return subjectPattern.matcher(nullSafe(m.getSubject(), "")).matches();
 			} catch (MessagingException e) {
-				throw buildError("predicate:subjectregex").build();
+				throw buildError("predicate:subjectmatches").build();
 			}
 		};
 	}
@@ -95,19 +98,158 @@ public class MailStoreService {
 	 * match, use something like:
 	 * 
 	 * <pre>
-	 * fromRegexFilter(".*my matching pattern.*");
+	 * fromMatches(".*my matching pattern.*");
 	 * </pre>
 	 * 
 	 * @param pattern
 	 * @return
 	 */
 	public static Predicate<Message> fromMatches(String pattern) {
-		Pattern fromPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		Pattern fromPattern = createStandardPattern(pattern);
 		return m -> {
 			try {
-				return fromPattern.matcher(m.getFrom().toString()).matches();
+				boolean result = false;
+				for(Address address : nullSafe(m.getFrom(), EMPTY_ADDRESSES)) {
+					result = fromPattern.matcher(address.toString()).matches();
+				}
+				return result;
 			} catch (MessagingException e) {
-				throw buildError("predicate:fromregex").build();
+				throw buildError("predicate:frommatches").build();
+			}
+		};
+	}
+
+	/**
+	 * Get a {@link Predicate} to match any "to" addresses against a regular expression.
+	 * 
+	 * Note, that the full address must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * toMatches(".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> toMatches(String pattern) {
+		return rcptMatches(RecipientType.TO, pattern, "tomatches");
+	}
+
+	/**
+	 * Get a {@link Predicate} to match any "cc" addresses against a regular expression.
+	 * 
+	 * Note, that the full address must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * ccMatches(".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> ccMatches(String pattern) {
+		return rcptMatches(RecipientType.CC, pattern, "ccmatches");
+	}
+
+	/**
+	 * Get a {@link Predicate} to match any "bcc" addresses against a regular expression.
+	 * 
+	 * Note, that the full address must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * bccMatches(".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * Note, that received messages typically do not contain a BCC header.
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> bccMatches(String pattern) {
+		return rcptMatches(RecipientType.BCC, pattern, "bccmatches");
+	}
+
+	private static Predicate<Message> rcptMatches(RecipientType recipientType, String pattern, String errorCode) {
+		Pattern rcptPattern = createStandardPattern(pattern);
+		return m -> {
+			try {
+				boolean result = false;
+				for(Address address : nullSafe(m.getRecipients(recipientType), EMPTY_ADDRESSES)) {
+					if(rcptPattern.matcher(address.toString()).matches()) {
+						result = true;
+						break;
+					}
+				}
+				return result;
+			} catch (MessagingException e) {
+				throw buildError("predicate:" + errorCode).build();
+			}
+		};
+	}
+
+	/**
+	 * Get a {@link Predicate} to match any recipient addresses against a regular expression.
+	 * 
+	 * Note, that the full address must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * anyRecipientMatches(".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> anyRecipientMatches(String pattern) {
+		Pattern rcptPattern = createStandardPattern(pattern);
+		return m -> {
+			try {
+				boolean result = false;
+				for(Address address : nullSafe(m.getAllRecipients(), EMPTY_ADDRESSES)) {
+					if(rcptPattern.matcher(address.toString()).matches()) {
+						result = true;
+						break;
+					}
+				}
+
+				return result;
+			} catch (MessagingException e) {
+				throw buildError("predicate:frommatches").build();
+			}
+		};
+	}
+
+	/**
+	 * Get a {@link Predicate} to match any header against a regular expression.
+	 * 
+	 * Note, that the full header must match. If you want a "contains"
+	 * match, use something like:
+	 * 
+	 * <pre>
+	 * headerMatches("Reply-To", ".*my matching pattern.*");
+	 * </pre>
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	public static Predicate<Message> headerMatches(String headerName, String pattern) {
+		Pattern headerPattern = createStandardPattern(pattern);
+		return m -> {
+			try {
+				boolean result = false;
+				for(String header : nullSafe(m.getHeader(headerName), new String[0])) {
+					if(headerPattern.matcher(header).matches()) {
+						result = true;
+						break;
+					}
+				}
+
+				return result;
+			} catch (MessagingException e) {
+				throw buildError("predicate:headermatches").build();
 			}
 		};
 	}
@@ -115,16 +257,61 @@ public class MailStoreService {
 	/**
 	 * Does this message have any attachments?
 	 * 
-	 * @param includeSubMessages also look into submessages?
+	 * @param includeSubMessages also look into sub-messages?
 	 * @return
 	 */
 	public static Predicate<Message> hasAttachment(boolean includeSubMessages) {
 		return m -> {
-			Predicate<Part> attachmentPredicate = MessageService.isAttachment().or(MessageService.isParent(includeSubMessages));
-			Collection<Part> parts = MessageService.allParts(m, attachmentPredicate, MessageService.isAttachment());
+			Collection<Part> parts = MessageService.getAllParts(m, includeSubMessages, MessageService.isAttachment());
 			return parts.size() > 0;
 		};
 	}
+
+	/**
+	 * Does this message have any part like this?
+	 * 
+	 * @param mimeType accept all if <code>null</code>
+	 * @param disposition accept all if <code>null</code> 
+	 * @param filenamePattern accept all if <code>null</code>
+	 * @param includeSubMessages also look into sub-messages?
+	 * @return
+	 */
+	public static Predicate<Message> hasPart(String mimeType, String disposition, String filenamePattern, boolean includeSubMessages) {
+		return m -> {
+			Predicate<Part> p = MessageService.alwaysTrue();
+			if(mimeType != null) {
+				p = p.and(MessageService.isMimeType(mimeType));
+			}
+			if(disposition != null) {
+				p = p.and(MessageService.isDisposition(disposition));
+			}
+			if(filenamePattern != null) {
+				p = p.and(MessageService.filenameMatches(filenamePattern));
+			}
+
+			Collection<Part> parts = MessageService.getAllParts(m, includeSubMessages, p);
+			return parts.size() > 0;
+		};
+	}
+
+	/**
+	 * Always return true.
+	 * 
+	 * @return
+	 */
+	public static Predicate<Message> alwaysTrue() {
+		return m -> true;
+	}
+
+	/**
+	 * Always return false.
+	 * 
+	 * @return
+	 */
+	public static Predicate<Message> alwaysFalse() {
+		return m -> false;
+	}
+
 
 	/**
 	 * Iterate through the E-Mails of a store.
@@ -410,6 +597,10 @@ public class MailStoreService {
 		return builder;
 	}
 
+	private static Pattern createStandardPattern(String pattern) {
+		return Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	}
+
 	private static String toString(Message m) {
 		String subject = null;
 		try {
@@ -417,6 +608,11 @@ public class MailStoreService {
 		} catch (MessagingException e) {
 			subject = "Exception while reading subject";
 		}
+
 		return String.format("Message[subject: '%s']", subject);
+	}
+
+	private static <T> T nullSafe(T unsafe, T def) {
+		return unsafe != null ? unsafe : def;
 	}
 }
