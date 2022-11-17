@@ -33,7 +33,7 @@
       "id" : "f1",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 144, "y" : 512 }
+        "at" : { "x" : 144, "y" : 624 }
       }
     }, {
       "id" : "f4",
@@ -44,14 +44,14 @@
         "labelOffset" : { "x" : -24, "y" : -16 }
       },
       "connect" : [
-        { "id" : "f12", "to" : "f11", "label" : {
+        { "id" : "f5", "to" : "f3", "label" : {
             "name" : "yes",
-            "offset" : { "x" : 17, "y" : -3 }
+            "offset" : { "x" : 16, "y" : -3 }
           }, "condition" : "in.messageIterator.hasNext()" },
-        { "id" : "f14", "to" : "f1", "via" : [ { "x" : 224, "y" : 240 }, { "x" : 224, "y" : 472 }, { "x" : 144, "y" : 472 } ], "label" : {
+        { "id" : "f14", "to" : "f1", "via" : [ { "x" : 224, "y" : 240 }, { "x" : 224, "y" : 592 }, { "x" : 144, "y" : 592 } ], "label" : {
             "name" : "no",
             "segment" : 1.55,
-            "offset" : { "x" : -47, "y" : -113 }
+            "offset" : { "x" : -55, "y" : -179 }
           } }
       ]
     }, {
@@ -79,7 +79,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 320 }
+        "at" : { "x" : 144, "y" : 432 }
       },
       "boundaries" : [ {
           "id" : "f15",
@@ -90,9 +90,9 @@
             }
           },
           "visual" : {
-            "at" : { "x" : 112, "y" : 290 }
+            "at" : { "x" : 112, "y" : 402 }
           },
-          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 112, "y" : 240 } ], "color" : "error" }
+          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 80, "y" : 402 }, { "x" : 80, "y" : 240 } ], "color" : "error" }
         } ],
       "connect" : { "id" : "f17", "to" : "f16" }
     }, {
@@ -105,9 +105,9 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 144, "y" : 424 }
+        "at" : { "x" : 144, "y" : 512 }
       },
-      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 424 }, { "x" : 64, "y" : 240 } ] }
+      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 568 }, { "x" : 64, "y" : 240 } ] }
     }, {
       "id" : "f2",
       "type" : "ProcessAnnotation",
@@ -122,6 +122,19 @@
         "at" : { "x" : 147, "y" : 71 },
         "size" : { "width" : 210, "height" : 78 }
       }
+    }, {
+      "id" : "f3",
+      "type" : "Script",
+      "name" : "reset handled",
+      "config" : {
+        "output" : {
+          "code" : "in.handled = false;"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 320 }
+      },
+      "connect" : { "id" : "f6", "to" : "f11" }
     } ],
   "layout" : {
     "colors" : {
