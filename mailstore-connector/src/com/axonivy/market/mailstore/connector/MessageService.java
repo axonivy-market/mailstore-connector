@@ -1,11 +1,12 @@
 package com.axonivy.market.mailstore.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -38,7 +39,7 @@ public class MessageService {
 	 * @param filter only return parts matching the predicate
 	 * @return
 	 */
-	public static Collection<Part> getAllParts(Message message, boolean includeSubMessages, Predicate<Part> filter) {
+	public static List<Part> getAllParts(Message message, boolean includeSubMessages, Predicate<Part> filter) {
 		List<Part> parts = new ArrayList<>();
 		try {
 			collectParts(parts, message, 1, includeSubMessages, filter);
@@ -48,6 +49,81 @@ public class MessageService {
 		}
 
 		return parts;
+	}
+
+	/**
+	 * Get all text parts concatenated into a single {@link String}.
+	 * 
+	 * @param message
+	 * @param subType
+	 * @param delimiter
+	 * @param includeSubMessages
+	 * @return
+	 */
+	public static String getAllTexts(Message message, String subType, String delimiter, boolean includeSubMessages) {
+		return getAllParts(message, includeSubMessages, isText(subType))
+				.stream()
+				.map(p -> {
+					try {
+						String content = (String)p.getContent();
+						return content != null ? content : "<null>";
+					} catch (IOException | MessagingException e) {
+						throw buildError("alltexts").build();
+					}
+				})
+				.collect(Collectors.joining(delimiter));
+	}
+
+	/**
+	 * Get all plain texts concatenated into a single {@link String}.
+	 * 
+	 * @param message
+	 * @param delimiter
+	 * @param includeSubMessages
+	 * @return
+	 */
+	public static String getAllPlainTexts(Message message, String delimiter, boolean includeSubMessages) {
+		return getAllTexts(message, "plain", delimiter, includeSubMessages);
+	}
+
+	/**
+	 * Get all HTML texts concatenated into a single {@link String}.
+	 * 
+	 * @param message
+	 * @param delimiter
+	 * @param includeSubMessages
+	 * @return
+	 */
+	public static String getAllHtmls(Message message, String delimiter, boolean includeSubMessages) {
+		return getAllTexts(message, "html", delimiter, includeSubMessages);
+	}
+
+	/**
+	 * Get the binary content of this part as a Stream.
+	 * 
+	 * @param part
+	 * @return
+	 */
+	public static InputStream getBinaryContentStream(Part part) {
+		try {
+			return (InputStream)part.getContent();
+		} catch (IOException | MessagingException e) {
+			throw buildError("binarycontent").build();
+		}
+	}
+
+	/**
+	 * Get the binary content bytes of this part.
+	 * 
+	 * @param part
+	 * @return
+	 */
+	public static byte[] getBinaryContent(Part part) {
+		try {
+			return getBinaryContentStream(part).readAllBytes();
+		} catch (IOException e) {
+			throw buildError("binarycontent").build();
+		}
 	}
 
 	private static void collectParts(List<Part> parts, Part part, int level, boolean includeSubMessages, Predicate<Part> filter) throws MessagingException, IOException {

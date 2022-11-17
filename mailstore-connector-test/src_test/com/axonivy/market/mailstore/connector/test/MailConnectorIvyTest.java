@@ -205,6 +205,20 @@ public class MailConnectorIvyTest{
 		assertThat(messages.stream().filter(MailStoreService.hasPart(null, null, "pst\\.jpg", false)).count()).isEqualTo(3);
 	}
 
+	@Test
+	public void testMailContent() {
+		Message message = readMessage("testmails/mail-with-inline-and-attachments.eml");
+
+		assertThat(MessageService.getAllPlainTexts(message, ",", false)).contains("Test Mail");
+
+		List<Part> parts = MessageService.getAllParts(message, false, MessageService.isImage("*").and(MessageService.isAttachment()));
+
+		assertThat(parts).hasSize(2);
+
+		assertThat(MessageService.getBinaryContent(parts.get(0))).hasSize(6964);
+		assertThat(MessageService.getBinaryContent(parts.get(1))).hasSize(4743);
+	}
+
 	private List<Message> allTestMessages() {
 		return List.of(
 				readMessage("testmails/mail-basic.eml"),
