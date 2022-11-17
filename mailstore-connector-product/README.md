@@ -74,7 +74,7 @@ Additional convenience functions are provided to
 
 ## Demo
 
-Two demo processes are provided, which do the same thing once in an Ivy sub-process and once directly in a Java service function if you prefer. Both read from an IMAP inbox (for testing you can use a docker image like [virtua-sa/docker-mail-devel](https://github.com/virtua-sa/docker-mail-devel) and any IMAP mail client like [Thunderbird](https://www.thunderbird.net/de/).
+Two demo processes are provided, which do the same thing once in an Ivy sub-process and once directly in a Java service function if you prefer. Both read from an IMAP inbox (for testing you can use a docker image like [virtua-sa/docker-mail-devel](https://github.com/virtua-sa/docker-mail-devel) or a public IMAP service like [Ethereal](https://ethereal.email/) and any IMAP mail client like [Thunderbird](https://www.thunderbird.net/de/).
 
 The demo will read from the standard inbox messages containing the text `Test 999...` where 999 is a number. For every message it will extract all image parts no matter what format or disposition (inline or attachment). So to see results, you should prepare such mails in the inbox. Messaages will not be deleted or moved to simplify testing.
 
