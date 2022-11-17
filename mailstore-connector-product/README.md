@@ -53,6 +53,10 @@ MessageIteraor it = MailsStoreService.messageIterator("ethereal-imaps", "INBOX",
 
 When you are finished handling an Email successfully, you should cal the `handledMessage(boolean)` function, so the iterator will perform the configured action for this Email. Not calling this function or calling this function with `false` will leave the Email in the store and it will be delivered in the next run.
 
+### As a sub-process
+
+All Email-handling can also be performed calling the provided sub-process `MailStoreConnector.handleMessages` and overriding the process to handle a single Email `MessageHandler.handleMessage`. Handling of mails will be marked as successful, when the overridden proces does not throw an error.
+
 ## Demo
 
 
