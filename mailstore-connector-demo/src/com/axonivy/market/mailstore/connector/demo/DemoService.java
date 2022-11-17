@@ -1,7 +1,6 @@
 package com.axonivy.market.mailstore.connector.demo;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -19,6 +18,17 @@ import ch.ivyteam.log.Logger;
 public class DemoService {
 	private static final Logger LOG = Ivy.log();
 
+	public static void handleMessages() throws MessagingException, IOException {
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*test [0-9]+.*"));
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
+
 	public static boolean handleMessage(Message message) throws MessagingException, IOException {
 		LOG.info("Working on message {0} received at {1} type {2}", message.getSubject(), message.getReceivedDate(), message.getContent().getClass());
 
@@ -31,17 +41,4 @@ public class DemoService {
 		return true;
 	}
 
-	public static void test() throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*test.*"));
-
-		while (iterator.hasNext()) {
-			Message message = iterator.next();
-
-			InputStream stream = MailStoreService.saveMessage(message);
-			message = MailStoreService.loadMessage(stream);
-
-			boolean handled = handleMessage(message);
-			iterator.handledMessage(handled);
-		}
-	}
 }

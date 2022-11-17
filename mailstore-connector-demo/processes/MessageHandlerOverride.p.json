@@ -53,7 +53,7 @@
             "import java.util.Collection;",
             "import com.axonivy.market.mailstore.connector.MessageService;",
             "",
-            "ivy.log.info(\"Working on message {0} received at {1}\", in.message.subject, in.message.getReceivedDate());",
+            "ivy.log.info(\"Working on message ''{0}'' received at {1}\", in.message.subject, in.message.getReceivedDate());",
             "",
             "Collection<Part> parts = MessageService.getAllParts(in.message, false, MessageService.isImage(\"*\"));",
             "",
@@ -62,8 +62,8 @@
             "}",
             "else {",
             "  for (Part part : parts) {",
-            "    ivy.log.info(\"Found image: Filename: {0} Description: {1} ContentType: {2} Disposition: {3} Content Class: {4}\",",
-            "            part.fileName, part.description, part.getContentType(), part.disposition, part.getContent().getClass());",
+            "    ivy.log.info(\"Found image: Filename: ''{0}'' ContentType: {1} Disposition: ''{2}'' Content size: {3}\",",
+            "      part.getFileName(), part.getContentType(), part.getDisposition(), MessageService.getBinaryContent(part).size());",
             "  }",
             "}",
             "",
@@ -75,5 +75,13 @@
         "at" : { "x" : 104, "y" : 144 }
       },
       "connect" : { "id" : "f10", "to" : "f7" }
+    }, {
+      "id" : "f0",
+      "type" : "ProcessAnnotation",
+      "name" : "For every image print it's filename, content-type, disposition (inline/attachment) and size of binary content.",
+      "visual" : {
+        "at" : { "x" : 272, "y" : 72 },
+        "size" : { "width" : 132, "height" : 96 }
+      }
     } ]
 }
