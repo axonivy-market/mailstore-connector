@@ -27,6 +27,7 @@
       "type" : "SubProcessCall",
       "name" : "Handle messages",
       "config" : {
+        "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate)",
         "call" : {
           "params" : [
             { "name" : "storeName", "type" : "String" },
@@ -39,49 +40,14 @@
             "param.storeName" : "\"localhost-imap\"",
             "param.srcFolder" : "\"INBOX\"",
             "param.dstFolder" : "null",
-            "param.delete" : "false"
-          },
-          "code" : [
-            "import com.axonivy.market.mailstore.connector.MailStoreService;",
-            "",
-            "",
-            "param.filter = MailStoreService.subjectMatches(\".*test 1[03].*\");",
-            "param.filter = MailStoreService.hasAttachment(false);"
-          ]
-        },
-        "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate)"
+            "param.delete" : "false",
+            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectMatches(\".*test 1[03].*\");"
+          }
+        }
       },
       "visual" : {
         "at" : { "x" : 224, "y" : 64 }
       },
       "connect" : { "id" : "f2", "to" : "f1" }
-    }, {
-      "id" : "f4",
-      "type" : "RequestStart",
-      "name" : "start2.ivp",
-      "config" : {
-        "callSignature" : "start2",
-        "outLink" : "start2.ivp",
-        "startName" : "~Test: quick fetch"
-      },
-      "visual" : {
-        "at" : { "x" : 96, "y" : 176 }
-      },
-      "connect" : { "id" : "f6", "to" : "f5" }
-    }, {
-      "id" : "f5",
-      "type" : "Script",
-      "config" : {
-        "output" : {
-          "code" : [
-            "import com.axonivy.market.mailstore.connector.demo.DemoService;",
-            "DemoService.test();"
-          ]
-        }
-      },
-      "visual" : {
-        "at" : { "x" : 208, "y" : 176 }
-      },
-      "connect" : { "id" : "f8", "to" : "f1" }
     } ]
 }
