@@ -55,7 +55,7 @@ When you are finished handling an Email successfully, you should cal the `handle
 
 ### As a sub-process
 
-All Email-handling can also be performed calling the provided sub-process `MailStoreConnector.handleMessages` and overriding the process to handle a single Email `MessageHandler.handleMessage`. Handling of mails will be marked as successful, when the overridden proces does not throw an error.
+All Email-handling can also be performed calling the provided sub-process `MailStoreConnector.handleMessages` and overriding the process to handle a single Email `MessageHandler.handleMessage`. Handling of mails will be marked as successful, when the overridden process returns with `handled=true` (and does not throw an error).
 
 ### Message handling
 
