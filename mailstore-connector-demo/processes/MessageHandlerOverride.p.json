@@ -58,7 +58,7 @@
             "Collection<Part> parts = MessageService.getAllParts(in.message, false, MessageService.isImage(\"*\"));",
             "",
             "if(parts.size() == 0) {",
-            "  ivy.log.info(\"Message does not contain any images\");",
+            "  ivy.log.info(\"Message does not contain any images.\");",
             "}",
             "else {",
             "  for (Part part : parts) {",
