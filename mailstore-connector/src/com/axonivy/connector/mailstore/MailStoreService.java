@@ -1,4 +1,4 @@
-package com.axonivy.market.mailstore.connector;
+package com.axonivy.connector.mailstore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -340,10 +340,10 @@ public class MailStoreService {
 				Thread.currentThread().setContextClassLoader(Session.class.getClassLoader());
 
 				this.delete = delete;
-				store = MailStoreService.get().openStore(storeName);
-				srcFolder = MailStoreService.get().openFolder(store, srcFolderName, Folder.READ_WRITE);
+				store = MailStoreService.openStore(storeName);
+				srcFolder = MailStoreService.openFolder(store, srcFolderName, Folder.READ_WRITE);
 				if(StringUtils.isNotBlank(dstFolderName)) {
-					dstFolder = MailStoreService.get().openFolder(store, dstFolderName, Folder.READ_WRITE);
+					dstFolder = MailStoreService.openFolder(store, dstFolderName, Folder.READ_WRITE);
 				}
 				messages = srcFolder.getMessages();
 
