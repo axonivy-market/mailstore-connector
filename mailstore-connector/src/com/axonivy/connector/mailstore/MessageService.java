@@ -1,4 +1,4 @@
-package com.axonivy.market.mailstore.connector;
+package com.axonivy.connector.mailstore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +16,10 @@ import javax.mail.internet.MimeMultipart;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
-import ch.ivyteam.ivy.environment.Ivy;
-import ch.ivyteam.log.Logger;
 
 public class MessageService {
 	private static final MessageService INSTANCE = new MessageService();
-	private static final Logger LOG = Ivy.log();
+	// private static final Logger LOG = Ivy.log();
 	private static final String ERROR_BASE = "mailstore:connector:message";
 
 	public static MessageService get() {

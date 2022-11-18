@@ -3,7 +3,7 @@
   "id" : "183EF82269E7D570",
   "kind" : "CALLABLE_SUB",
   "config" : {
-    "data" : "com.axonivy.market.mailstore.connector.MessageHandlerData"
+    "data" : "com.axonivy.connector.mailstore.MessageHandlerData"
   },
   "elements" : [ {
       "id" : "f6",

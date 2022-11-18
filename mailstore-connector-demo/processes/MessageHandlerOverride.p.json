@@ -3,7 +3,7 @@
   "id" : "1840F78EA8FD1B41",
   "kind" : "CALLABLE_SUB",
   "config" : {
-    "data" : "com.axonivy.market.mailstore.connector.demo.MessageHandlerOverrideData"
+    "data" : "com.axonivy.connector.mailstore.demo.MessageHandlerOverrideData"
   },
   "elements" : [ {
       "id" : "f6",
@@ -51,7 +51,7 @@
           "code" : [
             "import javax.mail.Part;",
             "import java.util.Collection;",
-            "import com.axonivy.market.mailstore.connector.MessageService;",
+            "import com.axonivy.connector.mailstore.MessageService;",
             "",
             "ivy.log.info(\"Working on message ''{0}'' received at {1}\", in.message.subject, in.message.getReceivedDate());",
             "",

@@ -1,4 +1,4 @@
 MessageHandlerOverrideData #class
-com.axonivy.market.mailstore.connector.demo #namespace
+com.axonivy.connector.mailstore.demo #namespace
 message javax.mail.Message #field
 handled Boolean #field

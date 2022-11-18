@@ -1,5 +1,0 @@
-MailStoreConnectorData #class
-com.axonivy.market.mailstore.connector #namespace
-messageIterator com.axonivy.market.mailstore.connector.MailStoreService.MessageIterator #field
-message javax.mail.Message #field
-handled Boolean #field

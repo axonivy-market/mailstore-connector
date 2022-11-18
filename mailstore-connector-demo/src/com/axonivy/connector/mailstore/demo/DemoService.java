@@ -1,4 +1,4 @@
-package com.axonivy.market.mailstore.connector.demo;
+package com.axonivy.connector.mailstore.demo;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -8,9 +8,9 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 
-import com.axonivy.market.mailstore.connector.MailStoreService;
-import com.axonivy.market.mailstore.connector.MailStoreService.MessageIterator;
-import com.axonivy.market.mailstore.connector.MessageService;
+import com.axonivy.connector.mailstore.MailStoreService;
+import com.axonivy.connector.mailstore.MessageService;
+import com.axonivy.connector.mailstore.MailStoreService.MessageIterator;
 
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.log.Logger;

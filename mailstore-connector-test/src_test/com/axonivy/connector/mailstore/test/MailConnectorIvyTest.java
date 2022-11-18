@@ -1,4 +1,4 @@
-package com.axonivy.market.mailstore.connector.test;
+package com.axonivy.connector.mailstore.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,8 +11,8 @@ import javax.mail.Part;
 
 import org.junit.jupiter.api.Test;
 
-import com.axonivy.market.mailstore.connector.MailStoreService;
-import com.axonivy.market.mailstore.connector.MessageService;
+import com.axonivy.connector.mailstore.MailStoreService;
+import com.axonivy.connector.mailstore.MessageService;
 
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.environment.IvyTest;

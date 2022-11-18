@@ -2,7 +2,7 @@
   "format" : "10.0.0",
   "id" : "183EF4C4DA38CCD9",
   "config" : {
-    "data" : "com.axonivy.market.mailstore.connector.demo.Data"
+    "data" : "com.axonivy.connector.mailstore.demo.Data"
   },
   "elements" : [ {
       "id" : "f0",
@@ -41,7 +41,7 @@
             "param.srcFolder" : "\"INBOX\"",
             "param.dstFolder" : "null",
             "param.delete" : "false",
-            "param.filter" : "com.axonivy.market.mailstore.connector.MailStoreService.subjectMatches(\".*test [0-9]+.*\");"
+            "param.filter" : "com.axonivy.connector.mailstore.MailStoreService.subjectMatches(\".*test [0-9]+.*\");"
           }
         }
       },
@@ -97,7 +97,8 @@
       "config" : {
         "output" : {
           "code" : [
-            "import com.axonivy.market.mailstore.connector.demo.DemoService;",
+            "import com.axonivy.connector.mailstore.demo.DemoService;",
+            "",
             "DemoService.handleMessages();"
           ]
         }
