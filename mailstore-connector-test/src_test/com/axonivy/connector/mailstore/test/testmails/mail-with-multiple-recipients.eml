@@ -1,0 +1,23 @@
+Return-Path: <debug@localdomain.test>
+Delivered-To: debug@localdomain.test
+Received: from e1666ba9da47
+	by e1666ba9da47 with LMTP id eBBAHoE9WmMFAgAAKN6DOg
+	for <debug@localdomain.test>; Thu, 27 Oct 2022 08:12:49 +0000
+Received: from [127.0.0.1] (unknown [172.29.0.1])
+	by e1666ba9da47 (Postfix) with ESMTP id 67E4262CBD;
+	Thu, 27 Oct 2022 08:12:49 +0000 (UTC)
+Message-ID: <97298fba-d3e4-1a6b-2116-8919d2ef8073@localdomain.test>
+Date: Thu, 27 Oct 2022 10:12:49 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+To: debug@localdomain.test, second@somewhere.test
+Cc: debug@localdomain.test, cc@somewhere.test
+Reply-To: debug@localdomain.test, second-reply@somewhere.test
+From: Mail Tester <debug@localdomain.test>
+Subject: Email with Header fields
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Email with multiple recipients.
+

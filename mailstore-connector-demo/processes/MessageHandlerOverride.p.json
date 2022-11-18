@@ -1,0 +1,94 @@
+{
+  "format" : "10.0.0",
+  "id" : "1840F78EA8FD1B41",
+  "kind" : "CALLABLE_SUB",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.demo.MessageHandlerOverrideData"
+  },
+  "elements" : [ {
+      "id" : "f6",
+      "type" : "CallSubStart",
+      "name" : "handleMessage(Message)",
+      "config" : {
+        "callSignature" : "handleMessage",
+        "input" : {
+          "params" : [
+            { "name" : "message", "type" : "javax.mail.Message" }
+          ],
+          "map" : {
+            "out.message" : "param.message"
+          }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "handled", "type" : "Boolean", "desc" : "Was the mail handled (and can be re/moved)?" }
+          ],
+          "map" : {
+            "result.handled" : "in.handled"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 104, "y" : 64 },
+        "labelOffset" : { "x" : 17, "y" : -23 }
+      },
+      "connect" : { "id" : "f9", "to" : "f8" }
+    }, {
+      "id" : "f7",
+      "type" : "CallSubEnd",
+      "visual" : {
+        "at" : { "x" : 104, "y" : 224 }
+      }
+    }, {
+      "id" : "f8",
+      "type" : "Script",
+      "name" : [
+        "Handle single",
+        "message"
+      ],
+      "config" : {
+        "output" : {
+          "code" : [
+            "import ch.ivyteam.ivy.workflow.document.IDocument;",
+            "import java.util.UUID;",
+            "import com.axonivy.connector.mailstore.MailStoreService;",
+            "import javax.mail.Part;",
+            "import java.util.Collection;",
+            "import com.axonivy.connector.mailstore.MessageService;",
+            "",
+            "ivy.log.info(\"Working on message ''{0}'' received at {1}\", in.message.subject, in.message.getReceivedDate());",
+            "",
+            "Collection<Part> parts = MessageService.getAllParts(in.message, false, MessageService.isImage(\"*\"));",
+            "",
+            "// For demonstration, save the message to a case document.",
+            "IDocument doc = ivy.case.documents().add(UUID.randomUUID().toString() + \".eml\");",
+            "doc.write().withContentFrom(MailStoreService.saveMessage(in.message));",
+            "",
+            "if(parts.size() == 0) {",
+            "  ivy.log.info(\"Message does not contain any images.\");",
+            "}",
+            "else {",
+            "  for (Part part : parts) {",
+            "    ivy.log.info(\"Found image: Filename: ''{0}'' ContentType: {1} Disposition: ''{2}'' Content size: {3}\",",
+            "      part.getFileName(), part.getContentType(), part.getDisposition(), MessageService.getBinaryContent(part).size());",
+            "  }",
+            "}",
+            "",
+            "in.handled = true;"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 104, "y" : 144 }
+      },
+      "connect" : { "id" : "f10", "to" : "f7" }
+    }, {
+      "id" : "f0",
+      "type" : "ProcessAnnotation",
+      "name" : "For every image print it's filename, content-type, disposition (inline/attachment) and size of binary content.",
+      "visual" : {
+        "at" : { "x" : 272, "y" : 72 },
+        "size" : { "width" : 132, "height" : 96 }
+      }
+    } ]
+}
