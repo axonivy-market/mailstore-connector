@@ -1,0 +1,28 @@
+# == Variables ==
+# 
+# You can define here your project Variables.
+# If you want to define/override a Variable for a specific Environment, 
+# add an additional ‘variables.yaml’ file in a subdirectory in the ‘Config’ folder: 
+# '<project>/Config/_<environment>/variables.yaml
+#
+Variables:
+  mailstore-connector:
+    localhost-imap:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imap'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: 'pass'
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'

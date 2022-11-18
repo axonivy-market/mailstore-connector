@@ -1,0 +1,144 @@
+{
+  "format" : "10.0.0",
+  "id" : "183EF449D1E50BCB",
+  "kind" : "CALLABLE_SUB",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.MailStoreConnectorData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "CallSubStart",
+      "name" : "handleMessages(String,String,String,Boolean,Predicate)",
+      "config" : {
+        "callSignature" : "handleMessages",
+        "input" : {
+          "params" : [
+            { "name" : "storeName", "type" : "String", "desc" : "Name of E-mail store as configured in global variables" },
+            { "name" : "srcFolder", "type" : "String", "desc" : "Name of source folder" },
+            { "name" : "dstFolder", "type" : "String", "desc" : "Name of destination folder (can be empty)" },
+            { "name" : "delete", "type" : "Boolean", "desc" : "Delete message from source folder?" },
+            { "name" : "filter", "type" : "java.util.function.Predicate", "desc" : "Predicate to filter (can be null)" }
+          ],
+          "map" : {
+            "out.messageIterator" : "com.axonivy.connector.mailstore.MailStoreService.messageIterator(param.storeName, param.srcFolder, param.#dstFolder, param.delete, param.#filter)"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 176 },
+        "labelOffset" : { "x" : 49, "y" : -23 }
+      },
+      "connect" : { "id" : "f19", "to" : "f4" }
+    }, {
+      "id" : "f1",
+      "type" : "CallSubEnd",
+      "visual" : {
+        "at" : { "x" : 144, "y" : 624 }
+      }
+    }, {
+      "id" : "f4",
+      "type" : "Alternative",
+      "name" : "has next?",
+      "visual" : {
+        "at" : { "x" : 144, "y" : 240 },
+        "labelOffset" : { "x" : -24, "y" : -16 }
+      },
+      "connect" : [
+        { "id" : "f5", "to" : "f3", "label" : {
+            "name" : "yes",
+            "offset" : { "x" : 16, "y" : -3 }
+          }, "condition" : "in.messageIterator.hasNext()" },
+        { "id" : "f14", "to" : "f1", "via" : [ { "x" : 224, "y" : 240 }, { "x" : 224, "y" : 592 }, { "x" : 144, "y" : 592 } ], "label" : {
+            "name" : "no",
+            "segment" : 1.55,
+            "offset" : { "x" : -55, "y" : -179 }
+          } }
+      ]
+    }, {
+      "id" : "f11",
+      "type" : "SubProcessCall",
+      "name" : [
+        "Handle single",
+        "message"
+      ],
+      "config" : {
+        "processCall" : "MessageHandler:handleMessage(javax.mail.Message)",
+        "output" : {
+          "map" : {
+            "out" : "in",
+            "out.handled" : "result.handled"
+          }
+        },
+        "call" : {
+          "params" : [
+            { "name" : "message", "type" : "javax.mail.Message" }
+          ],
+          "map" : {
+            "param.message" : "in.messageIterator.next()"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 432 }
+      },
+      "boundaries" : [ {
+          "id" : "f15",
+          "type" : "ErrorBoundaryEvent",
+          "config" : {
+            "output" : {
+              "code" : "ivy.log.error(\"Error while working on message {0}.\", error, in.message);"
+            }
+          },
+          "visual" : {
+            "at" : { "x" : 112, "y" : 402 }
+          },
+          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 80, "y" : 402 }, { "x" : 80, "y" : 240 } ], "color" : "error" }
+        } ],
+      "connect" : { "id" : "f17", "to" : "f16" }
+    }, {
+      "id" : "f16",
+      "type" : "Script",
+      "name" : "set handled",
+      "config" : {
+        "output" : {
+          "code" : "in.messageIterator.handledMessage(in.handled);"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 512 }
+      },
+      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 568 }, { "x" : 64, "y" : 240 } ] }
+    }, {
+      "id" : "f2",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Handle mails from a mail store",
+        "(like IMAP or POP3). Handled mails",
+        "can be automatically deleted or",
+        "moved to a different folder, if",
+        "the mail store supports it."
+      ],
+      "visual" : {
+        "at" : { "x" : 147, "y" : 71 },
+        "size" : { "width" : 210, "height" : 78 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "Script",
+      "name" : "reset handled",
+      "config" : {
+        "output" : {
+          "code" : "in.handled = false;"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 144, "y" : 320 }
+      },
+      "connect" : { "id" : "f6", "to" : "f11" }
+    } ],
+  "layout" : {
+    "colors" : {
+      "error" : "#ff0000"
+    }
+  }
+}

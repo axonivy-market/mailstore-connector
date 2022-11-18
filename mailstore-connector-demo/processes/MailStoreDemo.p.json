@@ -1,0 +1,111 @@
+{
+  "format" : "10.0.0",
+  "id" : "183EF4C4DA38CCD9",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.demo.Data"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "handleEmailsIvy.ivp",
+      "config" : {
+        "callSignature" : "handleEmailsIvy",
+        "outLink" : "handleEmailsIvy.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 48 }
+      },
+      "connect" : { "id" : "f7", "to" : "f3" }
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 640, "y" : 48 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "SubProcessCall",
+      "name" : "Handle messages",
+      "config" : {
+        "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate)",
+        "call" : {
+          "params" : [
+            { "name" : "storeName", "type" : "String" },
+            { "name" : "srcFolder", "type" : "String" },
+            { "name" : "dstFolder", "type" : "String" },
+            { "name" : "delete", "type" : "Boolean" },
+            { "name" : "filter", "type" : "java.util.function.Predicate" }
+          ],
+          "map" : {
+            "param.storeName" : "\"localhost-imap\"",
+            "param.srcFolder" : "\"INBOX\"",
+            "param.dstFolder" : "null",
+            "param.delete" : "false",
+            "param.filter" : "com.axonivy.connector.mailstore.MailStoreService.subjectMatches(\".*test [0-9]+.*\");"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 512, "y" : 48 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    }, {
+      "id" : "f4",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Read mails from standard INBOX.",
+        "",
+        "To simplify testing, Emails are not deleted or moved.",
+        "So you will always receive the same emails. Only",
+        "Emails containing the text \"test 999...\" in the",
+        "subject (where 999 is a number), will be",
+        "considered.",
+        "",
+        "To run the test, prepare some emails with",
+        "such subjects and inlined or attached",
+        "images in your inbox.",
+        "",
+        "The two processes show handling of messages in an",
+        "Ivy sub-process vs. directly in a Java service function."
+      ],
+      "visual" : {
+        "at" : { "x" : 155, "y" : 139 },
+        "size" : { "width" : 311, "height" : 223 }
+      }
+    }, {
+      "id" : "f5",
+      "type" : "RequestStart",
+      "name" : "handleEmailsJava.ivp",
+      "config" : {
+        "callSignature" : "handleEmailsJava",
+        "outLink" : "handleEmailsJava.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 184 }
+      },
+      "connect" : { "id" : "f12", "to" : "f11" }
+    }, {
+      "id" : "f6",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 640, "y" : 184 }
+      }
+    }, {
+      "id" : "f11",
+      "type" : "Script",
+      "name" : "Handle messages",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.connector.mailstore.demo.DemoService;",
+            "",
+            "DemoService.handleMessages();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 512, "y" : 184 }
+      },
+      "connect" : { "id" : "f9", "to" : "f6" }
+    } ]
+}
