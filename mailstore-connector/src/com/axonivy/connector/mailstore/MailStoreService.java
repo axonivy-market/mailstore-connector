@@ -373,40 +373,43 @@ public class MailStoreService {
 		 */
 		@Override
 		public void close() {
-			Exception exception = null;
-			if(dstFolder != null && dstFolder.isOpen()) {
-				try {
-					dstFolder.close();
-				} catch (Exception e) {
-					LOG.error("Could not close destination folder {0}", e, dstFolder);
-					if(exception == null) {
-						exception = e;
+			try {
+				Exception exception = null;
+				if (dstFolder != null && dstFolder.isOpen()) {
+					try {
+						dstFolder.close();
+					} catch (Exception e) {
+						LOG.error("Could not close destination folder {0}", e, dstFolder);
+						if (exception == null) {
+							exception = e;
+						}
 					}
 				}
-			}
-			if(srcFolder != null && srcFolder.isOpen()) {
-				try {
-					srcFolder.close();
-				} catch (Exception e) {
-					LOG.error("Could not close source folder {0}", e, srcFolder);
-					if(exception == null) {
-						exception = e;
+				if (srcFolder != null && srcFolder.isOpen()) {
+					try {
+						srcFolder.close();
+					} catch (Exception e) {
+						LOG.error("Could not close source folder {0}", e, srcFolder);
+						if (exception == null) {
+							exception = e;
+						}
 					}
 				}
-			}
-			if(store != null) {
-				try {
-					store.close();
-				} catch (Exception e) {
-					LOG.error("Could not close store {0}", e, srcFolder);
-					if(exception == null) {
-						exception = e;
+				if (store != null) {
+					try {
+						store.close();
+					} catch (Exception e) {
+						LOG.error("Could not close store {0}", e, srcFolder);
+						if (exception == null) {
+							exception = e;
+						}
 					}
 				}
-			}
-			Thread.currentThread().setContextClassLoader(originalClassLoader);
-			if(exception != null) {
-				buildError("close").withCause(exception).throwError();
+				if (exception != null) {
+					buildError("close").withCause(exception).throwError();
+				} 
+			} finally {
+				Thread.currentThread().setContextClassLoader(originalClassLoader);
 			}
 		}
 
