@@ -49,6 +49,9 @@
       "config" : {
         "output" : {
           "code" : [
+            "import ch.ivyteam.ivy.workflow.document.IDocument;",
+            "import java.util.UUID;",
+            "import com.axonivy.connector.mailstore.MailStoreService;",
             "import javax.mail.Part;",
             "import java.util.Collection;",
             "import com.axonivy.connector.mailstore.MessageService;",
@@ -56,6 +59,10 @@
             "ivy.log.info(\"Working on message ''{0}'' received at {1}\", in.message.subject, in.message.getReceivedDate());",
             "",
             "Collection<Part> parts = MessageService.getAllParts(in.message, false, MessageService.isImage(\"*\"));",
+            "",
+            "// For demonstration, save the message to a case document.",
+            "IDocument doc = ivy.case.documents().add(UUID.randomUUID().toString() + \".eml\");",
+            "doc.write().withContentFrom(MailStoreService.saveMessage(in.message));",
             "",
             "if(parts.size() == 0) {",
             "  ivy.log.info(\"Message does not contain any images.\");",
