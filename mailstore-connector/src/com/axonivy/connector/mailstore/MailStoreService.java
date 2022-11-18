@@ -360,7 +360,12 @@ public class MailStoreService {
 
 				nextIndex = 0;
 			} catch(Exception e) {
-				close();
+				try {
+					close();
+				}
+				catch(Exception e2) {
+					LOG.info("Ignoring exception in close that happened during handling of iterator exception.", e);
+				}
 				throw buildError("iterator").withCause(e).build();
 			}
 		}
@@ -406,7 +411,7 @@ public class MailStoreService {
 					}
 				}
 				if (exception != null) {
-					buildError("close").withCause(exception).throwError();
+					throw buildError("close").withCause(exception).build();
 				} 
 			} finally {
 				Thread.currentThread().setContextClassLoader(originalClassLoader);
