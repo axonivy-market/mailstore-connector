@@ -363,8 +363,8 @@ public class MailStoreService {
 				try {
 					close();
 				}
-				catch(Exception e2) {
-					LOG.info("Ignoring exception in close that happened during handling of iterator exception.", e);
+				catch(Exception closeException) {
+					LOG.info("Ignoring exception in close that happened during handling of iterator exception.", closeException);
 				}
 				throw buildError("iterator").withCause(e).build();
 			}
