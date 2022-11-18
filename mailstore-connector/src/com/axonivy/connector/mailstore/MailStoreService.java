@@ -404,10 +404,10 @@ public class MailStoreService {
 					}
 				}
 			}
-			if(exception != null) {
-				buildError("close").withCause(exception);
-			}
 			Thread.currentThread().setContextClassLoader(originalClassLoader);
+			if(exception != null) {
+				buildError("close").withCause(exception).throwError();
+			}
 		}
 
 		@Override
