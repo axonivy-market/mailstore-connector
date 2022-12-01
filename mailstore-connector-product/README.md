@@ -1,6 +1,50 @@
-# mailstore-connector
+# Mailstore Connector
 
 Connect to IMAP and POP3 mail stores optionally via SSL and handle new mails in an easy way. Note, that POP3 severly reduces the number of possibilities. The rest of this documentation is mainly focussed on features only fully available in IMAP.
+
+## Demo
+
+Two demo processes are provided, which do the same thing once in an Ivy sub-process and once directly in a Java service function if you prefer. Both read from an IMAP inbox (for testing you can use a docker image like [virtua-sa/docker-mail-devel](https://github.com/virtua-sa/docker-mail-devel) or a public IMAP service like [Ethereal](https://ethereal.email/) and any IMAP mail client like [Thunderbird](https://www.thunderbird.net/de/).
+
+The demo will read from the standard inbox messages containing the text `Test 999...` where 999 is a number. For every message it will save the message to a case document, extract all image parts and logs some information about them. So to see results, you should prepare such mails in the inbox. Messaages will not be deleted or moved to simplify testing.
+
+Results will only be written to the Ivy logfile. In a later version, there will be perhaps a little GUI for this. Stay tuned!
+
+## Usage
+
+### From Java or Ivy Script
+
+Use `com.axonivy.connector.mailstore.MailStoreService.messageIterator(String, String, String, boolean, Predicate<Message>)` to get an interator to new mails in a folder on a mail store. You can then iterate through the "new" mails in this folder dependeing on the given flags. If a destination folder is set, then mails which were handled successfully will be moved there. If the delete flag is set, then mails which were handled successfully will be deleted from the source folder.
+
+A filter can be defined to match only specific mails. Standard filters to filter for parts of the subject, sender, recipients,... are provided directly but filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
+
+A typical call reading mails with a certain subject `Request 12345` from the `inbox` and moving then to an `archive` after successfull handkling would be created like this:
+
+```java
+MessageIteraor it = MailsStoreService.messageIterator("ethereal-imaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*")
+```
+
+When you are finished handling an Email successfully, you should cal the `handledMessage(boolean)` function, so the iterator will perform the configured action for this Email. Not calling this function or calling this function with `false` will leave the Email in the store and it will be delivered in the next run.
+
+### As a sub-process
+
+All Email-handling can also be performed calling the provided sub-process `MailStoreConnector.handleMessages` and overriding the process to handle a single Email `MessageHandler.handleMessage`. Handling of mails will be marked as successful, when the overridden process returns with `handled=true` (and does not throw an error).
+
+### Message handling
+
+Handling a single message is easily supported by the `com.axonivy.connector.mailstore.MessageService.getAllParts(Message, boolean, Predicate<Part>)` and other convenience functions. The funtions support old style mails with text only and also MIME mails which can contain many different parts and even email-attachments. The basic idea is to pass a message and a filter to this function and then get back a list of `parts` matching the filter. Again, filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
+
+A typical call, extracting all images from an Email would look like this:
+
+```java
+Collection<Part> images = MessageService.getAllParts(message, false, MessageService.isImage("*"));
+```
+
+Additional convenience functions are provided to
+
+* load and save messages
+* extract all texts
+* read binary content of a part
 
 ## Setup
 
@@ -13,7 +57,7 @@ and the value list for `protocol` which will later provide some input support in
 If you want to see connect logs, use the `debug` switch. If your connection requires special settings, you
 can set them in the `properties` section.
 
-```
+```yaml
 Variables:
   mailstore-connector:
     ethereal-imaps:
@@ -36,46 +80,3 @@ Variables:
           # mail.imaps.ssl.checkserveridentity: false
           # mail.imaps.ssl.trust: '*'
 ```
-
-## Usage
-
-### From Java or Ivy Script
-
-Use `com.axonivy.connector.mailstore.MailStoreService.messageIterator(String, String, String, boolean, Predicate<Message>)` to get an interator to new mails in a folder on a mail store. You can then iterate through the "new" mails in this folder dependeing on the given flags. If a destination folder is set, then mails which were handled successfully will be moved there. If the delete flag is set, then mails which were handled successfully will be deleted from the source folder.
-
-A filter can be defined to match only specific mails. Standard filters to filter for parts of the subject, sender, recipients,... are provided directly but filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
-
-A typical call reading mails with a certain subject `Request 12345` from the `inbox` and moving then to an `archive` after successfull handkling would be created like this:
-
-```
-MessageIteraor it = MailsStoreService.messageIterator("ethereal-imaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*")
-```
-
-When you are finished handling an Email successfully, you should cal the `handledMessage(boolean)` function, so the iterator will perform the configured action for this Email. Not calling this function or calling this function with `false` will leave the Email in the store and it will be delivered in the next run.
-
-### As a sub-process
-
-All Email-handling can also be performed calling the provided sub-process `MailStoreConnector.handleMessages` and overriding the process to handle a single Email `MessageHandler.handleMessage`. Handling of mails will be marked as successful, when the overridden process returns with `handled=true` (and does not throw an error).
-
-### Message handling
-
-Handling a single message is easily supported by the `com.axonivy.connector.mailstore.MessageService.getAllParts(Message, boolean, Predicate<Part>)` and other convenience functions. The funtions support old style mails with text only and also MIME mails which can contain many different parts and even email-attachments. The basic idea is to pass a message and a filter to this function and then get back a list of `parts` matching the filter. Again, filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
-
-A typical call, extracting all images from an Email would look like this:
-
-```
-Collection<Part> images = MessageService.getAllParts(message, false, MessageService.isImage("*"));
-```
-
-Additional convenience functions are provided to
-* load and save messages
-* extract all texts
-* read binary content of a part
-
-## Demo
-
-Two demo processes are provided, which do the same thing once in an Ivy sub-process and once directly in a Java service function if you prefer. Both read from an IMAP inbox (for testing you can use a docker image like [virtua-sa/docker-mail-devel](https://github.com/virtua-sa/docker-mail-devel) or a public IMAP service like [Ethereal](https://ethereal.email/) and any IMAP mail client like [Thunderbird](https://www.thunderbird.net/de/).
-
-The demo will read from the standard inbox messages containing the text `Test 999...` where 999 is a number. For every message it will save the message to a case document, extract all image parts and logs some information about them. So to see results, you should prepare such mails in the inbox. Messaages will not be deleted or moved to simplify testing.
-
-Results will only be written to the Ivy logfile. In a later version, there will be perhaps a little GUI for this. Stay tuned!
