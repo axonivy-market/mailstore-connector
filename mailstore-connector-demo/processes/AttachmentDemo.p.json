@@ -1,0 +1,43 @@
+{
+  "format" : "10.0.0",
+  "id" : "188E3F03E979A257",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.demo.Data"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "handleEmailsWithAttachments.ivp",
+      "config" : {
+        "callSignature" : "filterEmailsWithAttachments",
+        "outLink" : "filterEmailsWithAttachments.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f3", "to" : "f11" }
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 360, "y" : 64 }
+      }
+    }, {
+      "id" : "f11",
+      "type" : "Script",
+      "name" : "Handle only messages with attachments",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.connector.mailstore.demo.DemoService;",
+            "",
+            "DemoService.handleAttachmentMessages();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 232, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}
