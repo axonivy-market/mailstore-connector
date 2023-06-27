@@ -2,6 +2,7 @@ package com.axonivy.connector.mailstore.demo;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -42,10 +43,42 @@ public class DemoService {
 		doc.write().withContentFrom(MailStoreService.saveMessage(message));
 
 		for (Part part : parts) {
-			LOG.info("Part: Filename: {0} Description: {1} ContentType: {2} Disposition: {3} Content Class: {4}",
+			LOG.info("  Part: Filename: {0} Description: {1} ContentType: {2} Disposition: {3} Content Class: {4}",
 					part.getFileName(), part.getDescription(), part.getContentType(), part.getDisposition(), part.getContent().getClass());
 		}
 		return true;
 	}
 
+	public static void handleAttachmentMessages() throws MessagingException, IOException {
+		MessageIterator iterator = MailStoreService.messageIterator(
+				"localhost-imap",
+				"INBOX",
+				null,
+				false,
+				null);
+		// MailStoreService.hasAttachment(true));
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+
+			List<Part> parts = MessageService.getAllParts(message, true, null);
+
+			for (Part part : parts) {
+				LOG.info("Part Disposition: {0}", part.getDisposition());
+			}
+
+			boolean handled = logMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
+
+	private static boolean logMessage(Message message) throws MessagingException, IOException {
+		LOG.info("Working on message {0} received at {1} type {2}", message.getSubject(), message.getReceivedDate(), message.getContent().getClass());
+		Collection<Part> parts = MessageService.getAllParts(message, false, null);
+		for (Part part : parts) {
+			LOG.info("    - Part: Filename: {0} Description: {1} ContentType: {2} Disposition: {3} Content Class: {4}",
+					part.getFileName(), part.getDescription(), part.getContentType(), part.getDisposition(), part.getContent().getClass());
+		}
+		return false;
+	}
 }

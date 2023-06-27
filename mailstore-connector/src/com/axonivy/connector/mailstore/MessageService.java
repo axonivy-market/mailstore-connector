@@ -138,8 +138,15 @@ public class MessageService {
 				}
 			}
 			else if(isMessage("*").test(part)) {
-				Message message = (Message) part.getContent();
-				collectParts(parts, message, level+1, includeSubMessages, filter);
+				Object content = part.getContent();
+
+				// Not all message/* sub-mime-types are really messages.
+				// E.g. message/delivery-status contains information about delivery problems (RFC 1894).
+				// Only real messages will be processed recursively.
+				if(content instanceof Message) {
+					Message message = (Message)content;
+					collectParts(parts, message, level+1, includeSubMessages, filter);
+				}
 			}
 		}
 	}
