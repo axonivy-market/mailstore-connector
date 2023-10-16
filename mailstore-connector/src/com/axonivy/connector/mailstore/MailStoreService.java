@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Properties;
@@ -62,8 +63,9 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static MessageIterator messageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
-		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter);
+	public static MessageIterator messageIterator(String storeName, String srcFolderName, String dstFolderName,
+			boolean delete, Predicate<Message> filter, Comparator<Message> comparator) {
+		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter, comparator);
 	}
 
 	/**
@@ -331,7 +333,8 @@ public class MailStoreService {
 		private int nextIndex;
 		private ClassLoader originalClassLoader;
 
-		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete, Predicate<Message> filter) {
+		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete,
+				Predicate<Message> filter, Comparator<Message> comparator) {
 			try {
 				// Use own classloader so that internal classes of javax.mail API are found.
 				// If they cannot be found on the classpath, then mail content will not
@@ -354,6 +357,10 @@ public class MailStoreService {
 
 				if(filter != null) {
 					messages = Stream.of(messages).filter(filter).toArray(Message[]::new);
+				}
+				
+				if (comparator != null) {
+					messages = Stream.of(messages).sorted(comparator).toArray(Message[]::new);
 				}
 
 				LOG.debug("Received {0}{1} messages.", messages.length, filter != null ? " matching" : "");
