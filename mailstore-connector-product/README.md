@@ -20,17 +20,19 @@ Results will only be written to the Ivy logfile. In a later version, there will 
 
 ### From Java or Ivy Script
 
-Use `com.axonivy.connector.mailstore.MailStoreService.messageIterator(String, String, String, boolean, Predicate<Message>)` to get an interator to new mails in a folder on a mail store. You can then iterate through the "new" mails in this folder dependeing on the given flags. If a destination folder is set, then mails which were handled successfully will be moved there. If the delete flag is set, then mails which were handled successfully will be deleted from the source folder.
+Use `com.axonivy.connector.mailstore.MailStoreService.messageIterator(String, String, String, boolean, Predicate<Message>, Comparator<Message>)` to get an interator to new mails in a folder on a mail store. You can then iterate through the "new" mails in this folder dependeing on the given flags. If a destination folder is set, then mails which were handled successfully will be moved there. If the delete flag is set, then mails which were handled successfully will be deleted from the source folder.
 
 A filter can be defined to match only specific mails. Standard filters to filter for parts of the subject, sender, recipients,... are provided directly but filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
 
-A typical call reading mails with a certain subject `Request 12345` from the `inbox` and moving then to an `archive` after successfull handkling would be created like this:
+Similar to filter, the sort follows the standard Java `Comparator<Message>` interface and can sort sent date, received date, subject,...
+
+A typical call reading mails with a certain subject `Request 12345` from the `inbox` and moving then to an `archive` after successfull handling would be created like this:
 
 ```java
-MessageIteraor it = MailsStoreService.messageIterator("ethereal-imaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*")
+MessageIteraor it = MailsStoreService.messageIterator("ethereal-imaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*"), new MessageComparator())
 ```
 
-When you are finished handling an Email successfully, you should cal the `handledMessage(boolean)` function, so the iterator will perform the configured action for this Email. Not calling this function or calling this function with `false` will leave the Email in the store and it will be delivered in the next run.
+When you are finished handling an Email successfully, you should call the `handledMessage(boolean)` function, so the iterator will perform the configured action for this Email. Not calling this function or calling this function with `false` will leave the Email in the store and it will be delivered in the next run.
 
 ### As a sub-process
 

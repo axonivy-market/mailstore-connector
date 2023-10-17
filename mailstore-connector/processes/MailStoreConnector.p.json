@@ -8,7 +8,7 @@
   "elements" : [ {
       "id" : "f0",
       "type" : "CallSubStart",
-      "name" : "handleMessages(String,String,String,Boolean,Predicate)",
+      "name" : "handleMessages(String,String,String,Boolean,Predicate,Comparator)",
       "config" : {
         "callSignature" : "handleMessages",
         "input" : {
@@ -17,10 +17,11 @@
             { "name" : "srcFolder", "type" : "String", "desc" : "Name of source folder" },
             { "name" : "dstFolder", "type" : "String", "desc" : "Name of destination folder (can be empty)" },
             { "name" : "delete", "type" : "Boolean", "desc" : "Delete message from source folder?" },
-            { "name" : "filter", "type" : "java.util.function.Predicate", "desc" : "Predicate to filter (can be null)" }
+            { "name" : "filter", "type" : "java.util.function.Predicate", "desc" : "Predicate to filter (can be null)" },
+            { "name" : "sort", "type" : "java.util.Comparator", "desc" : "Comparator to sort messages (can be null)" }
           ],
           "map" : {
-            "out.messageIterator" : "com.axonivy.connector.mailstore.MailStoreService.messageIterator(param.storeName, param.srcFolder, param.#dstFolder, param.delete, param.#filter)"
+            "out.messageIterator" : "com.axonivy.connector.mailstore.MailStoreService.messageIterator(param.storeName, param.srcFolder, param.#dstFolder, param.delete, param.#filter, param.#sort)"
           }
         }
       },
