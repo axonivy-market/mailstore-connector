@@ -1,6 +1,7 @@
 package com.axonivy.connector.mailstore.demo;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +49,20 @@ public class DemoService {
 		}
 		return true;
 	}
+	
+	public static void handleMessagesMultiDestinationFolder() throws MessagingException, IOException {
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", true, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator(), Arrays.asList("Processed", "ErrorFolder"));
+		int runner = 0;
+		
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled, runner % 2 == 0 ? "Processed" : "ErrorFolder");
+			runner = runner + 1;
+		}
+	}
+	
 
 	public static void handleAttachmentMessages() throws MessagingException, IOException {
 		MessageIterator iterator = MailStoreService.messageIterator(
