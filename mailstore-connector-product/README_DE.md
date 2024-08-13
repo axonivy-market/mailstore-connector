@@ -1,6 +1,8 @@
 # Mailstore Konnektor
 
-Nutze den Axon Ivy Mailstore-Connectors, um das E-Mail-Management in deinen Geschäftsprozessen zu vereinfachen. Dieser vielseitige Konnektor:
+Nutze den Axon Ivy Mailstore-Konnektor, um das E-Mail-Management in deinen Geschäftsprozessen zu vereinfachen. 
+
+Dieser vielseitige Konnektor:
 
 - lässt sich problemlos mit IMAP- und POP3-Mailstores verbinden.
 - sichert deine Daten durch  SSL-Verschlüsselung.
