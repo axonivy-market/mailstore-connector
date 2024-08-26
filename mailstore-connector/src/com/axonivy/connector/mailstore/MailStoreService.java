@@ -5,13 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.mail.Address;
@@ -26,6 +31,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
@@ -82,7 +88,24 @@ public class MailStoreService {
 	 */
 	public static MessageIterator messageIterator(String storeName, String srcFolderName, String dstFolderName,
 			boolean delete, Predicate<Message> filter, Comparator<Message> comparator) {
-		return new MessageIterator(storeName, srcFolderName, dstFolderName, delete, filter, comparator);
+		return new MessageIterator(storeName, srcFolderName, Arrays.asList(dstFolderName), delete, filter, comparator);
+	}
+	
+	/**
+	 * Get a {@link MessageIterator}.
+	 * 
+	 * @param storeName     name of Email Store (Imap Configuration)
+	 * @param srcFolderName source folder name
+	 * @param dstFolderNames list destination folder will be moved to these folder
+	 * @param delete        delete mail from source folder?
+	 * @param filter        a filter predicate
+	 * @param sort          a sort comparator
+	 * @return
+	 * @throws MessagingException
+	 */
+	public static MessageIterator messageIterator(String storeName, String srcFolderName, 
+			boolean delete, Predicate<Message> filter, Comparator<Message> comparator, List<String> dstFolderNames) {
+		return new MessageIterator(storeName, srcFolderName, dstFolderNames, delete, filter, comparator);
 	}
 
 	/**
@@ -344,13 +367,13 @@ public class MailStoreService {
 	public static class MessageIterator implements Iterator<Message>, AutoCloseable {
 		private Store store;
 		private Folder srcFolder;
-		private Folder dstFolder;
 		private boolean delete;
 		private Message[] messages;
 		private int nextIndex;
 		private ClassLoader originalClassLoader;
+		private Map<String, Folder> dstFolderMap;
 
-		private MessageIterator(String storeName, String srcFolderName, String dstFolderName, boolean delete,
+		private MessageIterator(String storeName, String srcFolderName, List<String> dstFolderNames, boolean delete,
 				Predicate<Message> filter, Comparator<Message> comparator) {
 			try {
 				// Use own classloader so that internal classes of javax.mail API are found.
@@ -362,9 +385,18 @@ public class MailStoreService {
 				this.delete = delete;
 				store = MailStoreService.openStore(storeName);
 				srcFolder = MailStoreService.openFolder(store, srcFolderName, Folder.READ_WRITE);
-				if(StringUtils.isNotBlank(dstFolderName)) {
-					dstFolder = MailStoreService.openFolder(store, dstFolderName, Folder.READ_WRITE);
+				
+				if(CollectionUtils.isNotEmpty(dstFolderNames)) {
+					dstFolderMap = new LinkedHashMap<>();
+					for(String dstFolderName : dstFolderNames) {
+						if(StringUtils.isNotBlank(dstFolderName)) {
+							dstFolderMap.put(dstFolderName, MailStoreService.openFolder(store, dstFolderName, Folder.READ_WRITE));
+						}else {
+							dstFolderMap.put(dstFolderName, null);
+						}
+					}
 				}
+				
 				messages = srcFolder.getMessages();
 
 				// pre-fetch headers
@@ -404,16 +436,18 @@ public class MailStoreService {
 		public void close() {
 			try {
 				Exception exception = null;
-				if (dstFolder != null && dstFolder.isOpen()) {
-					try {
-						dstFolder.close();
-					} catch (Exception e) {
-						LOG.error("Could not close destination folder {0}", e, dstFolder);
-						if (exception == null) {
-							exception = e;
+				for (Folder dstFolder : dstFolderMap.values()) {
+		            if (dstFolder != null && dstFolder.isOpen()) {
+						try {
+							dstFolder.close();
+						} catch (Exception e) {
+							LOG.error("Could not close destination folder {0}", e, dstFolder);
+							if (exception == null) {
+								exception = e;
+							}
 						}
 					}
-				}
+		        }
 				if (srcFolder != null && srcFolder.isOpen()) {
 					try {
 						srcFolder.close();
@@ -474,6 +508,7 @@ public class MailStoreService {
 			try {
 				if(handled) {
 					Message current = messages[nextIndex-1];
+					Folder dstFolder = getFirstEmailFolder();
 					if(dstFolder != null) {
 						LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
 						dstFolder.appendMessages(new Message[] {current});
@@ -490,8 +525,44 @@ public class MailStoreService {
 				throw buildError("handled").withCause(e).build();
 			}
 		}
+		
+		private Folder getFirstEmailFolder() {
+			if(null == dstFolderMap) {
+				return null;
+			}
+			return dstFolderMap.values().stream().collect(Collectors.toList()).get(0);
+		}		
+		
+		/**
+		 * Call this function, when the message was handled successfully and should be deleted/moved to a particular destination folder name
+		 * 
+		 * It will then be moved to the destination folder (if there is one)
+		 * and will be deleted in the source folder (if the delete option is set).
+		 * If this function is not called, the message will be coming again in the
+		 * next iterator.
+		 */
+		public void handledMessage(boolean handled, String dstFolderName) {
+			try {
+				if(handled) {
+					Message current = messages[nextIndex-1];
+					if(dstFolderMap.get(dstFolderName) != null) {
+						LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
+						dstFolderMap.get(dstFolderName).appendMessages(new Message[] {current});
+					}
+					if(delete) {
+						LOG.debug("Deleting {0}", MailStoreService.toString(current));
+						current.setFlag(Flag.DELETED, true);
+					}
+				}
+				if(!hasNext()) {
+					close();
+				}
+			} catch (Exception e) {
+				throw buildError("handled").withCause(e).build();
+			}
+		}
 	}
-
+	
 	/**
 	 * Get the raw message data e.g. for saving.
 	 * 
