@@ -688,7 +688,7 @@ public class MailStoreService {
 				String propertyName = name.substring(propertiesPrefix.length());
 				String value = variable.value(); 
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
-				properties.setProperty(name, value);
+				properties.setProperty(propertyName, value);
 			}
 		}
 
