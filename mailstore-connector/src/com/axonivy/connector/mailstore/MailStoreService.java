@@ -587,7 +587,7 @@ public class MailStoreService {
 	 */
 	public static Message loadMessage(InputStream stream) {
 		try {
-			return new MimeMessage(getSession(), stream);
+			return new MimeMessage(getSession(null), stream);
 		} catch (MessagingException e) {
 			throw buildError("load").withCause(e).build();
 		}
@@ -622,7 +622,7 @@ public class MailStoreService {
 		boolean debug = true;
 
 		try {
-			Session session = getSession();
+			Session session = getSession(storeName);
 
 			debug = Boolean.parseBoolean(debugString);
 			int port = Integer.parseInt(portString);
@@ -650,8 +650,8 @@ public class MailStoreService {
 		return store;
 	}
 
-	private static Session getSession() {
-		Properties properties = getProperties();
+	private static Session getSession(String store) {
+		Properties properties = getProperties(store);
 		Session session = Session.getDefaultInstance(properties, null);
 		return session;
 	}
@@ -678,17 +678,19 @@ public class MailStoreService {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
 	}
 
-	private static Properties getProperties() {
+	private static Properties getProperties(String store) {
 		Properties properties = System.getProperties();
-
-		String propertiesPrefix = PROPERTIES_VAR + ".";
+		if (store == null) {
+			return properties;
+		}
+		String propertiesPrefix = String.format("%s.%s.%s.", MAIL_STORE_VAR, store, PROPERTIES_VAR);
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
 			if(name.startsWith(propertiesPrefix)) {
 				String propertyName = name.substring(propertiesPrefix.length());
 				String value = variable.value(); 
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
-				properties.setProperty(name, value);
+				properties.setProperty(propertyName, value);
 			}
 		}
 
