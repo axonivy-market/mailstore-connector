@@ -679,6 +679,9 @@ public class MailStoreService {
 	}
 
 	private static Properties getProperties() {
+		
+		Ivy.log().info("-----------> getProperties");
+		
 		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
@@ -691,6 +694,12 @@ public class MailStoreService {
 				properties.setProperty(name, value);
 			}
 		}
+		
+		properties.setProperty("mail.imap.ssl.trust", "*");
+		properties.setProperty("mail.imap.ssl.checkserveridentity", "true"); 
+		properties.setProperty("mail.imap.ssl.enable", "true"); 
+		properties.setProperty("mail.imap.auth.mechanisms", "XOAUTH2");
+		properties.setProperty("mail.imaps.sasl.mechanisms", "XOAUTH2");
 
 		return properties;
 	}

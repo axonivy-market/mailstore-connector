@@ -23,12 +23,15 @@ public class DemoService {
 	private static final Logger LOG = Ivy.log();
 
 	public static void handleMessages() throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator());
+		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
 
-			boolean handled = handleMessage(message);
+			
+			Ivy.log().info("---------> "+message.getSubject());
+			
+			boolean handled = true;
 			iterator.handledMessage(handled);
 		}
 	}
