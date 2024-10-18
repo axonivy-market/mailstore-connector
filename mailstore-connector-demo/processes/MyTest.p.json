@@ -1,0 +1,44 @@
+{
+  "format" : "10.0.0",
+  "id" : "1929EF19B2B61825",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.demo.MyTestData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "start.ivp",
+      "config" : {
+        "callSignature" : "start",
+        "outLink" : "start.ivp",
+        "case" : { }
+      },
+      "visual" : {
+        "at" : { "x" : 208, "y" : 264 }
+      },
+      "connect" : { "id" : "f4", "to" : "f3" }
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 264 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "Script",
+      "name" : "execute",
+      "config" : {
+        "security" : "system",
+        "output" : {
+          "code" : [
+            "import com.axonivy.connector.mailstore.demo.DemoService;",
+            "DemoService.handleMessages();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 360, "y" : 264 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}

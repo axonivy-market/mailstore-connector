@@ -26,4 +26,5 @@ Variables:
       properties:
           mail.imaps.ssl.checkserveridentity: false
           mail.imaps.ssl.trust: '*'
-  
+          mail.imaps.auth.mechanisms: 'XOAUTH2'
+          mail.imaps.sasl.mechanisms: 'XOAUTH2'
