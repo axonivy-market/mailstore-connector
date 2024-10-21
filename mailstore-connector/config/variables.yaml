@@ -26,5 +26,21 @@ Variables:
       properties:
           mail.imaps.ssl.checkserveridentity: false
           mail.imaps.ssl.trust: '*'
-          mail.imaps.auth.mechanisms: 'XOAUTH2'
-          mail.imaps.sasl.mechanisms: 'XOAUTH2'
+          
+      # [basic, oauth2] basic: username and password, oauth2: OAuth2 Client Credentials grant flow, OAuth2 Authorization code flow, OAuth2 device authorization grant flow.
+      auth: 'basic'
+      
+      # tenant to use for OAUTH2 request.
+      # the default 'common' fits for user delegate requests.
+      # set the Azure Directory (tenant) ID, for application requests.
+      tenantId: ''
+      # Your Azure Application (client) ID
+      appId: ''
+      # Secret key from your applications "certificates & secrets" (client secret)
+      secretKey: ''
+      # permissions to request access to.
+      # you may exclude or add some, as your azure administrator allows or restricts them.
+      # for client_credentials: https://outlook.office365.com/.default
+      scope: ''
+      #[client_credentials, authorization_code]
+      grantType: ''

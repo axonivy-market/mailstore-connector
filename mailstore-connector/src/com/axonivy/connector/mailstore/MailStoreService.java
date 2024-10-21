@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -34,9 +35,14 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.axonivy.connector.oauth.FormDTO;
+import com.axonivy.connector.oauth.TokenDTO;
+
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
 import ch.ivyteam.ivy.environment.Ivy;
+import ch.ivyteam.ivy.process.call.SubProcessCall;
+import ch.ivyteam.ivy.process.call.SubProcessCallResult;
 import ch.ivyteam.ivy.vars.Variable;
 import ch.ivyteam.log.Logger;
 
@@ -53,6 +59,7 @@ public class MailStoreService {
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
 	private static final Address[] EMPTY_ADDRESSES = new Address[0];
+	private static final String AUTH = "auth";
 
 	public static MailStoreService get() {
 		return INSTANCE;
@@ -609,7 +616,17 @@ public class MailStoreService {
 		String host = getVar(storeName, HOST_VAR);
 		String portString = getVar(storeName, PORT_VAR);
 		String user = getVar(storeName, USER_VAR);
-		String password = getVar(storeName, PASSWORD_VAR);
+		
+		boolean isBasicAuth = isBasicAuth(storeName);
+		String password;
+		if(isBasicAuth) {
+			Ivy.log().info("---> basic auth");
+			password = getVar(storeName, PASSWORD_VAR);
+		} else {
+			Ivy.log().info("---> oauth2");
+			password = getToken(storeName);
+		}
+		
 		String debugString = getVar(storeName, DEBUG_VAR);
 
 		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
@@ -622,7 +639,7 @@ public class MailStoreService {
 		boolean debug = true;
 
 		try {
-			Session session = getSession();
+			Session session = getSession(storeName);
 
 			debug = Boolean.parseBoolean(debugString);
 			int port = Integer.parseInt(portString);
@@ -650,6 +667,12 @@ public class MailStoreService {
 		return store;
 	}
 
+	private static Session getSession(String storeName) {
+		Properties properties = getProperties(storeName);
+		Session session = Session.getDefaultInstance(properties, null);
+		return session;
+	}
+	
 	private static Session getSession() {
 		Properties properties = getProperties();
 		Session session = Session.getDefaultInstance(properties, null);
@@ -677,11 +700,62 @@ public class MailStoreService {
 	private static String getVar(String store, String var) {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
 	}
+	
+	private static boolean isBasicAuth(String store) {
+		String auth = Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, AUTH));
+		return auth.equalsIgnoreCase("basic");
+	}
+	
+	private static String getToken(String store) {
+		
 
+		
+		
+		TokenDTO result = null;
+		BpmError error = null;
+		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature")
+				.withStartName("call")
+				.withParam("domain", domain)
+				.withParam("endpoint", endpoint)
+				.withParam("form", form).call();
+		
+		if (callResult != null) {
+			Optional<Object> o = Optional.ofNullable(callResult.get("token"));
+			if (o.isPresent()) {
+				result = (TokenDTO) o.get();
+			} else {
+				Optional<Object> e = Optional.ofNullable(callResult.get("error"));
+				if (e.isPresent()) {
+					error = (BpmError) e.get();
+					Ivy.log().error(error);
+					throw error;
+				}
+			}
+		}
+		return result.getAccessToken();
+	}
+	
 	private static Properties getProperties() {
 		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
+		for (Variable variable : Ivy.var().all()) {
+			String name = variable.name();
+			if(name.startsWith(propertiesPrefix)) {
+				String propertyName = name.substring(propertiesPrefix.length());
+				String value = variable.value(); 
+				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
+				properties.setProperty(name, value);
+			}
+		}
+
+		return properties;
+	}
+
+	private static Properties getProperties(String storeName) {
+		Properties properties = System.getProperties();
+		String propertiesPrefix = MAIL_STORE_VAR + "." +storeName +"." + PROPERTIES_VAR + ".";
+		
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
 			if(name.contains(propertiesPrefix)) {
