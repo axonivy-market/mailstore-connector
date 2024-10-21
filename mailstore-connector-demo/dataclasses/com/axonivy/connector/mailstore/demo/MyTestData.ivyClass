@@ -1,2 +1,6 @@
 MyTestData #class
 com.axonivy.connector.mailstore.demo #namespace
+domain String #field
+endpoint String #field
+form com.axonivy.connector.oauth.FormDTO #field
+token com.axonivy.connector.oauth.TokenDTO #field

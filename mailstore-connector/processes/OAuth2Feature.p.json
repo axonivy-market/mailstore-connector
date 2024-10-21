@@ -1,0 +1,90 @@
+{
+  "format" : "10.0.0",
+  "id" : "192AD1C7ED09AF64",
+  "kind" : "CALLABLE_SUB",
+  "config" : {
+    "data" : "com.axonivy.connector.mailstore.OAuth2FeatureData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "CallSubStart",
+      "name" : "call(String,String,FormDTO)",
+      "config" : {
+        "callSignature" : "call",
+        "input" : {
+          "params" : [
+            { "name" : "domain", "type" : "String" },
+            { "name" : "endpoint", "type" : "String" },
+            { "name" : "form", "type" : "com.axonivy.connector.oauth.FormDTO" }
+          ],
+          "map" : {
+            "out.domain" : "param.domain",
+            "out.endpoint" : "param.endpoint",
+            "out.form" : "param.form"
+          }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "token", "type" : "com.axonivy.connector.oauth.TokenDTO" }
+          ],
+          "map" : {
+            "result.token" : "in.#tokenDTO"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f4", "to" : "f3" }
+    }, {
+      "id" : "f1",
+      "type" : "CallSubEnd",
+      "visual" : {
+        "at" : { "x" : 776, "y" : 64 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "RestClientCall",
+      "name" : "Get Token",
+      "config" : {
+        "bodyForm" : {
+          "client_id" : "in.form.clientId",
+          "client_secret" : "in.form.clientSecret",
+          "scope" : "in.form.scope",
+          "grant_type" : "in.form.grantType"
+        },
+        "path" : "/{endpoint}",
+        "clientId" : "a37c499d-82de-4d21-a021-06844835fb2d",
+        "clientErrorCode" : "ivy:error:rest:client",
+        "method" : "POST",
+        "statusErrorCode" : "ivy:error:rest:client",
+        "responseMapping" : {
+          "out.tokenDTO" : "result"
+        },
+        "templateParams" : {
+          "domain" : "in.domain",
+          "endpoint" : "in.endpoint"
+        },
+        "resultType" : "com.axonivy.connector.oauth.TokenDTO",
+        "bodyInputType" : "FORM",
+        "bodyMediaType" : "application/x-www-form-urlencoded"
+      },
+      "visual" : {
+        "at" : { "x" : 400, "y" : 64 }
+      },
+      "boundaries" : [ {
+          "id" : "f5",
+          "type" : "ErrorBoundaryEvent",
+          "config" : {
+            "output" : {
+              "code" : "ivy.log.error(error);"
+            }
+          },
+          "visual" : {
+            "at" : { "x" : 432, "y" : 104 }
+          },
+          "connect" : { "id" : "f6", "to" : "f1" }
+        } ],
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}
