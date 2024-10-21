@@ -679,30 +679,35 @@ public class MailStoreService {
 	}
 
 	private static Properties getProperties() {
-		
-		Ivy.log().info("-----------> getProperties");
-		
 		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
-			if(name.startsWith(propertiesPrefix)) {
-				String propertyName = name.substring(propertiesPrefix.length());
+			if(name.contains(propertiesPrefix)) {
+				String propertyName = getSubstringAfterProperties(name);
+				
 				String value = variable.value(); 
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
-				properties.setProperty(name, value);
+				properties.setProperty(propertyName, value);
 			}
 		}
-		
-		properties.setProperty("mail.imap.ssl.trust", "*");
-		properties.setProperty("mail.imap.ssl.checkserveridentity", "true"); 
-		properties.setProperty("mail.imap.ssl.enable", "true"); 
-		properties.setProperty("mail.imap.auth.mechanisms", "XOAUTH2");
-		properties.setProperty("mail.imaps.sasl.mechanisms", "XOAUTH2");
 
 		return properties;
 	}
+	
+	private static String getSubstringAfterProperties(String input) {
+        String keyword = "properties";
+        int index = input.indexOf(keyword);
+        
+        if (index != -1) {
+            // Get the substring starting right after "properties."
+            // Add length of "properties." (which is 12) to index to get the position after it
+            return input.substring(index + keyword.length() + 1);
+        }
+        
+        return null; // Return null if "properties" is not found
+    }
 
 	private static BpmPublicErrorBuilder buildError(String code) {
 		BpmPublicErrorBuilder builder = BpmError.create(ERROR_BASE + ":" + code);
