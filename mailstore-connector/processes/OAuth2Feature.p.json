@@ -8,9 +8,9 @@
   "elements" : [ {
       "id" : "f0",
       "type" : "CallSubStart",
-      "name" : "call(FormDTO)",
+      "name" : "getToken(FormDTO)",
       "config" : {
-        "callSignature" : "call",
+        "callSignature" : "getToken",
         "input" : {
           "params" : [
             { "name" : "form", "type" : "com.axonivy.connector.oauth.FormDTO" }
