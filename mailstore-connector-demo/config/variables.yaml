@@ -9,16 +9,16 @@ Variables:
   mailstore-connector:
     localhost-imap:
       # [enum: pop3, pop3s, imap, imaps]
-      protocol: 'imaps'
+      protocol: 'imap'
       # Host for store connection
-      host: 'outlook.office365.com'
+      host: 'localhost'
       # Port for store connection (only needed if not default)
-      port: 993
+      port: -1
       # User name for store connection
-      user: 'atomic-ivy@axonactive24.onmicrosoft.com'
+      user: 'debug@localdomain.test'
       # Password for store connection
       # [password]
-      password: 'eyJ0eXAiOiJKV1QiLCJub25jZSI6InQwakdibVFlUHBzOG1UQmJZSnpFTWpEd3J6aUozZFZ6OGhNNGdYUmV2RzAiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9.eyJhdWQiOiJodHRwczovL291dGxvb2sub2ZmaWNlMzY1LmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzAxNmE4YzVhLTViNDAtNDAzZC05ODE5LWYxYjMxNjJkNTVhYy8iLCJpYXQiOjE3MjkyNDQzMTUsIm5iZiI6MTcyOTI0NDMxNSwiZXhwIjoxNzI5MjQ4MjE1LCJhaW8iOiJrMkJnWUpqM3E2RjcvWm1tZDg4KzlML08zUEduR3dBPSIsImFwcF9kaXNwbGF5bmFtZSI6ImltYXAtb3V0bG9vay10ZXN0LW9hdXRoMiIsImFwcGlkIjoiM2M0NmQxMDctYTYxNC00ZmY4LTkzYjQtYjQ2MGQyZmExODlhIiwiYXBwaWRhY3IiOiIxIiwiaWRwIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMDE2YThjNWEtNWI0MC00MDNkLTk4MTktZjFiMzE2MmQ1NWFjLyIsImlkdHlwIjoiYXBwIiwib2lkIjoiM2FlNzIzMDQtNzY1MS00ZTZhLTgwMDAtMjM4OTBkZWRhNWE4IiwicmgiOiIwLkFjWUFXb3hxQVVCYlBVQ1lHZkd6RmkxVnJBSUFBQUFBQVBFUHpnQUFBQUFBQUFER0FBQS4iLCJyb2xlcyI6WyJNYWlsLlJlYWQiLCJJTUFQLkFjY2Vzc0FzQXBwIl0sInNpZCI6IjI2MDg1ZTMzLTA1NDgtNDJjMy1iNjAxLTIwMjMxMzY2YzMxZiIsInN1YiI6IjNhZTcyMzA0LTc2NTEtNGU2YS04MDAwLTIzODkwZGVkYTVhOCIsInRpZCI6IjAxNmE4YzVhLTViNDAtNDAzZC05ODE5LWYxYjMxNjJkNTVhYyIsInV0aSI6Ik5kQWNwdDFaUlVPTDQtd1ZBSFdhQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjA5OTdhMWQwLTBkMWQtNGFjYi1iNDA4LWQ1Y2E3MzEyMWU5MCJdLCJ4bXNfaWRyZWwiOiI3IDgifQ.WHZjqS7DDsm8_q7xLrBQtmLsiz9YBYlAyMnulRHbhBrlgu3GnTnc-ib5VZfVsvb9Dzg4d3VVn6HFxhwMrpvBApgvshd9GPqFifuaokePxted1DhmS-hJAFh-gzRoLYzIDT3ZGgokDJeyPzZvmtRNyUQf0QkHCSkmz171g7eDyYGhtpYZRAH5pdPPehqpFK_8_SW2aQdJYqKsSyft_YA51IVzjiS8Si5s72l0hhlSJKjD1OHO3gboC0_aW0eQJ-AynuCH7v2cDwaQvba3OqOt2iTQoeP6eGV11qMLZBdGX5pod2GKO3jN__hXOG6ZiKTShQUb9HN4gVo-eZEGOfFeHQ'
+      password: 'pass'
       # show debug output for connection
       debug: true
       # Additional properties for store connection,
@@ -26,5 +26,3 @@ Variables:
       properties:
           mail.imaps.ssl.checkserveridentity: false
           mail.imaps.ssl.trust: '*'
-          mail.imaps.auth.mechanisms: 'XOAUTH2'
-          mail.imaps.sasl.mechanisms: 'XOAUTH2'

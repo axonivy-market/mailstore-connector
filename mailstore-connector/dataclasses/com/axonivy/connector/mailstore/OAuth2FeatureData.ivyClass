@@ -1,6 +1,4 @@
 OAuth2FeatureData #class
 com.axonivy.connector.mailstore #namespace
-domain String #field
-endpoint String #field
-tokenDTO com.axonivy.connector.oauth.TokenDTO #field
 form com.axonivy.connector.oauth.FormDTO #field
+tokenDTO com.axonivy.connector.oauth.TokenDTO #field

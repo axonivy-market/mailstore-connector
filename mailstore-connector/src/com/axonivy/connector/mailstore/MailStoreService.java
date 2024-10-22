@@ -59,7 +59,13 @@ public class MailStoreService {
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
 	private static final Address[] EMPTY_ADDRESSES = new Address[0];
+	
 	private static final String AUTH = "auth";
+	private static final String TENANT_ID = "tenantId";
+	private static final String APP_ID = "appId";
+	private static final String SECRET_KEY = "secretKey";
+	private static final String GRANT_TYPE = "grantType";
+	private static final String SCOPE = "scope";
 
 	public static MailStoreService get() {
 		return INSTANCE;
@@ -620,8 +626,8 @@ public class MailStoreService {
 		boolean isBasicAuth = isBasicAuth(storeName);
 		String password;
 		if(isBasicAuth) {
-			Ivy.log().info("---> basic auth");
 			password = getVar(storeName, PASSWORD_VAR);
+			Ivy.log().info("---> basic auth: "+password);
 		} else {
 			Ivy.log().info("---> oauth2");
 			password = getToken(storeName);
@@ -669,7 +675,9 @@ public class MailStoreService {
 
 	private static Session getSession(String storeName) {
 		Properties properties = getProperties(storeName);
-		Session session = Session.getDefaultInstance(properties, null);
+
+		// Use getInstance instead of getDefaultInstance
+		Session session = Session.getInstance(properties, null);
 		return session;
 	}
 	
@@ -707,16 +715,14 @@ public class MailStoreService {
 	}
 	
 	private static String getToken(String store) {
-		
 
-		
+		FormDTO form = new FormDTO(getVar(store, TENANT_ID), getVar(store, APP_ID), getVar(store, SECRET_KEY), getVar(store, SCOPE), getVar(store, GRANT_TYPE));
+
 		
 		TokenDTO result = null;
 		BpmError error = null;
 		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature")
 				.withStartName("call")
-				.withParam("domain", domain)
-				.withParam("endpoint", endpoint)
 				.withParam("form", form).call();
 		
 		if (callResult != null) {
@@ -727,11 +733,17 @@ public class MailStoreService {
 				Optional<Object> e = Optional.ofNullable(callResult.get("error"));
 				if (e.isPresent()) {
 					error = (BpmError) e.get();
-					Ivy.log().error(error);
+					LOG.error(error);
 					throw error;
 				}
 			}
 		}
+		
+		if(null == result || StringUtils.isBlank(result.getAccessToken())) {
+			LOG.error("access token cannot be null or empty");
+			throw buildError("load").withMessage("access token cannot be null or empty").build(); 
+		}
+		
 		return result.getAccessToken();
 	}
 	
@@ -743,9 +755,10 @@ public class MailStoreService {
 			String name = variable.name();
 			if(name.startsWith(propertiesPrefix)) {
 				String propertyName = name.substring(propertiesPrefix.length());
+				
 				String value = variable.value(); 
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
-				properties.setProperty(name, value);
+			    properties.setProperty(name, value);
 			}
 		}
 
@@ -753,7 +766,7 @@ public class MailStoreService {
 	}
 
 	private static Properties getProperties(String storeName) {
-		Properties properties = System.getProperties();
+		Properties properties = new Properties();
 		String propertiesPrefix = MAIL_STORE_VAR + "." +storeName +"." + PROPERTIES_VAR + ".";
 		
 		for (Variable variable : Ivy.var().all()) {
@@ -766,7 +779,7 @@ public class MailStoreService {
 				properties.setProperty(propertyName, value);
 			}
 		}
-
+		
 		return properties;
 	}
 	
@@ -780,7 +793,7 @@ public class MailStoreService {
             return input.substring(index + keyword.length() + 1);
         }
         
-        return null; // Return null if "properties" is not found
+        return null;
     }
 
 	private static BpmPublicErrorBuilder buildError(String code) {
