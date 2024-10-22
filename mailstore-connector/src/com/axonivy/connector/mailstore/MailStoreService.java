@@ -650,7 +650,6 @@ public class MailStoreService {
 			debug = Boolean.parseBoolean(debugString);
 			int port = Integer.parseInt(portString);
 
-
 			if(debug) {
 				session.setDebug(debug);
 				session.setDebugOut(debugStream);
@@ -711,20 +710,20 @@ public class MailStoreService {
 	
 	private static boolean isBasicAuth(String store) {
 		String auth = Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, AUTH));
-		return auth.equalsIgnoreCase("basic");
+		return auth.equals("basic");
 	}
 	
 	private static String getToken(String store) {
 
+
 		FormDTO form = new FormDTO(getVar(store, TENANT_ID), getVar(store, APP_ID), getVar(store, SECRET_KEY), getVar(store, SCOPE), getVar(store, GRANT_TYPE));
 
-		
+
 		TokenDTO result = null;
 		BpmError error = null;
-		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature")
-				.withStartName("call")
+		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature").withStartName("getToken")
 				.withParam("form", form).call();
-		
+
 		if (callResult != null) {
 			Optional<Object> o = Optional.ofNullable(callResult.get("token"));
 			if (o.isPresent()) {
@@ -738,12 +737,12 @@ public class MailStoreService {
 				}
 			}
 		}
-		
-		if(null == result || StringUtils.isBlank(result.getAccessToken())) {
+
+		if (null == result || StringUtils.isBlank(result.getAccessToken())) {
 			LOG.error("access token cannot be null or empty");
-			throw buildError("load").withMessage("access token cannot be null or empty").build(); 
+			throw buildError("load").withMessage("access token cannot be null or empty").build();
 		}
-		
+
 		return result.getAccessToken();
 	}
 	
@@ -753,12 +752,12 @@ public class MailStoreService {
 		String propertiesPrefix = PROPERTIES_VAR + ".";
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
-			if(name.startsWith(propertiesPrefix)) {
+			if (name.startsWith(propertiesPrefix)) {
 				String propertyName = name.substring(propertiesPrefix.length());
-				
-				String value = variable.value(); 
+
+				String value = variable.value();
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
-			    properties.setProperty(name, value);
+				properties.setProperty(name, value);
 			}
 		}
 
@@ -767,34 +766,35 @@ public class MailStoreService {
 
 	private static Properties getProperties(String storeName) {
 		Properties properties = new Properties();
-		String propertiesPrefix = MAIL_STORE_VAR + "." +storeName +"." + PROPERTIES_VAR + ".";
-		
+		String propertiesPrefix = MAIL_STORE_VAR + "." + storeName + "." + PROPERTIES_VAR + ".";
+
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
-			if(name.contains(propertiesPrefix)) {
+			if (name.contains(propertiesPrefix)) {
 				String propertyName = getSubstringAfterProperties(name);
-				
-				String value = variable.value(); 
+
+				String value = variable.value();
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
 				properties.setProperty(propertyName, value);
 			}
 		}
-		
+
 		return properties;
 	}
 	
 	private static String getSubstringAfterProperties(String input) {
-        String keyword = "properties";
-        int index = input.indexOf(keyword);
-        
-        if (index != -1) {
-            // Get the substring starting right after "properties."
-            // Add length of "properties." (which is 12) to index to get the position after it
-            return input.substring(index + keyword.length() + 1);
-        }
-        
-        return null;
-    }
+		String keyword = "properties";
+		int index = input.indexOf(keyword);
+
+		if (index != -1) {
+			// Get the substring starting right after "properties."
+			// Add length of "properties." (which is 12) to index to get the position after
+			// it
+			return input.substring(index + keyword.length() + 1);
+		}
+
+		return null;
+	}
 
 	private static BpmPublicErrorBuilder buildError(String code) {
 		BpmPublicErrorBuilder builder = BpmError.create(ERROR_BASE + ":" + code);

@@ -1,7 +1,6 @@
 package com.axonivy.connector.oauth;
 
 public class FormDTO {
-	
 	private String tenantId;
 	private String clientId;
 	private String clientSecret;
@@ -19,6 +18,7 @@ public class FormDTO {
 		this.scope = scope;
 		this.grantType = grantType;
 	}
+	
 	public String getTenantId() {
 		return tenantId;
 	}
