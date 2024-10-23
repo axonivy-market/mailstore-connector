@@ -31,7 +31,7 @@ Variables:
           # mail.imaps.sasl.enable: 'true'
           # mail.imaps.sasl.mechanisms: 'XOAUTH2'
           
-      # [basic, oauth2] basic: username and password, oauth2: current only support OAuth2 Client Credentials grant flow
+      # [basic, oauth2] basic: username and password, oauth2: currently only support OAuth2 client credentials grant flow
       auth: 'basic'
       
       # only set below credential when you go with oauth2

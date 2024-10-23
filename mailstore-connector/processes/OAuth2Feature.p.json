@@ -8,15 +8,19 @@
   "elements" : [ {
       "id" : "f0",
       "type" : "CallSubStart",
-      "name" : "getToken(FormDTO)",
+      "name" : "getToken(Form,String,String)",
       "config" : {
         "callSignature" : "getToken",
         "input" : {
           "params" : [
-            { "name" : "form", "type" : "com.axonivy.connector.oauth.FormDTO" }
+            { "name" : "form", "type" : "javax.ws.rs.core.Form" },
+            { "name" : "tokenUrlPrefix", "type" : "String" },
+            { "name" : "tokenUrlSuffix", "type" : "String" }
           ],
           "map" : {
-            "out.form" : "param.form"
+            "out.form" : "param.form",
+            "out.tokenUrlPrefix" : "param.tokenUrlPrefix",
+            "out.tokenUrlSuffix" : "param.tokenUrlSuffix"
           }
         },
         "result" : {
@@ -31,37 +35,36 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 64 }
       },
-      "connect" : { "id" : "f4", "to" : "f3" }
+      "connect" : { "id" : "f9", "to" : "f3" }
     }, {
       "id" : "f1",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 776, "y" : 64 }
+        "at" : { "x" : 1048, "y" : 64 }
       }
     }, {
       "id" : "f3",
       "type" : "RestClientCall",
       "name" : "Get Token",
       "config" : {
-        "bodyForm" : {
-          "client_id" : "in.form.clientId",
-          "client_secret" : "in.form.clientSecret",
-          "scope" : "in.form.scope",
-          "grant_type" : "in.form.grantType"
+        "path" : "/{tokenUrlSuffix}",
+        "bodyObjectMapping" : {
+          "param" : "in.form"
         },
         "clientId" : "a37c499d-82de-4d21-a021-06844835fb2d",
         "clientErrorCode" : "ivy:error:rest:client",
         "method" : "POST",
         "statusErrorCode" : "ivy:error:rest:client",
-        "responseMapping" : {
-          "out.tokenDTO" : "result"
-        },
         "templateParams" : {
-          "tenant_id" : "in.form.tenantId"
+          "tokenUrlPrefix" : "in.tokenUrlPrefix",
+          "tokenUrlSuffix" : "in.tokenUrlSuffix"
         },
-        "resultType" : "com.axonivy.connector.oauth.TokenDTO",
-        "bodyInputType" : "FORM",
-        "bodyMediaType" : "application/x-www-form-urlencoded"
+        "bodyInputType" : "ENTITY",
+        "bodyMediaType" : "application/x-www-form-urlencoded",
+        "responseCode" : [
+          "import com.axonivy.connector.oauth.OAuthUtils;",
+          "in.tokenDTO = OAuthUtils.extractToken(response);"
+        ]
       },
       "visual" : {
         "at" : { "x" : 400, "y" : 64 }
@@ -77,8 +80,8 @@
           "visual" : {
             "at" : { "x" : 432, "y" : 104 }
           },
-          "connect" : { "id" : "f6", "to" : "f1", "via" : [ { "x" : 776, "y" : 104 } ] }
+          "connect" : { "id" : "f6", "to" : "f1", "via" : [ { "x" : 1048, "y" : 104 } ] }
         } ],
-      "connect" : { "id" : "f2", "to" : "f1" }
+      "connect" : { "id" : "f8", "to" : "f1" }
     } ]
 }

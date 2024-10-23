@@ -31,11 +31,11 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
+import javax.ws.rs.core.Form;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.axonivy.connector.oauth.FormDTO;
 import com.axonivy.connector.oauth.TokenDTO;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
@@ -714,12 +714,28 @@ public class MailStoreService {
 	}
 	
 	private static String getToken(String store) {
-		FormDTO form = new FormDTO(getVar(store, TENANT_ID), getVar(store, APP_ID), getVar(store, SECRET_KEY), getVar(store, SCOPE), getVar(store, GRANT_TYPE));
+		Form form = new Form();
+		form.param("client_id", getVar(store, APP_ID));
+		form.param("client_secret", getVar(store, SECRET_KEY));
+		form.param("scope", getVar(store, SCOPE));
+		form.param("grant_type", getVar(store, GRANT_TYPE));
 
+		String tenantId = getVar(store, TENANT_ID);
+		String tokenUrlPrefix = getVar(store, "tokenUrl.tokenUrlPrefix");
+		String tokenUrlSuffix = String.format(getVar(store, "tokenUrl.tokenUrlSuffix"), tenantId);
+
+		if (StringUtils.isBlank(tokenUrlPrefix) || StringUtils.isBlank(tokenUrlSuffix)) {
+			LOG.error("url to get token cannot be null or empty");
+			throw buildError("getToken").withMessage("url to get token cannot be null or empty").build();
+		}
+		
 		TokenDTO result = null;
 		BpmError error = null;
 		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature").withStartName("getToken")
-				.withParam("form", form).call();
+				.withParam("form", form)
+				.withParam("tokenUrlPrefix", tokenUrlPrefix)
+				.withParam("tokenUrlSuffix", tokenUrlSuffix)
+				.call();
 
 		if (callResult != null) {
 			Optional<Object> o = Optional.ofNullable(callResult.get("token"));
@@ -737,7 +753,7 @@ public class MailStoreService {
 
 		if (null == result || StringUtils.isBlank(result.getAccessToken())) {
 			LOG.error("access token cannot be null or empty");
-			throw buildError("load").withMessage("access token cannot be null or empty").build();
+			throw buildError("getToken").withMessage("access token cannot be null or empty").build();
 		}
 
 		return result.getAccessToken();

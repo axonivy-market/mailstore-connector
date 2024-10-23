@@ -1,6 +1,6 @@
 RestClients:
   Retrieve Token:
     UUID: a37c499d-82de-4d21-a021-06844835fb2d
-    Url: https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token
+    Url: https://{tokenUrlPrefix}/
     Features:
     - ch.ivyteam.ivy.rest.client.mapper.JsonFeature
