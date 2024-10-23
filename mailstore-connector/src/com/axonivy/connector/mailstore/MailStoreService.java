@@ -627,9 +627,9 @@ public class MailStoreService {
 		String password;
 		if(isBasicAuth) {
 			password = getVar(storeName, PASSWORD_VAR);
-			Ivy.log().info("---> basic auth: "+password);
+			LOG.debug("connect to mail server with basic auth type");
 		} else {
-			Ivy.log().info("---> oauth2");
+			LOG.debug("connect to mail server with oauth2 type");
 			password = getToken(storeName);
 		}
 		
