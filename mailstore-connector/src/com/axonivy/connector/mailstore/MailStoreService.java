@@ -714,10 +714,7 @@ public class MailStoreService {
 	}
 	
 	private static String getToken(String store) {
-
-
 		FormDTO form = new FormDTO(getVar(store, TENANT_ID), getVar(store, APP_ID), getVar(store, SECRET_KEY), getVar(store, SCOPE), getVar(store, GRANT_TYPE));
-
 
 		TokenDTO result = null;
 		BpmError error = null;
