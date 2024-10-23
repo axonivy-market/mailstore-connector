@@ -46,3 +46,7 @@ Variables:
       scope: ''
       #[client_credentials]
       grantType: ''
+      # link url to get token
+      tokenUrl:
+        tokenUrlPrefix: 'login.microsoftonline.com'
+        tokenUrlSuffix: '%s/oauth2/v2.0/token'
