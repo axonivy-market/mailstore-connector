@@ -638,7 +638,6 @@ public class MailStoreService {
 		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
 				protocol, host, portString, user, StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
 
-
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		PrintStream debugStream = new PrintStream(stream);
 
@@ -713,12 +712,18 @@ public class MailStoreService {
 		return auth.equals("basic");
 	}
 	
-	private static String getToken(String store) {
+	private static Form buildForm(String store) {
 		Form form = new Form();
 		form.param("client_id", getVar(store, APP_ID));
 		form.param("client_secret", getVar(store, SECRET_KEY));
 		form.param("scope", getVar(store, SCOPE));
 		form.param("grant_type", getVar(store, GRANT_TYPE));
+		
+		return form;
+	}
+	
+	private static String getToken(String store) {
+		Form form = buildForm(store);
 
 		String tenantId = getVar(store, TENANT_ID);
 		String tokenUrlPrefix = getVar(store, "tokenUrl.tokenUrlPrefix");
