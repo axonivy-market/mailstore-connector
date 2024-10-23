@@ -591,7 +591,7 @@ public class MailStoreService {
 		}
 		return new ByteArrayInputStream(bos.toByteArray());
 	}
-
+	
 	/**
 	 * Create a mail from raw message data e.g. from loading.
 	 * 
@@ -777,6 +777,7 @@ public class MailStoreService {
 		return properties;
 	}
 
+	// Only retrieve properties from the store that belong to
 	private static Properties getProperties(String storeName) {
 		Properties properties = new Properties();
 		String propertiesPrefix = MAIL_STORE_VAR + "." + storeName + "." + PROPERTIES_VAR + ".";
