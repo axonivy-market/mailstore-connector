@@ -58,6 +58,7 @@ Variables:
         # ex: %s/oauth2/v2.0/token (with %s is tenant_id)
         tokenUrlSuffix: ''
 
+
     localhost-imap-basic-authentication:
       # [enum: pop3, pop3s, imap, imaps]
       protocol: 'imap'
@@ -83,7 +84,7 @@ Variables:
       # com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
       userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
 
-        
+
     localhost-imap-azure-oauth2-authentication:
       # [enum: pop3, pop3s, imap, imaps]
       protocol: 'imap'
