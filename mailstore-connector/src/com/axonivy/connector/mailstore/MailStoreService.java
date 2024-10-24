@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +35,9 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.axonivy.connector.oauth.BasicUserPasswordProvider;
+import com.axonivy.connector.oauth.UserPasswordProvider;
+
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
 import ch.ivyteam.ivy.environment.Ivy;
@@ -43,16 +47,16 @@ import ch.ivyteam.log.Logger;
 public class MailStoreService {
 	private static final MailStoreService INSTANCE = new MailStoreService();
 	private static final Logger LOG = Ivy.log();
-	private static final String MAIL_STORE_VAR = "mailstore-connector";
+	public static final String MAIL_STORE_VAR = "mailstore-connector";
 	private static final String PROTOCOL_VAR = "protocol";
 	private static final String HOST_VAR = "host";
 	private static final String PORT_VAR = "port";
 	private static final String USER_VAR = "user";
-	private static final String PASSWORD_VAR = "password";
 	private static final String DEBUG_VAR = "debug";
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
 	private static final Address[] EMPTY_ADDRESSES = new Address[0];
+	private static Map<String, UserPasswordProvider> userPasswordProviderRegister = new HashMap<>();
 
 	public static MailStoreService get() {
 		return INSTANCE;
@@ -107,7 +111,7 @@ public class MailStoreService {
 			boolean delete, Predicate<Message> filter, Comparator<Message> comparator, List<String> dstFolderNames) {
 		return new MessageIterator(storeName, srcFolderName, dstFolderNames, delete, filter, comparator);
 	}
-
+	
 	/**
 	 * Get a {@link Predicate} to match subjects against a regular expression.
 	 * 
@@ -354,6 +358,9 @@ public class MailStoreService {
 		return m -> false;
 	}
 
+	public static void registerUserPasswordProvider(String storeName, UserPasswordProvider userPasswordProvider) {
+		userPasswordProviderRegister.put(storeName, userPasswordProvider);
+	}
 
 	/**
 	 * Iterate through the E-Mails of a store.
@@ -578,7 +585,7 @@ public class MailStoreService {
 		}
 		return new ByteArrayInputStream(bos.toByteArray());
 	}
-
+	
 	/**
 	 * Create a mail from raw message data e.g. from loading.
 	 * 
@@ -609,12 +616,18 @@ public class MailStoreService {
 		String host = getVar(storeName, HOST_VAR);
 		String portString = getVar(storeName, PORT_VAR);
 		String user = getVar(storeName, USER_VAR);
-		String password = getVar(storeName, PASSWORD_VAR);
+		
+		UserPasswordProvider userPasswordProvider = userPasswordProviderRegister.get(storeName);
+		// adapt exist project already use this connector, default is basic auth
+		if(null == userPasswordProvider) {
+			userPasswordProvider = new BasicUserPasswordProvider();
+		}
+		String password = userPasswordProvider.authenticate(storeName);
+
 		String debugString = getVar(storeName, DEBUG_VAR);
 
 		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
 				protocol, host, portString, user, StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
-
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		PrintStream debugStream = new PrintStream(stream);
@@ -622,11 +635,10 @@ public class MailStoreService {
 		boolean debug = true;
 
 		try {
-			Session session = getSession();
+			Session session = getSession(storeName);
 
 			debug = Boolean.parseBoolean(debugString);
 			int port = Integer.parseInt(portString);
-
 
 			if(debug) {
 				session.setDebug(debug);
@@ -650,6 +662,14 @@ public class MailStoreService {
 		return store;
 	}
 
+	private static Session getSession(String storeName) {
+		Properties properties = getProperties(storeName);
+
+		// Use getInstance instead of getDefaultInstance
+		Session session = Session.getInstance(properties, null);
+		return session;
+	}
+	
 	private static Session getSession() {
 		Properties properties = getProperties();
 		Session session = Session.getDefaultInstance(properties, null);
@@ -674,19 +694,20 @@ public class MailStoreService {
 		return folder;
 	}
 
-	private static String getVar(String store, String var) {
+	public static String getVar(String store, String var) {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
 	}
-
+	
 	private static Properties getProperties() {
 		Properties properties = System.getProperties();
 
 		String propertiesPrefix = PROPERTIES_VAR + ".";
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
-			if(name.startsWith(propertiesPrefix)) {
+			if (name.startsWith(propertiesPrefix)) {
 				String propertyName = name.substring(propertiesPrefix.length());
-				String value = variable.value(); 
+
+				String value = variable.value();
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
 				properties.setProperty(name, value);
 			}
@@ -695,7 +716,40 @@ public class MailStoreService {
 		return properties;
 	}
 
-	private static BpmPublicErrorBuilder buildError(String code) {
+	// Only retrieve properties from the store that belong to
+	private static Properties getProperties(String storeName) {
+		Properties properties = new Properties();
+		String propertiesPrefix = MAIL_STORE_VAR + "." + storeName + "." + PROPERTIES_VAR + ".";
+
+		for (Variable variable : Ivy.var().all()) {
+			String name = variable.name();
+			if (name.contains(propertiesPrefix)) {
+				String propertyName = getSubstringAfterProperties(name);
+
+				String value = variable.value();
+				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
+				properties.setProperty(propertyName, value);
+			}
+		}
+
+		return properties;
+	}
+	
+	private static String getSubstringAfterProperties(String input) {
+		String keyword = "properties";
+		int index = input.indexOf(keyword);
+
+		if (index != -1) {
+			// Get the substring starting right after "properties."
+			// Add length of "properties." (which is 12) to index to get the position after
+			// it
+			return input.substring(index + keyword.length() + 1);
+		}
+
+		return null;
+	}
+
+	public static BpmPublicErrorBuilder buildError(String code) {
 		BpmPublicErrorBuilder builder = BpmError.create(ERROR_BASE + ":" + code);
 		return builder;
 	}
