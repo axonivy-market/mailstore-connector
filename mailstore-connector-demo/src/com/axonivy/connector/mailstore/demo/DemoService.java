@@ -13,6 +13,7 @@ import javax.mail.Part;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 import com.axonivy.connector.mailstore.MailStoreService.MessageIterator;
+import com.axonivy.connector.oauth.UserPasswordProvider;
 import com.axonivy.connector.mailstore.MessageService;
 
 import ch.ivyteam.ivy.environment.Ivy;
@@ -63,6 +64,37 @@ public class DemoService {
 		}
 	}
 	
+	public static void connectMailStoreWithBasicAuth() throws MessagingException, IOException {
+		String storeName = "localhost-imap-basic-authentication";
+		
+		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
+		String authProviderPath = "com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider";
+		initAuthProvider(storeName, authProviderPath);
+		
+		MessageIterator iterator = MailStoreService.messageIterator(storeName, "INBOX", null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
+	
+	public static void connectMailStoreWithAzureOauth2() throws MessagingException, IOException {
+		String storeName = "localhost-imap-azure-oauth2-authentication";
+		
+		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
+		String authProviderPath = "com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider";
+		initAuthProvider(storeName, authProviderPath);
+		
+		MessageIterator iterator = MailStoreService.messageIterator(storeName, "INBOX", null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
 
 	public static void handleAttachmentMessages() throws MessagingException, IOException {
 		MessageIterator iterator = MailStoreService.messageIterator(
@@ -71,7 +103,6 @@ public class DemoService {
 				null,
 				false,
 				null);
-		// MailStoreService.hasAttachment(true));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
@@ -84,6 +115,16 @@ public class DemoService {
 
 			boolean handled = logMessage(message);
 			iterator.handledMessage(handled);
+		}
+	}
+	
+	private static void initAuthProvider(String storeName, String authProviderPath) {
+		try {
+			Class<?> clazz = Class.forName(authProviderPath);
+			UserPasswordProvider userPasswordProvider = (UserPasswordProvider) clazz.getDeclaredConstructor().newInstance();
+	        MailStoreService.registerUserPasswordProvider(storeName, userPasswordProvider);
+		} catch(Exception ex) {
+			Ivy.log().error("exception during instantiate UserPasswordProvider"+ex);
 		}
 	}
 
