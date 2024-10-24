@@ -4,3 +4,4 @@ tokenDTO com.axonivy.connector.oauth.TokenDTO #field
 form javax.ws.rs.core.Form #field
 tokenUrlPrefix String #field
 tokenUrlSuffix String #field
+error ch.ivyteam.ivy.bpm.error.BpmError #field
