@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-
 public class OAuthUtils {
 	
 	// get response entity from response
@@ -18,6 +17,5 @@ public class OAuthUtils {
 
 		return tokenDto;
 	}
-
 
 }

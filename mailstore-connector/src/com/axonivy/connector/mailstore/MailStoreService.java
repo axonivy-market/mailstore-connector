@@ -617,16 +617,13 @@ public class MailStoreService {
 		String portString = getVar(storeName, PORT_VAR);
 		String user = getVar(storeName, USER_VAR);
 		
-		
 		UserPasswordProvider userPasswordProvider = userPasswordProviderRegister.get(storeName);
 		// adapt exist project already use this connector, default is basic auth
 		if(null == userPasswordProvider) {
 			userPasswordProvider = new BasicUserPasswordProvider();
 		}
 		String password = userPasswordProvider.authenticate(storeName);
-		
-		
-		
+
 		String debugString = getVar(storeName, DEBUG_VAR);
 
 		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
