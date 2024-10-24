@@ -8,12 +8,12 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -31,41 +31,32 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
-import javax.ws.rs.core.Form;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.axonivy.connector.oauth.TokenDTO;
+import com.axonivy.connector.oauth.BasicUserPasswordProvider;
+import com.axonivy.connector.oauth.UserPasswordProvider;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
 import ch.ivyteam.ivy.environment.Ivy;
-import ch.ivyteam.ivy.process.call.SubProcessCall;
-import ch.ivyteam.ivy.process.call.SubProcessCallResult;
 import ch.ivyteam.ivy.vars.Variable;
 import ch.ivyteam.log.Logger;
 
 public class MailStoreService {
 	private static final MailStoreService INSTANCE = new MailStoreService();
 	private static final Logger LOG = Ivy.log();
-	private static final String MAIL_STORE_VAR = "mailstore-connector";
+	public static final String MAIL_STORE_VAR = "mailstore-connector";
 	private static final String PROTOCOL_VAR = "protocol";
 	private static final String HOST_VAR = "host";
 	private static final String PORT_VAR = "port";
 	private static final String USER_VAR = "user";
-	private static final String PASSWORD_VAR = "password";
 	private static final String DEBUG_VAR = "debug";
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
 	private static final Address[] EMPTY_ADDRESSES = new Address[0];
-	
-	private static final String AUTH = "auth";
-	private static final String TENANT_ID = "tenantId";
-	private static final String APP_ID = "appId";
-	private static final String SECRET_KEY = "secretKey";
-	private static final String GRANT_TYPE = "grantType";
-	private static final String SCOPE = "scope";
+	private static Map<String, UserPasswordProvider> userPasswordProviderRegister = new HashMap<>();
 
 	public static MailStoreService get() {
 		return INSTANCE;
@@ -120,7 +111,7 @@ public class MailStoreService {
 			boolean delete, Predicate<Message> filter, Comparator<Message> comparator, List<String> dstFolderNames) {
 		return new MessageIterator(storeName, srcFolderName, dstFolderNames, delete, filter, comparator);
 	}
-
+	
 	/**
 	 * Get a {@link Predicate} to match subjects against a regular expression.
 	 * 
@@ -367,6 +358,9 @@ public class MailStoreService {
 		return m -> false;
 	}
 
+	public static void registerUserPasswordProvider(String storeName, UserPasswordProvider userPasswordProvider) {
+		userPasswordProviderRegister.put(storeName, userPasswordProvider);
+	}
 
 	/**
 	 * Iterate through the E-Mails of a store.
@@ -623,15 +617,15 @@ public class MailStoreService {
 		String portString = getVar(storeName, PORT_VAR);
 		String user = getVar(storeName, USER_VAR);
 		
-		boolean isBasicAuth = isBasicAuth(storeName);
-		String password;
-		if(isBasicAuth) {
-			password = getVar(storeName, PASSWORD_VAR);
-			LOG.debug("connect to mail server with basic auth type");
-		} else {
-			LOG.debug("connect to mail server with oauth2 type");
-			password = getToken(storeName);
+		
+		UserPasswordProvider userPasswordProvider = userPasswordProviderRegister.get(storeName);
+		// adapt exist project already use this connector, default is basic auth
+		if(null == userPasswordProvider) {
+			userPasswordProvider = new BasicUserPasswordProvider();
 		}
+		String password = userPasswordProvider.authenticate(storeName);
+		
+		
 		
 		String debugString = getVar(storeName, DEBUG_VAR);
 
@@ -703,65 +697,8 @@ public class MailStoreService {
 		return folder;
 	}
 
-	private static String getVar(String store, String var) {
+	public static String getVar(String store, String var) {
 		return Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, var));
-	}
-	
-	private static boolean isBasicAuth(String store) {
-		String auth = Ivy.var().get(String.format("%s.%s.%s", MAIL_STORE_VAR, store, AUTH));
-		return auth.equals("basic");
-	}
-	
-	private static Form buildForm(String store) {
-		Form form = new Form();
-		form.param("client_id", getVar(store, APP_ID));
-		form.param("client_secret", getVar(store, SECRET_KEY));
-		form.param("scope", getVar(store, SCOPE));
-		form.param("grant_type", getVar(store, GRANT_TYPE));
-		
-		return form;
-	}
-	
-	private static String getToken(String store) {
-		Form form = buildForm(store);
-
-		String tenantId = getVar(store, TENANT_ID);
-		String tokenUrlPrefix = getVar(store, "tokenUrl.tokenUrlPrefix");
-		String tokenUrlSuffix = String.format(getVar(store, "tokenUrl.tokenUrlSuffix"), tenantId);
-
-		if (StringUtils.isBlank(tokenUrlPrefix) || StringUtils.isBlank(tokenUrlSuffix)) {
-			LOG.error("url to get token cannot be null or empty");
-			throw buildError("getToken").withMessage("url to get token cannot be null or empty").build();
-		}
-		
-		TokenDTO result = null;
-		BpmError error = null;
-		SubProcessCallResult callResult = SubProcessCall.withPath("OAuth2Feature").withStartName("getToken")
-				.withParam("form", form)
-				.withParam("tokenUrlPrefix", tokenUrlPrefix)
-				.withParam("tokenUrlSuffix", tokenUrlSuffix)
-				.call();
-
-		if (callResult != null) {
-			Optional<Object> o = Optional.ofNullable(callResult.get("token"));
-			if (o.isPresent()) {
-				result = (TokenDTO) o.get();
-			} else {
-				Optional<Object> e = Optional.ofNullable(callResult.get("error"));
-				if (e.isPresent()) {
-					error = (BpmError) e.get();
-					LOG.error(error);
-					throw error;
-				}
-			}
-		}
-
-		if (null == result || StringUtils.isBlank(result.getAccessToken())) {
-			LOG.error("access token cannot be null or empty");
-			throw buildError("getToken").withMessage("access token cannot be null or empty").build();
-		}
-
-		return result.getAccessToken();
 	}
 	
 	private static Properties getProperties() {
@@ -815,7 +752,7 @@ public class MailStoreService {
 		return null;
 	}
 
-	private static BpmPublicErrorBuilder buildError(String code) {
+	public static BpmPublicErrorBuilder buildError(String code) {
 		BpmPublicErrorBuilder builder = BpmError.create(ERROR_BASE + ":" + code);
 		return builder;
 	}
