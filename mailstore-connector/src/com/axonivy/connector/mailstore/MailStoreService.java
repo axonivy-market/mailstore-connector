@@ -358,6 +358,12 @@ public class MailStoreService {
 		return m -> false;
 	}
 
+	/**
+	 * Function to Register Authentication Provider
+	 * 
+	 * client need to register authentication provider before they connect to mailstore, if not default basic authentication will be used
+	 * 
+	 */
 	public static void registerUserPasswordProvider(String storeName, UserPasswordProvider userPasswordProvider) {
 		userPasswordProviderRegister.put(storeName, userPasswordProvider);
 	}
