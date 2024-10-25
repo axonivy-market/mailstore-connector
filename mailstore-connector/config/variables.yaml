@@ -32,9 +32,9 @@ Variables:
           # mail.imaps.sasl.mechanisms: 'XOAUTH2'
       
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
-      # com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider for Basic Authentication
-      # com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
-      userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: 'com.axonivy.connector.oauth.BasicUserPasswordProvider'
       
       # [basic, oauth2] basic: username and password, oauth2: currently only support OAuth2 client credentials grant flow      
       # only set below credential when you go with oauth2
