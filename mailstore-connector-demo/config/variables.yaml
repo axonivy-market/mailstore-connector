@@ -34,7 +34,7 @@ Variables:
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
       # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
       # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
-      userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
+      userPasswordProvider: 'com.axonivy.connector.oauth.BasicUserPasswordProvider'
       
       # only set below credential when you go with oauth2
       # tenant to use for OAUTH2 request.
