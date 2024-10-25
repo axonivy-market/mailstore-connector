@@ -1,7 +1,10 @@
 package com.axonivy.connector.oauth;
 
+import java.util.Map;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,13 +61,24 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 			throw MailStoreService.buildError("getToken").withMessage("response cannot be null").build();
 		}
 
-		TokenDTO tokenDto = OAuthUtils.extractToken(response);
+		String accessToken = extractToken(response);
 
-		if (null == tokenDto || StringUtils.isEmpty(tokenDto.getAccessToken())) {
+		if (StringUtils.isEmpty(accessToken)) {
 			throw new IllegalStateException("Failed to read 'access_token' from " + response);
 		}
 
-		return tokenDto.getAccessToken();
+		return accessToken;
 	}
 
+	// get response entity from response
+	private String extractToken(Response response) {
+		GenericType<Map<String, Object>> map = new GenericType<>(Map.class);
+		Map<String, Object> values = response.readEntity(map);
+		
+		if(null == values) {
+			return null;
+		}
+
+		return values.get("access_token").toString();
+	}
 }
