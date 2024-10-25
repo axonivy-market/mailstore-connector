@@ -68,7 +68,7 @@ public class DemoService {
 		String storeName = "localhost-imap-basic-authentication";
 		
 		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
-		String authProviderPath = "com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider";
+		String authProviderPath = "com.axonivy.connector.oauth.BasicUserPasswordProvider";
 		initAuthProvider(storeName, authProviderPath);
 		
 		MessageIterator iterator = MailStoreService.messageIterator(storeName, "INBOX", null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
@@ -84,7 +84,7 @@ public class DemoService {
 		String storeName = "localhost-imap-azure-oauth2-authentication";
 		
 		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
-		String authProviderPath = "com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider";
+		String authProviderPath = "com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider";
 		initAuthProvider(storeName, authProviderPath);
 		
 		MessageIterator iterator = MailStoreService.messageIterator(storeName, "INBOX", null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());

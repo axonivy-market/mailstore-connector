@@ -1,6 +1,6 @@
 RestClients:
-  Retrieve Token:
+  getTokenAzureOAuth:
     UUID: a37c499d-82de-4d21-a021-06844835fb2d
-    Url: https://{tokenUrlPrefix}/
+    Url: https://login.microsoftonline.com
     Features:
     - ch.ivyteam.ivy.rest.client.mapper.JsonFeature

@@ -11,6 +11,10 @@ public class OAuthUtils {
 	public static TokenDTO extractToken(Response response) {
 		GenericType<Map<String, Object>> map = new GenericType<>(Map.class);
 		Map<String, Object> values = response.readEntity(map);
+		
+		if(null == values) {
+			return null;
+		}
 
 		TokenDTO tokenDto = new TokenDTO();
 		tokenDto.setAccessToken(values.get("access_token").toString());
