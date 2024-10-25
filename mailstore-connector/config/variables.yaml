@@ -49,12 +49,3 @@ Variables:
       scope: ''
       #[client_credentials]
       grantType: ''
-      # link url to get token
-      # example microsoft loutlook client_credentials: https://login.microsoftonline.com/{{tenant_id}}/oauth2/v2.0/token
-      tokenUrl:
-        # prefix login url. 
-        # ex: login.microsoftonline.com
-        tokenUrlPrefix: ''
-        # suffix login url
-        # ex: %s/oauth2/v2.0/token (with %s is tenant_id)
-        tokenUrlSuffix: ''

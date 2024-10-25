@@ -32,8 +32,8 @@ Variables:
           # mail.imaps.sasl.mechanisms: 'XOAUTH2'
       
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
-      # com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider for Basic Authentication
-      # com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
       userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
       
       # only set below credential when you go with oauth2
@@ -48,15 +48,6 @@ Variables:
       scope: ''
       #[client_credentials]
       grantType: ''
-      # link url to get token
-      # example microsoft loutlook client_credentials: https://login.microsoftonline.com/{{tenant_id}}/oauth2/v2.0/token
-      tokenUrl:
-        # prefix login url. 
-        # ex: login.microsoftonline.com
-        tokenUrlPrefix: ''
-        # suffix login url
-        # ex: %s/oauth2/v2.0/token (with %s is tenant_id)
-        tokenUrlSuffix: ''
 
 
     localhost-imap-basic-authentication:
@@ -80,9 +71,9 @@ Variables:
           mail.imaps.ssl.trust: '*'
       
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
-      # com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider for Basic Authentication
-      # com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
-      userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: 'com.axonivy.connector.oauth.BasicUserPasswordProvider'
 
 
     localhost-imap-azure-oauth2-authentication:
@@ -110,9 +101,9 @@ Variables:
           mail.imaps.sasl.mechanisms: 'XOAUTH2'
       
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
-      # com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider for Basic Authentication
-      # com.axonivy.connector.mailstore.demo.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
-      userPasswordProvider: 'com.axonivy.connector.mailstore.demo.oauth.BasicUserPasswordProvider'
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: 'com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider'
       
       # only set below credential when you go with oauth2
       # tenant to use for OAUTH2 request.
@@ -126,12 +117,3 @@ Variables:
       scope: ''
       #[client_credentials]
       grantType: ''
-      # link url to get token
-      # example microsoft loutlook client_credentials: https://login.microsoftonline.com/{{tenant_id}}/oauth2/v2.0/token
-      tokenUrl:
-        # prefix login url. 
-        # ex: login.microsoftonline.com
-        tokenUrlPrefix: ''
-        # suffix login url
-        # ex: %s/oauth2/v2.0/token (with %s is tenant_id)
-        tokenUrlSuffix: ''
