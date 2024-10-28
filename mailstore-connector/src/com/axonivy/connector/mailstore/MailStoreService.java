@@ -51,7 +51,6 @@ public class MailStoreService {
 	private static final String PROTOCOL_VAR = "protocol";
 	private static final String HOST_VAR = "host";
 	private static final String PORT_VAR = "port";
-	private static final String USER_VAR = "user";
 	private static final String DEBUG_VAR = "debug";
 	private static final String PROPERTIES_VAR = "properties";
 	private static final String ERROR_BASE = "mailstore:connector";
@@ -621,14 +620,17 @@ public class MailStoreService {
 		String protocol = getVar(storeName, PROTOCOL_VAR);
 		String host = getVar(storeName, HOST_VAR);
 		String portString = getVar(storeName, PORT_VAR);
-		String user = getVar(storeName, USER_VAR);
+		
+		//String user = getVar(storeName, USER_VAR);
 		
 		UserPasswordProvider userPasswordProvider = userPasswordProviderRegister.get(storeName);
 		// adapt exist project already use this connector, default is basic auth
 		if(null == userPasswordProvider) {
 			userPasswordProvider = new BasicUserPasswordProvider();
 		}
-		String password = userPasswordProvider.authenticate(storeName);
+		
+		String user = userPasswordProvider.getUser(storeName);
+		String password = userPasswordProvider.getPassword(storeName);
 
 		String debugString = getVar(storeName, DEBUG_VAR);
 

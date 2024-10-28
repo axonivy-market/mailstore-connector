@@ -124,7 +124,7 @@ public class DemoService {
 			UserPasswordProvider userPasswordProvider = (UserPasswordProvider) clazz.getDeclaredConstructor().newInstance();
 	        MailStoreService.registerUserPasswordProvider(storeName, userPasswordProvider);
 		} catch(Exception ex) {
-			Ivy.log().error("exception during instantiate UserPasswordProvider"+ex);
+			LOG.error("Exception during instatiation of UserPasswordProvider ''{0}''.",ex, authProviderPath);
 		}
 	}
 
