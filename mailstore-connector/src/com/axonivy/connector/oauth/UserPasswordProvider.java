@@ -1,5 +1,6 @@
 package com.axonivy.connector.oauth;
 
 public interface UserPasswordProvider {
-	 String authenticate(String storeName);
+	 String getUser(String storeName);
+	 String getPassword(String storeName);
 }
