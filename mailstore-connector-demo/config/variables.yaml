@@ -106,7 +106,7 @@ Variables:
       appId: ''
       # Secret key from your applications "certificates & secrets" (client secret)
       secretKey: ''
-      # for client_credentials: https://outlook.office365.com/.default
+      # for client_credentials/password: https://outlook.office365.com/.default
       scope: ''
-      #[client_credentials]
+      #[client_credentials, password]
       grantType: ''

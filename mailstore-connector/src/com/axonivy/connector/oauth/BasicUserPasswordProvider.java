@@ -7,8 +7,6 @@ import ch.ivyteam.log.Logger;
 
 public class BasicUserPasswordProvider implements UserPasswordProvider {
     private static final Logger LOG = Ivy.log();
-	private static final String PASSWORD_VAR = "password";
-	private static final String USER_VAR = "user";
 
 	@Override
 	public String getUser(String storeName) {

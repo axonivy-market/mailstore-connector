@@ -621,11 +621,9 @@ public class MailStoreService {
 		String host = getVar(storeName, HOST_VAR);
 		String portString = getVar(storeName, PORT_VAR);
 		
-		//String user = getVar(storeName, USER_VAR);
-		
 		UserPasswordProvider userPasswordProvider = userPasswordProviderRegister.get(storeName);
 		// adapt exist project already use this connector, default is basic auth
-		if(null == userPasswordProvider) {
+		if (null == userPasswordProvider) {
 			userPasswordProvider = new BasicUserPasswordProvider();
 		}
 		
