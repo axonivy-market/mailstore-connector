@@ -21,7 +21,6 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 	private static final String SECRET_KEY = "secretKey";
 	private static final String GRANT_TYPE = "grantType";
 	private static final String SCOPE = "scope";
-	private static final String USER_VAR = "user";
 	
 	private static final String REST_CLIENT = "getTokenAzureOAuth";
 
@@ -44,7 +43,17 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		form.param("client_id", MailStoreService.getVar(storeName, APP_ID));
 		form.param("client_secret", MailStoreService.getVar(storeName, SECRET_KEY));
 		form.param("scope", MailStoreService.getVar(storeName, SCOPE));
-		form.param("grant_type", MailStoreService.getVar(storeName, GRANT_TYPE));
+
+		String grantTypeValue = MailStoreService.getVar(storeName, GRANT_TYPE);
+		
+		LOG.debug("Grant type value retrieved for store {0}: {1}", storeName, grantTypeValue);
+		
+		form.param("grant_type", grantTypeValue);
+
+		if (GrantType.isUserPassAuth(grantTypeValue)) {
+			form.param("username", getUser(storeName));
+			form.param("password", MailStoreService.getVar(storeName, PASSWORD_VAR));
+		}
 
 		return form;
 	}
@@ -89,5 +98,23 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 
 		return values.get("access_token").toString();
 	}
+	
+	private static enum GrantType {
+	    APPLICATION("client_credentials"),
+
+	    /** weak security: app acts as pre-configured personal user! **/
+	    PASSWORD("password");
+
+	    private String type;
+
+	    GrantType(String type) {
+	      this.type = type;
+	    }
+
+	    private static boolean isUserPassAuth(String str) {
+	        return str != null && (str.equals(PASSWORD.type));
+	    }
+	    
+	  }
 
 }
