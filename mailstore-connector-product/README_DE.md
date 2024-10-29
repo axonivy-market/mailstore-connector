@@ -91,7 +91,7 @@ Variables:
           # mail.imaps.ssl.trust: '*'
 ```
 
-OAuth 2.0 Support: Azure client_credential grant flow
+OAuth 2.0 Support: Azure client_credential/password grant flow
 
 ## Overview
 
@@ -174,7 +174,7 @@ Variables:
       secretKey: ''
       # for client_credentials: https://outlook.office365.com/.default
       scope: ''
-      #[client_credentials]
+      #[client_credentials/password]
       grantType: '
 ```
 
