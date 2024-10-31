@@ -48,3 +48,7 @@ Variables:
       scope: ''
       #[client_credentials, password]
       grantType: ''
+      
+  # login microsoft azure
+  azureOAuth:
+    loginUrl: ''
