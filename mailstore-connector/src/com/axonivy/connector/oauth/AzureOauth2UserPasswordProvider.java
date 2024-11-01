@@ -1,6 +1,7 @@
 package com.axonivy.connector.oauth;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -14,6 +15,15 @@ import com.axonivy.connector.mailstore.MailStoreService;
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.log.Logger;
 
+/**
+ * The {@code AzureOauth2UserPasswordProvider} class implements the 
+ * {@link UserPasswordProvider} interface, providing methods to retrieve 
+ * user credentials specifically for Azure OAuth2 authentication.
+ * <p>
+ * This class retrieves user credentials from a mail store and handles 
+ * interactions with Azure's OAuth2 token endpoint.
+ * </p>
+ */
 public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 	private static final Logger LOG = Ivy.log();
 	private static final String TENANT_ID = "tenantId";
@@ -23,7 +33,30 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 	private static final String SCOPE = "scope";
 	
 	private static final String REST_CLIENT = "getTokenAzureOAuth";
-
+    private static final String TOKEN_PATH = "oauth2/v2.0/token";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+    private static final String CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
+	
+    /**
+     * The {@code FormProperty} interface defines constants for form property 
+     * names used in the OAuth2 token request.
+     */
+	public static interface FormProperty {
+		String CLIENT_ID = "client_id";
+		String CLIENT_SECRET = "client_secret";
+		String SCOPE = "scope";
+		String GRANT_TYPE = "grant_type";
+		String USERNAME = "username";
+		String PASSWORD = "password";
+		
+	}
+	
+    /**
+     * Retrieves the username associated with the specified store name.
+     *
+     * @param storeName the name of the store
+     * @return the username for the specified store
+     */
 	@Override
 	public String getUser(String storeName) {
 		LOG.debug("Retrieving user for store: ''{0}''.", storeName);
@@ -31,6 +64,12 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		return MailStoreService.getVar(storeName, USER_VAR);
 	}
 
+    /**
+     * Retrieves the password associated with the specified store name.
+     *
+     * @param storeName the name of the store
+     * @return the password for the specified store
+     */
 	@Override
 	public String getPassword(String storeName) {
 		LOG.debug("Retrieving password for store: ''{0}''.", storeName);
@@ -40,31 +79,31 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 	
 	private Form buildForm(String storeName) {
 		Form form = new Form();
-		form.param("client_id", MailStoreService.getVar(storeName, APP_ID));
-		form.param("client_secret", MailStoreService.getVar(storeName, SECRET_KEY));
-		form.param("scope", MailStoreService.getVar(storeName, SCOPE));
-
+		form.param(FormProperty.CLIENT_ID, MailStoreService.getVar(storeName, APP_ID));
+		form.param(FormProperty.CLIENT_SECRET, MailStoreService.getVar(storeName, SECRET_KEY));
+		form.param(FormProperty.SCOPE, MailStoreService.getVar(storeName, SCOPE));
+		
 		String grantTypeValue = MailStoreService.getVar(storeName, GRANT_TYPE);
 		
 		LOG.debug("Grant type value retrieved for store {0}: {1}", storeName, grantTypeValue);
 		
-		form.param("grant_type", grantTypeValue);
+		form.param(FormProperty.GRANT_TYPE, grantTypeValue);
 
 		if (GrantType.isUserPassAuth(grantTypeValue)) {
-			form.param("username", getUser(storeName));
-			form.param("password", MailStoreService.getVar(storeName, PASSWORD_VAR));
+			form.param(FormProperty.USERNAME, getUser(storeName));
+			form.param(FormProperty.PASSWORD, MailStoreService.getVar(storeName, PASSWORD_VAR));
 		}
 
 		return form;
 	}
 	
 	private Response sendTokenRequest(String tenantId, Form form) {
-	    return Ivy.rest().client(REST_CLIENT)
-	        .path(tenantId)
-	        .path("oauth2/v2.0/token")
-	        .request()
-	        .header("Content-Type", "application/x-www-form-urlencoded")
-	        .post(Entity.form(form));
+		return Ivy.rest()
+				.client(REST_CLIENT)
+				.path(tenantId)
+				.path(TOKEN_PATH).request()
+				.header(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE)
+				.post(Entity.form(form));
 	}
 	
 	private String getToken(String storeName) {
@@ -92,11 +131,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		GenericType<Map<String, Object>> map = new GenericType<>(Map.class);
 		Map<String, Object> values = response.readEntity(map);
 		
-		if(null == values) {
-			return null;
-		}
-
-		return values.get("access_token").toString();
+		return Optional.ofNullable(values).map(value -> values.get("access_token").toString()).orElse(null); 
 	}
 	
 	private static enum GrantType {

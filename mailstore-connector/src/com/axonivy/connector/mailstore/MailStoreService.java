@@ -712,7 +712,6 @@ public class MailStoreService {
 			String name = variable.name();
 			if (name.startsWith(propertiesPrefix)) {
 				String propertyName = name.substring(propertiesPrefix.length());
-
 				String value = variable.value();
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
 				properties.setProperty(name, value);
@@ -725,13 +724,12 @@ public class MailStoreService {
 	// Only retrieve properties from the store that belong to
 	private static Properties getProperties(String storeName) {
 		Properties properties = new Properties();
-		String propertiesPrefix = MAIL_STORE_VAR + "." + storeName + "." + PROPERTIES_VAR + ".";
+		String propertiesPrefix = String.format("%s.%s.%s.", MAIL_STORE_VAR, storeName, PROPERTIES_VAR);
 
 		for (Variable variable : Ivy.var().all()) {
 			String name = variable.name();
 			if (name.contains(propertiesPrefix)) {
 				String propertyName = getSubstringAfterProperties(name);
-
 				String value = variable.value();
 				LOG.info("Setting additional property {0}: ''{1}''", propertyName, value);
 				properties.setProperty(propertyName, value);
@@ -742,17 +740,9 @@ public class MailStoreService {
 	}
 	
 	private static String getSubstringAfterProperties(String input) {
-		String keyword = "properties";
-		int index = input.indexOf(keyword);
-
-		if (index != -1) {
-			// Get the substring starting right after "properties."
-			// Add length of "properties." (which is 12) to index to get the position after
-			// it
-			return input.substring(index + keyword.length() + 1);
-		}
-
-		return null;
+		int index = input.indexOf(PROPERTIES_VAR);
+		
+		return index != -1 ? input.substring(index + PROPERTIES_VAR.length() + 1) : null;
 	}
 
 	public static BpmPublicErrorBuilder buildError(String code) {
