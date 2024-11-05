@@ -26,3 +26,91 @@ Variables:
       properties:
           mail.imaps.ssl.checkserveridentity: false
           mail.imaps.ssl.trust: '*'
+          # only set below credential when you go with oauth2
+          # mail.imaps.auth.mechanisms: 'XOAUTH2'
+          # mail.imaps.sasl.enable: 'true'
+          # mail.imaps.sasl.mechanisms: 'XOAUTH2'
+      
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: ''
+      
+      # only set below credential when you go with oauth2
+      # tenant to use for OAUTH2 request.
+      # set the Azure Directory (tenant) ID, for application requests.
+      tenantId: ''
+      # Your Azure Application (client) ID, used for OAuth2 authentication
+      appId: ''
+      # Secret key from your applications "certificates & secrets" (client secret)
+      secretKey: ''
+      # for client_credentials: https://outlook.office365.com/.default
+      scope: ''
+      #[client_credentials]
+      grantType: ''
+
+
+    localhost-imap-basic-authentication:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imap'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: 'pass'
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'
+      
+      userPasswordProvider: 'com.axonivy.connector.oauth.BasicUserPasswordProvider'
+
+
+    localhost-imap-azure-oauth2-authentication:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imap'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: ''
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'
+          # only set below credential when you go with oauth2
+          mail.imaps.auth.mechanisms: 'XOAUTH2'
+          mail.imaps.sasl.enable: 'true'
+          mail.imaps.sasl.mechanisms: 'XOAUTH2'
+      
+      userPasswordProvider: 'com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider'
+      
+      # only set below credential when you go with oauth2
+      # tenant to use for OAUTH2 request.
+      # set the Azure Directory (tenant) ID, for application requests.
+      tenantId: ''
+      # Your Azure Application (client) ID, used for OAuth2 authentication
+      appId: ''
+      # Secret key from your applications "certificates & secrets" (client secret)
+      secretKey: ''
+      # for client_credentials/password: https://outlook.office365.com/.default
+      scope: ''
+      #[client_credentials, password]
+      grantType: ''
+  # login microsoft azure
+  azureOAuth:
+    loginUrl: 'login.microsoftonline.com'
+      

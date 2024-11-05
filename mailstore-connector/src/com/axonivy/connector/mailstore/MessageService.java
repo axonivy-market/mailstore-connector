@@ -19,7 +19,6 @@ import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
 
 public class MessageService {
 	private static final MessageService INSTANCE = new MessageService();
-	// private static final Logger LOG = Ivy.log();
 	private static final String ERROR_BASE = "mailstore:connector:message";
 
 	public static MessageService get() {

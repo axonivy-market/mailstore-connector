@@ -1,1 +1,6 @@
 RestClients:
+  getTokenAzureOAuth:
+    UUID: a37c499d-82de-4d21-a021-06844835fb2d
+    Url: https://${ivy.var.azureOAuth.loginUrl}
+    Features:
+    - ch.ivyteam.ivy.rest.client.mapper.JsonFeature
