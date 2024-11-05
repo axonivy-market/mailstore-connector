@@ -13,6 +13,7 @@ import javax.mail.Part;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 import com.axonivy.connector.mailstore.MailStoreService.MessageIterator;
+import com.axonivy.connector.oauth.UserPasswordProvider;
 import com.axonivy.connector.mailstore.MessageService;
 
 import ch.ivyteam.ivy.environment.Ivy;
@@ -21,9 +22,14 @@ import ch.ivyteam.log.Logger;
 
 public class DemoService {
 	private static final Logger LOG = Ivy.log();
+	private static final String INBOX = "INBOX";
+	private static final String USER_PASSWORD_PROVIDER = "userPasswordProvider";
+	private static final String LOCALHOST_IMAP = "localhost-imap";
+	private static final String LOCALHOST_IMAP_BASIC_AUTHENTICATION = "localhost-imap-basic-authentication";
+	private static final String LOCALHOST_IMAP_AZURE_OAUTH2_AUTHENTICATION = "localhost-imap-azure-oauth2-authentication";
 
 	public static void handleMessages() throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", null, false, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator());
+		MessageIterator iterator = MailStoreService.messageIterator(LOCALHOST_IMAP, INBOX, null, false, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator());
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
@@ -51,7 +57,7 @@ public class DemoService {
 	}
 	
 	public static void handleMessagesMultiDestinationFolder() throws MessagingException, IOException {
-		MessageIterator iterator = MailStoreService.messageIterator("localhost-imap", "INBOX", true, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator(), Arrays.asList("Processed", "ErrorFolder"));
+		MessageIterator iterator = MailStoreService.messageIterator(LOCALHOST_IMAP, INBOX, true, MailStoreService.subjectMatches(".*test [0-9]+.*"), new MessageComparator(), Arrays.asList("Processed", "ErrorFolder"));
 		int runner = 0;
 		
 		while (iterator.hasNext()) {
@@ -63,15 +69,41 @@ public class DemoService {
 		}
 	}
 	
+	public static void connectMailStoreWithBasicAuth() throws MessagingException, IOException {
+		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
+		String authProviderPath = MailStoreService.getVar(LOCALHOST_IMAP_BASIC_AUTHENTICATION, USER_PASSWORD_PROVIDER);
+		initAuthProvider(LOCALHOST_IMAP_BASIC_AUTHENTICATION, authProviderPath);
+		
+		MessageIterator iterator = MailStoreService.messageIterator(LOCALHOST_IMAP_BASIC_AUTHENTICATION, INBOX, null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
+	
+	public static void connectMailStoreWithAzureOauth2() throws MessagingException, IOException {
+		// get from variable mailstore-connector.localhost-imap.userPasswordProvider
+		String authProviderPath = MailStoreService.getVar(LOCALHOST_IMAP_AZURE_OAUTH2_AUTHENTICATION, USER_PASSWORD_PROVIDER);
+		initAuthProvider(LOCALHOST_IMAP_AZURE_OAUTH2_AUTHENTICATION, authProviderPath);
+		
+		MessageIterator iterator = MailStoreService.messageIterator(LOCALHOST_IMAP_AZURE_OAUTH2_AUTHENTICATION, INBOX, null, false, MailStoreService.subjectMatches(".*"), new MessageComparator());
+
+		while (iterator.hasNext()) {
+			Message message = iterator.next();
+			boolean handled = handleMessage(message);
+			iterator.handledMessage(handled);
+		}
+	}
 
 	public static void handleAttachmentMessages() throws MessagingException, IOException {
 		MessageIterator iterator = MailStoreService.messageIterator(
-				"localhost-imap",
-				"INBOX",
+				LOCALHOST_IMAP,
+				INBOX,
 				null,
 				false,
 				null);
-		// MailStoreService.hasAttachment(true));
 
 		while (iterator.hasNext()) {
 			Message message = iterator.next();
@@ -84,6 +116,16 @@ public class DemoService {
 
 			boolean handled = logMessage(message);
 			iterator.handledMessage(handled);
+		}
+	}
+	
+	private static void initAuthProvider(String storeName, String authProviderPath) {
+		try {
+			Class<?> clazz = Class.forName(authProviderPath);
+			UserPasswordProvider userPasswordProvider = (UserPasswordProvider) clazz.getDeclaredConstructor().newInstance();
+	        MailStoreService.registerUserPasswordProvider(storeName, userPasswordProvider);
+		} catch(Exception ex) {
+			LOG.error("Exception during instatiation of UserPasswordProvider ''{0}''.",ex, authProviderPath);
 		}
 	}
 
