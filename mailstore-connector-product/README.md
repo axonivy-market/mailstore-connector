@@ -88,3 +88,98 @@ Variables:
           # mail.imaps.ssl.checkserveridentity: false
           # mail.imaps.ssl.trust: '*'
 ```
+
+OAuth 2.0 Support: Azure client_credential/password grant flow
+
+## Overview
+
+This document outlines the steps to configure OAuth 2.0 support using the Azure client credentials grant flow.
+
+### Configuration Steps
+1. Ensure that the necessary properties are enabled for JavaMail to support OAuth 2.0. For more details, refer to the [JavaMail API documentation](https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html#:~:text=or%20confidentiality%20layer.-,OAuth%202.0%20Support,-Support%20for%20OAuth).
+
+```yaml
+      properties:
+          # only set below credential when you go with oauth2
+          mail.imaps.auth.mechanisms: 'XOAUTH2'
+          mail.imaps.sasl.enable: 'true'
+          mail.imaps.sasl.mechanisms: 'XOAUTH2'
+```
+
+2. Add Credentials for Azure Authentication
+Include your Azure credentials in the authentication configuration.
+```yaml
+      # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: 'com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider'
+      
+      # only set below credential when you go with oauth2
+      # tenant to use for OAUTH2 request.
+      # set the Azure Directory (tenant) ID, for application requests.
+      tenantId: ''
+      # Your Azure Application (client) ID, used for OAuth2 authentication
+      appId: ''
+      # Secret key from your applications "certificates & secrets" (client secret)
+      secretKey: ''
+      # for client_credentials: https://outlook.office365.com/.default
+      scope: ''
+      #[client_credentials]
+      grantType: '
+```
+
+3. Provide a Complete YAML Configuration File
+Ensure that a fully configured YAML file is available for the application.
+```yaml
+Variables:
+  mailstore-connector:
+    localhost-imap-azure-oauth2-authentication:
+      # [enum: pop3, pop3s, imap, imaps]
+      protocol: 'imap'
+      # Host for store connection
+      host: 'localhost'
+      # Port for store connection (only needed if not default)
+      port: -1
+      # User name for store connection
+      user: 'debug@localdomain.test'
+      # Password for store connection
+      # [password]
+      password: ''
+      # show debug output for connection
+      debug: true
+      # Additional properties for store connection,
+      # see https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+      properties:
+          mail.imaps.ssl.checkserveridentity: false
+          mail.imaps.ssl.trust: '*'
+          # only set below credential when you go with oauth2
+          mail.imaps.auth.mechanisms: 'XOAUTH2'
+          mail.imaps.sasl.enable: 'true'
+          mail.imaps.sasl.mechanisms: 'XOAUTH2'
+      
+      # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
+      # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
+      # com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider for AzureOauth2UserPasswordProvider
+      userPasswordProvider: 'com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider'
+      
+      # only set below credential when you go with oauth2
+      # tenant to use for OAUTH2 request.
+      # set the Azure Directory (tenant) ID, for application requests.
+      tenantId: ''
+      # Your Azure Application (client) ID, used for OAuth2 authentication
+      appId: ''
+      # Secret key from your applications "certificates & secrets" (client secret)
+      secretKey: ''
+      # for client_credentials: https://outlook.office365.com/.default
+      scope: ''
+      #[client_credentials/password]
+      grantType: '
+```
+
+4. Set Up the Authentication Provider
+Before calling the mailstore connector, you need to provide an authentication provider.
+```java
+  Class<?> clazz = Class.forName("com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider");
+	UserPasswordProvider userPasswordProvider = (UserPasswordProvider) clazz.getDeclaredConstructor().newInstance();
+  MailStoreService.registerUserPasswordProvider(storeName, userPasswordProvider);
+```
