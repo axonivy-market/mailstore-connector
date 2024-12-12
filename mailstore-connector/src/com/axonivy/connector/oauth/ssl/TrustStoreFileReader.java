@@ -12,13 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import ch.ivyteam.config.ConfigFile;
 import ch.ivyteam.ivy.config.IFileAccess;
 import ch.ivyteam.ivy.environment.Ivy;
+
 @SuppressWarnings("restriction")
 public class TrustStoreFileReader extends ConfigFile {
-	private static final char[] DEFAULT_KEY_PASSWORD = "changeit".toCharArray();
-	private static final String DEFAULT_TRUST_STORE_FILE = "truststore.p12";
+	private static final char[] DEFAULT_PASSWORD = "changeit".toCharArray();
+	private static final String DEFAULT_FILE_NAME = "truststore.p12";
 	private static final String SSL_TRUSTSTORE_FILE_KEY = "SSL.Client.TrustStore.File";
 	private static final String SSL_TRUSTSTORE_PASS_KEY = "SSL.Client.TrustStore.Password";
-
 	private Properties properties;
 
 	public TrustStoreFileReader() {
@@ -34,15 +34,16 @@ public class TrustStoreFileReader extends ConfigFile {
 	public File getTrustFile() {
 		String filePath = properties.getProperty(SSL_TRUSTSTORE_FILE_KEY);
 		File store = new File(filePath);
-		if (!store.isAbsolute())
-			store = IFileAccess.instance().getConfigFile(DEFAULT_TRUST_STORE_FILE).toFile();
+		if (!store.isAbsolute()) {
+			store = IFileAccess.instance().getConfigFile(DEFAULT_FILE_NAME).toFile();
+		}
 		return store;
 	}
 
 	public char[] getTrustPassword() {
 		var pass = properties.getProperty(SSL_TRUSTSTORE_PASS_KEY);
 		if (StringUtils.isAllBlank(pass)) {
-			return DEFAULT_KEY_PASSWORD;
+			return DEFAULT_PASSWORD;
 		}
 		return pass.toCharArray();
 	}
@@ -51,7 +52,7 @@ public class TrustStoreFileReader extends ConfigFile {
 		try {
 			properties = readAsProperties();
 		} catch (IOException e) {
-			Ivy.log().error(e);
+			Ivy.log().error("Failed to read ivy config as properties", e);
 		}
 	}
 }

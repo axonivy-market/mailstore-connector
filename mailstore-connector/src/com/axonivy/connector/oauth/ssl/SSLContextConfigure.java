@@ -39,7 +39,7 @@ public class SSLContextConfigure {
 	public void addIvyTrustStoreToCurrentContext() throws NoSuchAlgorithmException, KeyStoreException,
 			CertificateException, IOException, KeyManagementException {
 		TrustManagerFactory tmFactory = initDefaultTrustManagerFactory();
-		// Backup default Certs
+		// Backup default Certificates
 		X509TrustManager defaultX509CertTM = getFirstX509TrustManagerFromFactory(tmFactory);
 
 		TrustStoreFileReader trustStoreFileReader = new TrustStoreFileReader();
@@ -76,8 +76,8 @@ public class SSLContextConfigure {
 	}
 
 	public void resetToDefaultTrustStore() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-		TrustManagerFactory tmFactory = initDefaultTrustManagerFactory();
-		X509TrustManager defaultX509CertTM = getFirstX509TrustManagerFromFactory(tmFactory);
+		TrustManagerFactory trustManagerFactory = initDefaultTrustManagerFactory();
+		X509TrustManager defaultX509CertTM = getFirstX509TrustManagerFromFactory(trustManagerFactory);
 		buildSSLContext(defaultX509CertTM);
 	}
 
