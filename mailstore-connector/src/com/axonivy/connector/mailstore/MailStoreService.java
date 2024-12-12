@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.axonivy.connector.oauth.BasicUserPasswordProvider;
 import com.axonivy.connector.oauth.UserPasswordProvider;
+import com.axonivy.connector.oauth.ssl.SSLContextConfigure;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.bpm.error.BpmPublicErrorBuilder;
@@ -614,7 +615,7 @@ public class MailStoreService {
 	 * @return
 	 * @throws MessagingException
 	 */
-	public static Store openStore(String storeName) throws MessagingException {
+	public static Store openStore(String storeName) throws Exception {
 		Store store = null;
 
 		String protocol = getVar(storeName, PROTOCOL_VAR);
@@ -652,7 +653,7 @@ public class MailStoreService {
 			}
 			store = session.getStore(protocol);
 			store.connect(host, port, user, password);
-		} catch(MessagingException e) {
+		} catch(Exception e) {
 			try {
 				store.close();
 			} catch (MessagingException closeEx) {
@@ -668,8 +669,11 @@ public class MailStoreService {
 		return store;
 	}
 
-	private static Session getSession(String storeName) {
+	private static Session getSession(String storeName) throws Exception {
 		Properties properties = getProperties(storeName);
+		if (SSLContextConfigure.get().isStartTLSEnabled(properties)) {
+			SSLContextConfigure.get().addIvyTrustStoreToCurrentContext();
+		}
 
 		// Use getInstance instead of getDefaultInstance
 		Session session = Session.getInstance(properties, null);
