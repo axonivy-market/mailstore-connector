@@ -9,6 +9,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -59,14 +60,10 @@ public class SSLContextConfigure {
 	}
 
 	private X509TrustManager getFirstX509TrustManagerFromFactory(TrustManagerFactory trustManagerFactory) {
-		X509TrustManager foundTrustManager = null;
-		for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
-			if (trustManager instanceof X509TrustManager) {
-				foundTrustManager = (X509TrustManager) trustManager;
-				break;
-			}
-		}
-		return foundTrustManager;
+		return Stream.of(trustManagerFactory.getTrustManagers())
+				.filter(trustManager -> trustManager instanceof X509TrustManager)
+				.findFirst().map(trustManager -> (X509TrustManager) trustManager)
+				.orElse(null);
 	}
 
 	private TrustManagerFactory initDefaultTrustManagerFactory() throws NoSuchAlgorithmException, KeyStoreException {
