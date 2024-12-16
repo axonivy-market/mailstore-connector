@@ -655,7 +655,9 @@ public class MailStoreService {
 			store.connect(host, port, user, password);
 		} catch(Exception e) {
 			try {
-				store.close();
+				if (store != null) {
+					store.close();
+				}
 			} catch (MessagingException closeEx) {
 				LOG.error("Closing store caused another exception. Anyway the store is closed.", closeEx);
 			}
