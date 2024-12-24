@@ -18,8 +18,8 @@ Variables:
       # User name for store connection
       user: 'debug@localdomain.test'
       # Password for store connection
-      # [password]
-      password: 'pass'
+      #[password]
+      password: ${decrypt:XZqAi7eMCFxdtNs1TPnCWA==}
       # show debug output for connection
       debug: true
       # Additional properties for store connection,
