@@ -1,0 +1,16 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/data-class/12.0.0/data-class.json",
+  "simpleName" : "MailStoreConnectorData",
+  "namespace" : "com.axonivy.connector.mailstore",
+  "isBusinessCaseData" : false,
+  "fields" : [ {
+    "name" : "messageIterator",
+    "type" : "com.axonivy.connector.mailstore.MailStoreService.MessageIterator"
+  }, {
+    "name" : "message",
+    "type" : "javax.mail.Message"
+  }, {
+    "name" : "handled",
+    "type" : "Boolean"
+  } ]
+}

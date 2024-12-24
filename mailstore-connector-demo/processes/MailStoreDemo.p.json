@@ -1,5 +1,5 @@
 {
-  "format" : "10.0.0",
+  "$schema" : "https://json-schema.axonivy.com/process/12.0.0/process.json",
   "id" : "183EF4C4DA38CCD9",
   "config" : {
     "data" : "com.axonivy.connector.mailstore.demo.Data"
@@ -9,14 +9,14 @@
       "type" : "RequestStart",
       "name" : "handleEmailsIvy.ivp",
       "config" : {
-        "callSignature" : "handleEmailsIvy",
-        "outLink" : "handleEmailsIvy.ivp",
-        "case" : { }
+        "signature" : "handleEmailsIvy"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 48 }
       },
-      "connect" : { "id" : "f7", "to" : "f3" }
+      "connect" : [
+        { "id" : "f7", "to" : "f3" }
+      ]
     }, {
       "id" : "f1",
       "type" : "TaskEnd",
@@ -30,14 +30,6 @@
       "config" : {
         "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate,java.util.Comparator)",
         "call" : {
-          "params" : [
-            { "name" : "storeName", "type" : "String" },
-            { "name" : "srcFolder", "type" : "String" },
-            { "name" : "dstFolder", "type" : "String" },
-            { "name" : "delete", "type" : "Boolean" },
-            { "name" : "filter", "type" : "java.util.function.Predicate" },
-            { "name" : "sort", "type" : "java.util.Comparator" }
-          ],
           "map" : {
             "param.storeName" : "\"localhost-imap\"",
             "param.srcFolder" : "\"INBOX\"",
@@ -51,7 +43,9 @@
       "visual" : {
         "at" : { "x" : 624, "y" : 48 }
       },
-      "connect" : { "id" : "f2", "to" : "f1" }
+      "connect" : [
+        { "id" : "f2", "to" : "f1" }
+      ]
     }, {
       "id" : "f4",
       "type" : "ProcessAnnotation",
@@ -80,14 +74,14 @@
       "type" : "RequestStart",
       "name" : "handleEmailsJava.ivp",
       "config" : {
-        "callSignature" : "handleEmailsJava",
-        "outLink" : "handleEmailsJava.ivp",
-        "case" : { }
+        "signature" : "handleEmailsJava"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 184 }
       },
-      "connect" : { "id" : "f12", "to" : "f11" }
+      "connect" : [
+        { "id" : "f12", "to" : "f11" }
+      ]
     }, {
       "id" : "f6",
       "type" : "TaskEnd",
@@ -110,20 +104,22 @@
       "visual" : {
         "at" : { "x" : 624, "y" : 184 }
       },
-      "connect" : { "id" : "f9", "to" : "f6" }
+      "connect" : [
+        { "id" : "f9", "to" : "f6" }
+      ]
     }, {
       "id" : "f8",
       "type" : "RequestStart",
       "name" : "handleMessagesMultipleDestinationFolder.ivp",
       "config" : {
-        "callSignature" : "handleMessagesMultipleDestinationFolder",
-        "outLink" : "handleMessagesMultipleDestinationFolder.ivp",
-        "case" : { }
+        "signature" : "handleMessagesMultipleDestinationFolder"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 328 }
       },
-      "connect" : { "id" : "f14", "to" : "f13" }
+      "connect" : [
+        { "id" : "f14", "to" : "f13" }
+      ]
     }, {
       "id" : "f10",
       "type" : "TaskEnd",
@@ -146,20 +142,22 @@
       "visual" : {
         "at" : { "x" : 624, "y" : 328 }
       },
-      "connect" : { "id" : "f15", "to" : "f10" }
+      "connect" : [
+        { "id" : "f15", "to" : "f10" }
+      ]
     }, {
       "id" : "f16",
       "type" : "RequestStart",
       "name" : "connectMailStoreWithBasicAuth.ivp",
       "config" : {
-        "callSignature" : "connectMailStoreWithBasicAuth",
-        "outLink" : "connectMailStoreWithBasicAuth.ivp",
-        "case" : { }
+        "signature" : "connectMailStoreWithBasicAuth"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 560 }
       },
-      "connect" : { "id" : "f19", "to" : "f18" }
+      "connect" : [
+        { "id" : "f19", "to" : "f18" }
+      ]
     }, {
       "id" : "f17",
       "type" : "TaskEnd",
@@ -171,52 +169,56 @@
       "type" : "Script",
       "name" : "connectMailStoreWithBasicAuth",
       "config" : {
-        "security" : "system",
         "output" : {
           "code" : [
             "import com.axonivy.connector.mailstore.demo.DemoService;",
             "",
             "DemoService.connectMailStoreWithBasicAuth();"
           ]
-        }
+        },
+        "sudo" : true
       },
       "visual" : {
         "at" : { "x" : 632, "y" : 560 },
         "size" : { "width" : 232, "height" : 66 }
       },
-      "connect" : { "id" : "f20", "to" : "f17" }
+      "connect" : [
+        { "id" : "f20", "to" : "f17" }
+      ]
     }, {
       "id" : "f21",
       "type" : "RequestStart",
       "name" : "connectMailStoreWithAzureOauth2.ivp",
       "config" : {
-        "callSignature" : "connectMailStoreWithAzureOauth2",
-        "outLink" : "connectMailStoreWithAzureOauth2.ivp",
-        "case" : { }
+        "signature" : "connectMailStoreWithAzureOauth2"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 768 }
       },
-      "connect" : { "id" : "f24", "to" : "f22" }
+      "connect" : [
+        { "id" : "f24", "to" : "f22" }
+      ]
     }, {
       "id" : "f22",
       "type" : "Script",
       "name" : "connectMailStoreWithAzureOauth2",
       "config" : {
-        "security" : "system",
         "output" : {
           "code" : [
             "import com.axonivy.connector.mailstore.demo.DemoService;",
             "",
             "DemoService.connectMailStoreWithAzureOauth2();"
           ]
-        }
+        },
+        "sudo" : true
       },
       "visual" : {
         "at" : { "x" : 632, "y" : 768 },
-        "size" : { "width" : 232, "height" : 60 }
+        "size" : { "width" : 232 }
       },
-      "connect" : { "id" : "f25", "to" : "f23" }
+      "connect" : [
+        { "id" : "f25", "to" : "f23" }
+      ]
     }, {
       "id" : "f23",
       "type" : "TaskEnd",
@@ -228,14 +230,14 @@
       "type" : "RequestStart",
       "name" : "resetToDefaultTrustStore.ivp",
       "config" : {
-        "callSignature" : "resetToDefaultTrustStore",
-        "outLink" : "resetToDefaultTrustStore.ivp",
-        "case" : { }
+        "signature" : "resetToDefaultTrustStore"
       },
       "visual" : {
         "at" : { "x" : 384, "y" : 880 }
       },
-      "connect" : { "id" : "f29", "to" : "f28" }
+      "connect" : [
+        { "id" : "f29", "to" : "f28" }
+      ]
     }, {
       "id" : "f27",
       "type" : "TaskEnd",
@@ -247,18 +249,20 @@
       "type" : "Script",
       "name" : "Reset to the default TrustStore",
       "config" : {
-        "security" : "system",
         "output" : {
           "code" : [
             "import com.axonivy.connector.oauth.ssl.SSLContextConfigure;",
             "SSLContextConfigure.get().resetToDefaultTrustStore();"
           ]
-        }
+        },
+        "sudo" : true
       },
       "visual" : {
         "at" : { "x" : 588, "y" : 880 },
-        "size" : { "width" : 136, "height" : 60 }
+        "size" : { "width" : 136 }
       },
-      "connect" : { "id" : "f30", "to" : "f27" }
+      "connect" : [
+        { "id" : "f30", "to" : "f27" }
+      ]
     } ]
 }
