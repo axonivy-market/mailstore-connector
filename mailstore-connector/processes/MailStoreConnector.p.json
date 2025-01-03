@@ -1,5 +1,5 @@
 {
-  "format" : "10.0.0",
+  "$schema" : "https://json-schema.axonivy.com/process/12.0.0/process.json",
   "id" : "183EF449D1E50BCB",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -10,7 +10,7 @@
       "type" : "CallSubStart",
       "name" : "handleMessages(String,String,String,Boolean,Predicate,Comparator)",
       "config" : {
-        "callSignature" : "handleMessages",
+        "signature" : "handleMessages",
         "input" : {
           "params" : [
             { "name" : "storeName", "type" : "String", "desc" : "Name of E-mail store as configured in global variables" },
@@ -29,7 +29,9 @@
         "at" : { "x" : 144, "y" : 176 },
         "labelOffset" : { "x" : 49, "y" : -23 }
       },
-      "connect" : { "id" : "f19", "to" : "f4" }
+      "connect" : [
+        { "id" : "f19", "to" : "f4" }
+      ]
     }, {
       "id" : "f1",
       "type" : "CallSubEnd",
@@ -40,6 +42,11 @@
       "id" : "f4",
       "type" : "Alternative",
       "name" : "has next?",
+      "config" : {
+        "conditions" : {
+          "f5" : "in.messageIterator.hasNext()"
+        }
+      },
       "visual" : {
         "at" : { "x" : 144, "y" : 240 },
         "labelOffset" : { "x" : -24, "y" : -16 }
@@ -48,7 +55,7 @@
         { "id" : "f5", "to" : "f3", "label" : {
             "name" : "yes",
             "offset" : { "x" : 16, "y" : -3 }
-          }, "condition" : "in.messageIterator.hasNext()" },
+          } },
         { "id" : "f14", "to" : "f1", "via" : [ { "x" : 224, "y" : 240 }, { "x" : 224, "y" : 592 }, { "x" : 144, "y" : 592 } ], "label" : {
             "name" : "no",
             "segment" : 1.55,
@@ -64,18 +71,15 @@
       ],
       "config" : {
         "processCall" : "MessageHandler:handleMessage(javax.mail.Message)",
+        "call" : {
+          "map" : {
+            "param.message" : "in.messageIterator.next()"
+          }
+        },
         "output" : {
           "map" : {
             "out" : "in",
             "out.handled" : "result.handled"
-          }
-        },
-        "call" : {
-          "params" : [
-            { "name" : "message", "type" : "javax.mail.Message" }
-          ],
-          "map" : {
-            "param.message" : "in.messageIterator.next()"
           }
         }
       },
@@ -93,9 +97,13 @@
           "visual" : {
             "at" : { "x" : 112, "y" : 402 }
           },
-          "connect" : { "id" : "f18", "to" : "f4", "via" : [ { "x" : 80, "y" : 402 }, { "x" : 80, "y" : 240 } ], "color" : "error" }
+          "connect" : [
+            { "id" : "f18", "to" : "f4", "via" : [ { "x" : 80, "y" : 402 }, { "x" : 80, "y" : 240 } ], "color" : "error" }
+          ]
         } ],
-      "connect" : { "id" : "f17", "to" : "f16" }
+      "connect" : [
+        { "id" : "f17", "to" : "f16" }
+      ]
     }, {
       "id" : "f16",
       "type" : "Script",
@@ -108,7 +116,9 @@
       "visual" : {
         "at" : { "x" : 144, "y" : 512 }
       },
-      "connect" : { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 568 }, { "x" : 64, "y" : 240 } ] }
+      "connect" : [
+        { "id" : "f13", "to" : "f4", "via" : [ { "x" : 64, "y" : 568 }, { "x" : 64, "y" : 240 } ] }
+      ]
     }, {
       "id" : "f2",
       "type" : "ProcessAnnotation",
@@ -135,7 +145,9 @@
       "visual" : {
         "at" : { "x" : 144, "y" : 320 }
       },
-      "connect" : { "id" : "f6", "to" : "f11" }
+      "connect" : [
+        { "id" : "f6", "to" : "f11" }
+      ]
     } ],
   "layout" : {
     "colors" : {

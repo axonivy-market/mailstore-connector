@@ -1,0 +1,13 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/data-class/12.0.0/data-class.json",
+  "simpleName" : "MessageHandlerOverrideData",
+  "namespace" : "com.axonivy.connector.mailstore.demo",
+  "isBusinessCaseData" : false,
+  "fields" : [ {
+    "name" : "message",
+    "type" : "javax.mail.Message"
+  }, {
+    "name" : "handled",
+    "type" : "Boolean"
+  } ]
+}

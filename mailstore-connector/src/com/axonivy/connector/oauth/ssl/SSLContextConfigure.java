@@ -1,8 +1,8 @@
 package com.axonivy.connector.oauth.ssl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -20,6 +20,8 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.axonivy.connector.mailstore.constant.Constants;
 import com.axonivy.connector.mailstore.enums.StartTLS;
+
+import ch.ivyteam.ivy.ssl.restricted.SslClientSettings;
 
 public class SSLContextConfigure {
 	private static final SSLContextConfigure INSTANCE = new SSLContextConfigure();
@@ -42,13 +44,12 @@ public class SSLContextConfigure {
 		TrustManagerFactory tmFactory = initDefaultTrustManagerFactory();
 		// Backup default Certificates
 		X509TrustManager defaultX509CertTM = getFirstX509TrustManagerFromFactory(tmFactory);
-
-		TrustStoreFileReader trustStoreFileReader = new TrustStoreFileReader();
-		try (InputStream trustStoreStream = new FileInputStream(trustStoreFileReader.getTrustFile())) {
-			KeyStore ivyTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			ivyTrustStore.load(trustStoreStream, trustStoreFileReader.getTrustPassword());
+		var ivyTrustStore = SslClientSettings.instance().getTrustStore();
+		try (InputStream trustStoreStream = Files.newInputStream(ivyTrustStore.getPath())) {
+			KeyStore ivyKeyStore = KeyStore.getInstance(ivyTrustStore.getType());
+			ivyKeyStore.load(trustStoreStream, ivyTrustStore.getPassword());
 			tmFactory = getDefaultAlgorithm();
-			tmFactory.init(ivyTrustStore);
+			tmFactory.init(ivyKeyStore);
 			X509TrustManager ivyTrustManager = getFirstX509TrustManagerFromFactory(tmFactory);
 			// Merge ivyTrustStrore with defaultTrustStore then build SSLContext
 			buildSSLContext(new MailStoreTrustManager(defaultX509CertTM, ivyTrustManager));
