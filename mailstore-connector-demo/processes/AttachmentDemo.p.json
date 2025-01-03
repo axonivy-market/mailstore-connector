@@ -1,5 +1,5 @@
 {
-  "format" : "10.0.0",
+  "$schema" : "https://json-schema.axonivy.com/process/12.0.0/process.json",
   "id" : "188E3F03E979A257",
   "config" : {
     "data" : "com.axonivy.connector.mailstore.demo.Data"
@@ -9,13 +9,14 @@
       "type" : "RequestStart",
       "name" : "handleEmailsWithAttachments.ivp",
       "config" : {
-        "callSignature" : "filterEmailsWithAttachments",
-        "outLink" : "filterEmailsWithAttachments.ivp"
+        "signature" : "filterEmailsWithAttachments"
       },
       "visual" : {
         "at" : { "x" : 96, "y" : 64 }
       },
-      "connect" : { "id" : "f3", "to" : "f11" }
+      "connect" : [
+        { "id" : "f3", "to" : "f11" }
+      ]
     }, {
       "id" : "f1",
       "type" : "TaskEnd",
@@ -38,6 +39,8 @@
       "visual" : {
         "at" : { "x" : 232, "y" : 64 }
       },
-      "connect" : { "id" : "f2", "to" : "f1" }
+      "connect" : [
+        { "id" : "f2", "to" : "f1" }
+      ]
     } ]
 }
