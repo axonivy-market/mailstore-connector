@@ -21,6 +21,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.axonivy.connector.mailstore.constant.Constants;
 import com.axonivy.connector.mailstore.enums.StartTLS;
 
+import ch.ivyteam.ivy.ssl.client.restricted.SslClientSettings;
+
 public class SSLContextConfigure {
 	private static final SSLContextConfigure INSTANCE = new SSLContextConfigure();
 	private SSLContextConfigure() {}
@@ -37,16 +39,17 @@ public class SSLContextConfigure {
 				|| BooleanUtils.toBoolean(properties.getProperty(StartTLS.REQUIRED.getProperty()));
 	}
 
+	@SuppressWarnings("restriction")
 	public void addIvyTrustStoreToCurrentContext() throws NoSuchAlgorithmException, KeyStoreException,
 			CertificateException, IOException, KeyManagementException {
 		TrustManagerFactory tmFactory = initDefaultTrustManagerFactory();
 		// Backup default Certificates
 		X509TrustManager defaultX509CertTM = getFirstX509TrustManagerFromFactory(tmFactory);
 
-		TrustStoreFileReader trustStoreFileReader = new TrustStoreFileReader();
-		try (InputStream trustStoreStream = new FileInputStream(trustStoreFileReader.getTrustFile())) {
-			KeyStore ivyTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			ivyTrustStore.load(trustStoreStream, trustStoreFileReader.getTrustPassword());
+		var currentSSLClientSettings = SslClientSettings.instance();
+		try (InputStream trustStoreStream = new FileInputStream(currentSSLClientSettings.getTrustStoreFile())) {
+			KeyStore ivyTrustStore = KeyStore.getInstance(currentSSLClientSettings.getTrustStoreType());
+			ivyTrustStore.load(trustStoreStream, currentSSLClientSettings.getTrustStorePassword());
 			tmFactory = getDefaultAlgorithm();
 			tmFactory.init(ivyTrustStore);
 			X509TrustManager ivyTrustManager = getFirstX509TrustManagerFromFactory(tmFactory);
