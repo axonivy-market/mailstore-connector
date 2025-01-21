@@ -173,7 +173,10 @@ Variables:
       # for client_credentials: https://outlook.office365.com/.default
       scope: ''
       #[client_credentials/password]
-      grantType: '
+      grantType: ''
+  # login url microsoft zure
+  azureOAuth:
+    loginUrl: 'login.microsoftonline.com'
 ```
 
 4. Set Up the Authentication Provider
