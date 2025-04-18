@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.axonivy.connector.mailstore.enums.MailMovingMethod;
 import com.axonivy.connector.oauth.BasicUserPasswordProvider;
 import com.axonivy.connector.oauth.UserPasswordProvider;
 import com.axonivy.connector.oauth.ssl.SSLContextConfigure;
@@ -54,6 +55,7 @@ public class MailStoreService {
 	private static final String PORT_VAR = "port";
 	private static final String DEBUG_VAR = "debug";
 	private static final String PROPERTIES_VAR = "properties";
+	private static final String MOVING_METHOD_VAR = "movingMethod";
 	private static final String ERROR_BASE = "mailstore:connector";
 	private static final Address[] EMPTY_ADDRESSES = new Address[0];
 	private static Map<String, UserPasswordProvider> userPasswordProviderRegister = new HashMap<>();
@@ -385,6 +387,7 @@ public class MailStoreService {
 		private int nextIndex;
 		private ClassLoader originalClassLoader;
 		private Map<String, Folder> dstFolderMap;
+		private MailMovingMethod mailMovingMethod;
 
 		private MessageIterator(String storeName, String srcFolderName, List<String> dstFolderNames, boolean delete,
 				Predicate<Message> filter, Comparator<Message> comparator) {
@@ -398,6 +401,7 @@ public class MailStoreService {
 				this.delete = delete;
 				store = MailStoreService.openStore(storeName);
 				srcFolder = MailStoreService.openFolder(store, srcFolderName, Folder.READ_WRITE);
+				mailMovingMethod = MailMovingMethod.from(getVar(storeName, MOVING_METHOD_VAR));
 				
 				if(CollectionUtils.isNotEmpty(dstFolderNames)) {
 					dstFolderMap = new LinkedHashMap<>();
@@ -518,25 +522,7 @@ public class MailStoreService {
 		 * next iterator.
 		 */
 		public void handledMessage(boolean handled) {
-			try {
-				if(handled) {
-					Message current = messages[nextIndex-1];
-					Folder dstFolder = getFirstEmailFolder();
-					if(dstFolder != null) {
-						LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
-						dstFolder.appendMessages(new Message[] {current});
-					}
-					if(delete) {
-						LOG.debug("Deleting {0}", MailStoreService.toString(current));
-						current.setFlag(Flag.DELETED, true);
-					}
-				}
-				if(!hasNext()) {
-					close();
-				}
-			} catch (Exception e) {
-				throw buildError("handled").withCause(e).build();
-			}
+			handledMessage(handled, null);
 		}
 		
 		private Folder getFirstEmailFolder() {
@@ -555,22 +541,36 @@ public class MailStoreService {
 		 * next iterator.
 		 */
 		public void handledMessage(boolean handled, String dstFolderName) {
+			String subject = null;
 			try {
-				if(handled) {
-					Message current = messages[nextIndex-1];
-					if(dstFolderMap.get(dstFolderName) != null) {
-						LOG.debug("Appending {0} to destination folder", MailStoreService.toString(current));
-						dstFolderMap.get(dstFolderName).appendMessages(new Message[] {current});
-					}
-					if(delete) {
-						LOG.debug("Deleting {0}", MailStoreService.toString(current));
-						current.setFlag(Flag.DELETED, true);
+				if (handled) {
+					Message current = messages[nextIndex - 1];
+					subject = MailStoreService.toString(current);
+					try {
+						Folder dstFolder = StringUtils.isBlank(dstFolderName) ? getFirstEmailFolder()
+								: dstFolderMap.get(dstFolderName);
+						if (dstFolder != null) {
+							dstFolderName = dstFolder.getName();
+							LOG.debug("Appending {0} to {1} folder", subject, dstFolderName);
+							if (mailMovingMethod == MailMovingMethod.APPEND) {
+								dstFolderMap.get(dstFolderName).appendMessages(new Message[] { current });
+							} else {
+								srcFolder.copyMessages(new Message[] { current }, dstFolderMap.get(dstFolderName));
+							}
+						}
+					} finally {
+						if (delete) {
+							LOG.debug("Deleting {0}", MailStoreService.toString(current));
+							current.setFlag(Flag.DELETED, true);
+						}
 					}
 				}
-				if(!hasNext()) {
+
+				if (!hasNext()) {
 					close();
 				}
 			} catch (Exception e) {
+				LOG.error("Unable to handle email {0}", subject);
 				throw buildError("handled").withCause(e).build();
 			}
 		}
