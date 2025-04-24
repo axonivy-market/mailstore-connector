@@ -52,7 +52,15 @@ Variables:
       scope: ''
       #[client_credentials, password]
       grantType: ''
-  
+      # The method used to move messages. Default is <pre>append</pre>; change to
+      # <pre>copy</pre> if you encounter performance issues when moving mail.
+      # <ul>
+      #   <li><pre>append</pre> uses <code>appendMessages</code></li>
+      #   <li><pre>copy</pre> uses <code>copyMessages</code></li>
+      # </ul>
+      # Options: [append, copy]]
+      movingMethod: ''
+      
   # login microsoft azure
   azureOAuth:
     loginUrl: ''
