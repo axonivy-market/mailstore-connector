@@ -19,15 +19,14 @@ public enum MailMovingMethod {
 	APPEND, COPY;
 
 	/**
-     * Parses the input string and returns the corresponding {@code MailMovingMethod}.
-     * The comparison is case-insensitive and trims any leading/trailing whitespace.
-     *
-     * @param name the name of the mail moving method to parse
-     * @return the matching {@code MailMovingMethod}, or {@code APPEND} if no match is found
-     */
+	 * Parses the input string and returns the corresponding {@code MailMovingMethod}.
+	 * The comparison is case-insensitive and trims any leading/trailing whitespace.
+	 *
+	 * @param name the name of the mail moving method to parse
+	 * @return the matching {@code MailMovingMethod}, or {@code APPEND} if no match is found
+	 */
 	public static MailMovingMethod from(String name) {
 		return Stream.of(MailMovingMethod.values())
-				.filter(method -> StringUtils.equalsIgnoreCase(method.name(), StringUtils.trim(name))).findAny()
-				.orElse(APPEND);
+				.filter(method -> StringUtils.equalsIgnoreCase(method.name(), StringUtils.trim(name))).findAny().orElse(APPEND);
 	}
 }

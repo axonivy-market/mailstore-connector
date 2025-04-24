@@ -547,15 +547,15 @@ public class MailStoreService {
 					Message current = messages[nextIndex - 1];
 					subject = MailStoreService.toString(current);
 					try {
-						Folder dstFolder = StringUtils.isBlank(dstFolderName) ? getFirstEmailFolder()
-								: dstFolderMap.get(dstFolderName);
+						Folder dstFolder =
+								StringUtils.isBlank(dstFolderName) ? getFirstEmailFolder() : dstFolderMap.get(dstFolderName);
 						if (dstFolder != null) {
 							dstFolderName = dstFolder.getName();
 							LOG.debug("Appending {0} to {1} folder", subject, dstFolderName);
 							if (mailMovingMethod == MailMovingMethod.APPEND) {
-								dstFolderMap.get(dstFolderName).appendMessages(new Message[] { current });
+								dstFolderMap.get(dstFolderName).appendMessages(new Message[] {current});
 							} else {
-								srcFolder.copyMessages(new Message[] { current }, dstFolderMap.get(dstFolderName));
+								srcFolder.copyMessages(new Message[] {current}, dstFolderMap.get(dstFolderName));
 							}
 						}
 					} finally {
@@ -575,7 +575,7 @@ public class MailStoreService {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the raw message data e.g. for saving.
 	 * 
