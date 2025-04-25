@@ -22,7 +22,13 @@ public enum MailMovingMethod {
 	 * @return the matching {@code MailMovingMethod}, or {@code APPEND} if no match is found
 	 */
 	public static MailMovingMethod from(String name) {
-		MailMovingMethod method = name == null ? null : MailMovingMethod.valueOf(name.trim().toUpperCase());
-		return method != null ? method : APPEND;
+		try {
+			if (name == null) {
+				return APPEND;
+			}
+			return MailMovingMethod.valueOf(name.trim().toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return APPEND;
+		}
 	}
 }
