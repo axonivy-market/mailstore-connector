@@ -633,8 +633,10 @@ public class MailStoreService {
 
 		String debugString = getVar(storeName, DEBUG_VAR);
 
-		LOG.debug("Creating mail store connection, protocol: {0} host: {1} port: {2} user: {3} password: {4} debug: {5}",
-				protocol, host, portString, user, StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
+		LOG.debug(
+				"Creating mail store connection, protocol: {0} host: {1} port: {2} UserPasswordProvider: {3} user: {4} password: {5} debug: {6}",
+				protocol, host, portString, userPasswordProvider.getClass().getSimpleName(), user,
+				StringUtils.isNotBlank(password) ? "is set" : "is not set", debugString);
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		PrintStream debugStream = new PrintStream(stream);
