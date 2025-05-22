@@ -1,4 +1,4 @@
-package com.axonivy.connector.oauth;
+package com.axonivy.connector.mailstore.provider.oauth;
 
 import java.util.Map;
 import java.util.Optional;
@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import com.axonivy.connector.mailstore.MailStoreService;
+import com.axonivy.connector.mailstore.provider.UserPasswordProvider;
 
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.log.Logger;

@@ -1,4 +1,4 @@
-package com.axonivy.connector.oauth;
+package com.axonivy.connector.mailstore.provider;
 
 /**
  * The {@code UserPasswordProvider} interface provides methods to retrieve 

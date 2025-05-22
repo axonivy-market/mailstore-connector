@@ -36,8 +36,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.axonivy.connector.mailstore.enums.MailMovingMethod;
-import com.axonivy.connector.oauth.BasicUserPasswordProvider;
-import com.axonivy.connector.oauth.UserPasswordProvider;
+import com.axonivy.connector.mailstore.provider.BasicUserPasswordProvider;
+import com.axonivy.connector.mailstore.provider.UserPasswordProvider;
 import com.axonivy.connector.oauth.ssl.SSLContextConfigure;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
