@@ -1,4 +1,4 @@
-package com.axonivy.connector.oauth;
+package com.axonivy.connector.mailstore.provider;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 
