@@ -13,7 +13,7 @@ import javax.mail.Part;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 import com.axonivy.connector.mailstore.MailStoreService.MessageIterator;
-import com.axonivy.connector.oauth.UserPasswordProvider;
+import com.axonivy.connector.mailstore.provider.UserPasswordProvider;
 import com.axonivy.connector.mailstore.MessageService;
 
 import ch.ivyteam.ivy.environment.Ivy;

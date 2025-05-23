@@ -1,4 +1,4 @@
-package com.axonivy.connector.oauth;
+package com.axonivy.connector.mailstore.provider.oauth;
 
 import java.util.Map;
 import java.util.Optional;
@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import com.axonivy.connector.mailstore.MailStoreService;
+import com.axonivy.connector.mailstore.provider.UserPasswordProvider;
 
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.log.Logger;
@@ -62,7 +63,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
      */
 	@Override
 	public String getUser(String storeName) {
-		LOG.debug("Retrieving user for store: ''{0}''.", storeName);
+		LOG.debug("[AzureOauth2UserPasswordProvider] Retrieving user for store: ''{0}''.", storeName);
 		
 		return MailStoreService.getVar(storeName, USER_VAR);
 	}
@@ -75,7 +76,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
      */
 	@Override
 	public String getPassword(String storeName) {
-		LOG.debug("Retrieving password for store: ''{0}''.", storeName);
+		LOG.debug("[AzureOauth2UserPasswordProvider] Retrieving password for store: ''{0}''.", storeName);
 
 		return getToken(storeName);
 	}
@@ -88,7 +89,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		
 		String grantTypeValue = MailStoreService.getVar(storeName, GRANT_TYPE);
 		
-		LOG.debug("Grant type value retrieved for store {0}: {1}", storeName, grantTypeValue);
+		LOG.debug("[AzureOauth2UserPasswordProvider] Grant type value retrieved for store {0}: {1}", storeName, grantTypeValue);
 		
 		form.param(FormProperty.GRANT_TYPE, grantTypeValue);
 
@@ -116,8 +117,9 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		Response response = sendTokenRequest(tenantId, form);
 
 		if (null == response) {
-			LOG.error("response cannot be null");
-			throw MailStoreService.buildError("getToken").withMessage("response cannot be null").build();
+			final String nullResponseMessage = "[AzureOauth2UserPasswordProvider] response cannot be null";
+			LOG.error(nullResponseMessage);
+			throw MailStoreService.buildError("getToken").withMessage(nullResponseMessage).build();
 		}
 
 		String accessToken = extractToken(response);
