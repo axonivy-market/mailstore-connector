@@ -1,4 +1,4 @@
-package com.axonivy.connector.oauth;
+package com.axonivy.connector.mailstore.provider;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 
@@ -25,7 +25,7 @@ public class BasicUserPasswordProvider implements UserPasswordProvider {
      */
 	@Override
 	public String getUser(String storeName) {
-		LOG.debug("Retrieving user for store: ''{0}''.", storeName);
+		LOG.debug("[BasicUserPasswordProvider] Retrieving user for store: ''{0}''.", storeName);
 		
 		return MailStoreService.getVar(storeName, USER_VAR);
 	}
@@ -38,7 +38,7 @@ public class BasicUserPasswordProvider implements UserPasswordProvider {
      */
 	@Override
 	public String getPassword(String storeName) {
-		LOG.debug("Retrieving password for store: ''{0}''.", storeName);
+		LOG.debug("[BasicUserPasswordProvider] Retrieving password for store: ''{0}''.", storeName);
 		
 		return MailStoreService.getVar(storeName, PASSWORD_VAR);
 	}
