@@ -31,7 +31,7 @@
         "processCall" : "MailStoreConnector:handleMessages(String,String,String,Boolean,java.util.function.Predicate,java.util.Comparator)",
         "call" : {
           "map" : {
-            "param.storeName" : "\"localhost-imap\"",
+            "param.storeName" : "\"localhostImap\"",
             "param.srcFolder" : "\"INBOX\"",
             "param.dstFolder" : "null",
             "param.delete" : "false",
