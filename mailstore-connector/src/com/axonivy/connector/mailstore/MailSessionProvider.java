@@ -2,11 +2,14 @@ package com.axonivy.connector.mailstore;
 
 import static com.axonivy.connector.mailstore.MailStoreService.LOG;
 
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.mail.Session;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.axonivy.connector.mailstore.enums.StartTLS;
@@ -20,7 +23,9 @@ import ch.ivyteam.ivy.vars.Variable;
 public class MailSessionProvider {
 
 	private static final String PROPERTIES_VAR = "properties";
-
+	private static final String IMAP_PROPERTY_PREFIX = "mail.imap.";
+	private static final String IMAPS_PROPERTY_PREFIX = "mail.imaps.";
+	
 	/**
 	 * https://eclipse-ee4j.github.io/angus-mail/docs/api/org.eclipse.angus.mail/org/eclipse/angus/mail/imap/package-summary.html
 	 */
@@ -35,7 +40,10 @@ public class MailSessionProvider {
 			String SSL_SOCKET_FACTORY = "mail.imap.ssl.socketFactory";
 			String SOCKET_FACTORY = "mail.imap.socketFactory";
 			String SOCKET_FACTORY_FALLBACK = "mail.imap.socketFactory.fallback";
-			
+		}
+		public interface IMAPS {
+			String SSL_SOCKET_FACTORY = "mail.imaps.ssl.socketFactory";
+			String SSL_SOCKET_FACTORY_FALLBACK = "mail.imaps.ssl.socketFactory.fallback";
 		}
 	}
 
@@ -46,20 +54,33 @@ public class MailSessionProvider {
 	}
 
 	private static void enrichSslContext(Properties properties) {
-		var socketFactory = ivySslContext();
-		boolean tlsEnabled = isStartTLSEnabled(properties);
-		if (tlsEnabled) {
-			properties.put(Property.SMTP.SSL_SOCKET_FACTORY, socketFactory);
-			// ensures that socket will only be created with our socket factory otherwise it will fail
-			properties.setProperty(Property.SMTP.SSL_SOCKET_FACTORY_FALLBACK, "false");
+		if(properties != null && CollectionUtils.isNotEmpty(properties.keySet())) {
+			var socketFactory = ivySslContext();
+			boolean tlsEnabled = isStartTLSEnabled(properties);
+			if (tlsEnabled) {
+				properties.put(Property.SMTP.SSL_SOCKET_FACTORY, socketFactory);
+				// ensures that socket will only be created with our socket factory otherwise it will fail
+				properties.setProperty(Property.SMTP.SSL_SOCKET_FACTORY_FALLBACK, "false");
+			}
+			
+			List<Object> imapProperties = properties.keySet().stream().filter(k -> k.toString().contains(IMAP_PROPERTY_PREFIX)).collect(Collectors.toList());
+			if(!imapProperties.isEmpty()) {
+				boolean imapSsl = BooleanUtils.toBoolean(properties.getProperty(Property.IMAP.SSL_ENABLED));
+				if (imapSsl) {
+					Ivy.log().info("enabling imap SSL context");
+					properties.put(Property.IMAP.SSL_SOCKET_FACTORY, socketFactory);
+					properties.put(Property.IMAP.SOCKET_FACTORY_FALLBACK, "false");
+				}
+				properties.put(Property.IMAP.SOCKET_FACTORY, socketFactory);
+			}
+			
+			List<Object> imapsProperties = properties.keySet().stream().filter(k -> k.toString().contains(IMAPS_PROPERTY_PREFIX)).collect(Collectors.toList());
+			if(!imapsProperties.isEmpty()) {
+				Ivy.log().info("enabling imaps SSL context");
+				properties.put(Property.IMAPS.SSL_SOCKET_FACTORY, socketFactory);
+				properties.put(Property.IMAPS.SSL_SOCKET_FACTORY_FALLBACK, "false");
+			}
 		}
-		boolean imapSsl = BooleanUtils.toBoolean(properties.getProperty(Property.IMAP.SSL_ENABLED));
-		if (imapSsl) {
-			Ivy.log().info("enabling imap SSL context");
-			properties.put(Property.IMAP.SSL_SOCKET_FACTORY, socketFactory);
-			properties.put(Property.IMAP.SOCKET_FACTORY_FALLBACK, "false");
-		}
-		properties.put(Property.IMAP.SOCKET_FACTORY, ivySslContext());
 	}
 
 	private static boolean isStartTLSEnabled(Properties properties) {
