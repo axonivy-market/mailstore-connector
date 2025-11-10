@@ -71,7 +71,7 @@ public class MailSessionProvider {
 					properties.put(Property.IMAP.SSL_SOCKET_FACTORY, socketFactory);
 					properties.put(Property.IMAP.SOCKET_FACTORY_FALLBACK, "false");
 				}
-				properties.put(Property.IMAP.SOCKET_FACTORY, ivySslContext());
+				properties.put(Property.IMAP.SOCKET_FACTORY, socketFactory);
 			}
 			
 			List<Object> imapsProperties = properties.keySet().stream().filter(k -> k.toString().contains(IMAPS_PROPERTY_PREFIX)).collect(Collectors.toList());
