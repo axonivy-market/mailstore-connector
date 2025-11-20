@@ -1,152 +1,155 @@
-# Mailstore Anschluss
+# Mailstore Connector
 
-Entsperr das Potential #Axon Efeus Mailstore Anschluss zu #windschlüpfig machen
-eure Arbeitsgang Automatisierung Bemühungen, vereinfachend #Email Management
-innerhalb euren dienstlichen Arbeitsgängen. Dieser vielseitiger Anschluss:
+Nutzen Sie das Potenzial des Mailstore-Konnektors von Axon Ivy, um Ihre
+Prozessautomatisierung zu optimieren und die E-Mail-Verwaltung innerhalb Ihrer
+Geschäftsprozesse zu vereinfachen. Dieser vielseitige Konnektor:
 
-- #Bruchlos integriert mit #beide IMAP und POP3 Post Vorräte.
-- Sichert #Daten Sicherheit durch stabil SSL Verschlüsselung.
-- Beschleunigt eure Integration Anstrengungen mit einem Nutzer-freundlich,
-  bereit-zu-Kopie Demo Ausführung.
+- Nahtlose Integration mit IMAP- und POP3-Mail-Speichern.
+- Gewährleistet Datensicherheit durch robuste SSL-Verschlüsselung.
+- Beschleunigen Sie Ihre Integrationsbemühungen mit einer benutzerfreundlichen,
+  kopierfertigen Demo-Implementierung.
 
-Bitte sei bewusst dass der umfassende Charakterzug Apparat ist exklusiv
-erreichbar durch der IMAP #Email Protokoll, #während POP3 versieht einzige
-grundsätzliche Funktionalität.
+Bitte beachten Sie, dass der umfassende Funktionsumfang ausschließlich über das
+IMAP-E-Mail-Protokoll zugänglich ist, während POP3 nur grundlegende Funktionen
+bietet.
 
 ## Demo
 
-Zwei Demo Arbeitsgänge sind versehen:
+Es werden zwei Demo-Prozesse bereitgestellt:
 
-- #Man implementierte da ein **Efeu Ersatz-Arbeitsgang**
-- #Man implementierte da ein **#Java #bespringen Aufgabe**
+- Einer davon ist als Ivy-Unterprozess „ **” implementiert.**
+- Eine als Java-Dienstfunktion „ **” implementierte Funktion.**
 
-> #Beide aufführen ebensolchen gleichen Task – wählt aus whichever Integration
-> Stil passt eure Notwendigkeiten.
+> Beide erfüllen dieselbe Aufgabe – wählen Sie den Integrationsstil, der Ihren
+> Anforderungen entspricht.
 
-Beide Demos koppeln zu #ein **IMAP inbox**.
+Beide Demos verbinden sich mit einem IMAP-Posteingang von **** .
 
-Für testen Zwecke, du kannst benutzen:
+Zu Testzwecken können Sie Folgendes verwenden:
 
-- Ein Hafenarbeiter Behälter wie
-  [`virtua-sa/Hafenarbeiter-Post-devel`](https://github.com/virtua-sa/docker-mail-devel)
-- Ein öffentliches IMAP Probe Bedienung mag [Ätherisch](https://ethereal.email/)
-- #Irgendein IMAP-fähiger Kunde wie
-  [Donnervogel](https://www.thunderbird.net/de/)
+- Ein Docker-Container wie
+  [`virtua-sa/docker-mail-devel`](https://github.com/virtua-sa/docker-mail-devel)
+- Ein öffentlicher IMAP-Testdienst wie [Ethereal](https://ethereal.email/)
+- Jeder IMAP-fähige Client wie [Thunderbird](https://www.thunderbird.net/de/)
 
-Die Demo liest Meldungen von das tarifliches inbox jener zügeln den Text:
-`Klausur 999` (#wo `999` ist irgendwelche Nummer).
+Die Demo liest Nachrichten aus dem Standard-Posteingang, die den folgenden Text
+enthalten: `Test 999` (wobei `999` eine beliebige Zahl ist).
 
-Für jede #zusammenpassend Meldung, es:
+Für jede übereinstimmende Meldung gilt Folgendes:
 
-- Speichert da die Meldung eine **Fall Dokument**
-- Extrakte alle **Image Teile**
-- #Loggen #relevant #Metadaten zu #der **Efeu #loggen**
+- Speichert die Nachricht als Dokument im Fall „ **“.**
+- Extrahiert alle Bildteile aus „ **“**
+- Protokolliert relevante Metadaten im Ivy-Protokoll „ **“.**
 
-> Zu testen ihm, bereite vor herein solche Meldungen die inbox.\
-> Meldungen sind **nicht gestrichen oder begeben**, zu Unterhalt Probe
-> repeatable und zuverlässig.
+> Um dies zu testen, bereiten Sie solche Nachrichten im Posteingang vor.\
+> Die Nachrichten befinden sich unter **und werden nicht gelöscht oder
+> verschoben**, damit die Tests wiederholbar und sicher sind.
 
-### 📝 Ausgabe & Aussicht
+### 📝 Ausgabe & Ausblick
 
-- Alle Ausgabe ist #anschreiben die **Efeu #loggen**.
-- Eine simple #grafische Benutzeroberfläche darf sein zugefügt in einer
-  künftigen Version — Stag stimmte ab!
+- Alle Ausgaben werden in das Ivy-Protokoll „ **“ geschrieben:**.
+- In einer zukünftigen Version wird möglicherweise eine einfache GUI hinzugefügt
+  – bleiben Sie dran!
 
-## Gebrauch
+## Verwendung
 
-### Von #Java oder Efeu #Skripten
+### Aus Java oder Ivy Script
 
-1. Nutzung
-   `com.axonivy.Anschluss.mailstore.MailStoreService.messageIterator(Schnur,
-   Schnur, Schnur, aussagenlogisch, Satzaussage<message>, #Komparator<message>)`
-   zu bekommen ein iterator über neu #Email in einem spezifischen Ordner von
-   einen Post Vorrat. Du kannst dann durch diese Meldungen #iterieren gegründet
-   auf dem #versehen Filter und Konfiguration Fahnen.</message></message>
-  - Ob ein **Reiseziel Ordner** ist präzisiert, Meldungen dass sind erfolgreich
-    bedient wollen sein **begeben** dort.
-  - Ob das **streicht Fahne** ist gesetzt, erfolgreich bediente Meldungen wollen
-    sein **gestrichen** von den Quelle Ordner stattdessen.
-
-
-2. Ein Filter kann sein definiert zu passen einzige #Spezifikum Meldungen.
-   Tarifliche Filter sind versehen zu passen Teile von die **Sujet**,
-   **Absender**, **Empfänger**, und More.
-  - Filtert #sein gegründet auf #der #tariflich #Java `Satzaussage<message>`
-    #einbinden und kann sein sicher definiert und verbunden benutzend wie
-    tarifliche #Java Funktionalität `Satzaussage.Und(...)` Oder
-    `Satzaussage.Oder(...)`.</message>
+1. Verwenden Sie
+   `com.axonivy.connector.mailstore.MailStoreService.messageIterator(String,
+   String, String, boolean, Predicate<message>, Comparator<message>)`, um einen
+   Iterator für neue E-Mails in einem bestimmten Ordner eines Mailspeichers zu
+   erhalten. Anschließend können Sie diese Nachrichten basierend auf den
+   bereitgestellten Filter- und Konfigurationsflags
+   durchlaufen.</message></message>
+  - Wenn ein Zielordner „ **“ angegeben ist (** ), werden erfolgreich
+    bearbeitete Nachrichten dorthin verschoben ( **) (** ).
+  - Wenn das Löschflag „ **“** gesetzt ist, werden erfolgreich bearbeitete
+    Nachrichten stattdessen aus dem Quellordner gelöscht **** .
 
 
-3. Gleichartig zu filtern, die Sorte folgt #der #tariflich #Java
-   `#Komparator<message>` #einbinden und kann ordnen #hingerissen Datum,
-   anerkanntes Datum, Sujet,...</message>
+2. Es kann ein Filter definiert werden, der nur bestimmte Nachrichten auswählt.
+   Es stehen Standardfilter zur Verfügung, um Teile des Betreffs **,**, **, des
+   Absenders**, **, der Empfänger** und mehr auszuwählen.
+  - Filter basieren auf der Standard-Java- `-Schnittstelle Predicate<message>`
+    und können mithilfe von Standard-Java-Funktionen wie `Predicate.and(...)`
+    oder `Predicate.or(...)` einfach definiert und kombiniert werden.</message>
 
-4. Ein typischer Anruf dass liest #Email mit einem spezifischen Sujet mag `Bitte
-   12345` von die `inbox` Ordner und begibt jene zu ein `Archiv` Ordner nach
-   erfolgreich Verarbeitung kann sein geschrieben folgendermaßen:
+
+3. Ähnlich wie der Filter folgt auch die Sortierung der Standard-Java-
+   `-Schnittstelle Comparator<message>` und kann nach Sendedatum, Empfangsdatum,
+   Betreff usw. sortieren.</message>
+
+4. Ein typischer Aufruf, der E-Mails mit einem bestimmten Betreff wie „ `Request
+   12345` ” aus dem Posteingang „ `” im Ordner „` ” liest und sie nach
+   erfolgreicher Verarbeitung in das Archiv „ `” im Ordner „` ” verschiebt, kann
+   wie folgt geschrieben werden:
 
 ```java
 MessageIteraor it = MailsStoreService.messageIterator("etherealImaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*"), new MessageComparator())
 ```
 
-Wann du hast erfolgreich bedient eine #Email, du solltest rufen die
-`handledMessage(aussagenlogisch)` Aufgabe.\
-Dies informiert das iterator zu aufführen das konfiguriert Aktion (#z.B., begib
-oder streichen) für jene Meldung.
+Wenn Sie eine E-Mail erfolgreich bearbeitet haben, sollten Sie die Funktion „
+`handledMessage(boolean)` ” aufrufen.\
+Dadurch wird der Iterator angewiesen, die konfigurierte Aktion (z. B.
+Verschieben oder Löschen) für diese Nachricht auszuführen.
 
-Ob du tust **nicht** rufst diese Aufgabe, oder ob du rufst ihm mit `falsch`, die
-Meldung will in dem Vorrat verharren und will sein angeliefert nochmal während
-dem nächsten Lauf.
+Wenn Sie **statt** aufrufen oder wenn Sie es mit `false` aufrufen, bleibt die
+Nachricht im Speicher und wird beim nächsten Durchlauf erneut zugestellt.
 
 
-### Da einen Ersatz-verarbeite
+### Als Teilprozess
 
-Alle #Email-bedienen kann auch sein #aufführen rufen den #versehen
-Ersatz-Arbeitsgang `MailStoreConnector.handleMessages` Und #außer Kraft setzend
-der Arbeitsgang zu bedienen eine ledige #Email `MessageHandler.handleMessage`.
-Bedienen von #Email wollen sein zensiert da erfolgreich, als die overridden
-Arbeitsgang Rückgaben mit `bedienten=wahr` (und werfen nicht einen Fehler).
+Die gesamte E-Mail-Verarbeitung kann auch durch Aufruf des bereitgestellten
+Unterprozesses `MailStoreConnector.handleMessages` und Überschreiben des
+Prozesses zur Verarbeitung einer einzelnen E-Mail `MessageHandler.handleMessage`
+durchgeführt werden. Die Verarbeitung von E-Mails wird als erfolgreich markiert,
+wenn der überschriebene Prozess mit `handled=true` zurückkehrt (und keinen
+Fehler auslöst).
 
-### Meldung Handing
+### Nachrichtenverarbeitung
 
-Bedienend eine ledige Meldung ist sicher mal unterstützt die
-`com.axonivy.Anschluss.mailstore.MessageService.getAllParts(Meldung,
-aussagenlogisch, Satzaussage<part>)` und anderen Annehmlichkeit Aufgaben. Das
-funtions unterstützen alte Stil #Post mit Text nur und auch MIMEN #Post #welche
-können zügeln #viele verschiedene Teile und gleichmäßige #Email-Anfügungen. Die
-einfache Idee ist zu abspielen eine Meldung und ein Filter zu dieser Aufgabe und
-dann zurückbekommen eine Liste von `Teile` #zusammenpassend den Filter. Nochmal,
-Filter folgen #der #tariflich #Java `Satzaussage<message>` #einbinden und kann
-sein sicher definiert und verquickt mit #existierend #Java Funktionalität
-(#mögen `Satzaussage.Und` oder `Satzaussage.Oder`).</message></part>
+Die Verarbeitung einer einzelnen Nachricht wird durch die Funktionen „ `“,
+„com.axonivy.connector.mailstore.MessageService.getAllParts(Message, boolean,
+Predicate<part>)“, „` “ und andere praktische Funktionen unterstützt. Die
+Funktionen unterstützen sowohl E-Mails im alten Stil mit reinem Text als auch
+MIME-E-Mails, die viele verschiedene Teile und sogar E-Mail-Anhänge enthalten
+können. Die Grundidee besteht darin, eine Nachricht und einen Filter an diese
+Funktion zu übergeben und dann eine Liste von `Teilen` zurückzubekommen, die dem
+Filter entsprechen. Auch hier folgen die Filter der Standard-Java-
+`-Schnittstelle Predicate<message>` und können einfach definiert und mit
+bestehenden Java-Funktionen kombiniert werden (wie `Predicate.and` oder
+`Predicate.or`).</message></part>
 
-Ein typischer Anruf, gewinnend alle Images von einer #Email wollte #aussehen
-dies:
+Ein typischer Aufruf zum Extrahieren aller Bilder aus einer E-Mail würde wie
+folgt aussehen:
 
 ```java
 Collection<Part> images = MessageService.getAllParts(message, false, MessageService.isImage("*"));
 ```
 
-Zuzügliche Annehmlichkeit Aufgaben sind versehen zu
+Zusätzliche Komfortfunktionen werden bereitgestellt, um
 
-* Lade und speichern Meldungen
-* Extrakt alle Texte
-* Lies dualen Inhalt von einem Teil
+* Laden und Speichern von Nachrichten
+* Extrahieren Sie alle Texte.
+* Binärinhalt eines Teils lesen
 
 ## Einrichtung
 
-Konfigurier eins oder More mailstores in global Variablen. Ein mailstore ist
-identifiziert #bei einem Namen und eine globale Variable Sektion zügelnd Zugang
-Auskunft. Das folgende Beispiel Vorstellungen Zusammenhang Auskunft für eine
-mailstore jener sollte sein erreichbar unter dem Namen `etherealImaps`. Leg
-diesen variablen Block hinein eure Projekt. Mindestens `Protokoll`, `Gastgeber`,
-`Nutzer` und `Passwort` muss sein definiert (beachte das #verschlüsselt
-`Passwort` und die Wert Liste für `Protokoll` #welche will nachher versehen
-einige Input Unterstützung in die Motor Pilotenkabine).
+Konfigurieren Sie einen oder mehrere Mailstores in globalen Variablen. Ein
+Mailstore wird durch einen Namen und einen globalen Variablenabschnitt mit
+Zugriffsinformationen identifiziert. Das folgende Beispiel zeigt die
+Verbindungsinformationen für einen Mailstore, der unter dem Namen
+`etherealImaps` zugänglich sein sollte. Fügen Sie diesen Variablenblock in Ihr
+Projekt ein. Mindestens `protocol`, `host`, `user` und `password` müssen
+definiert sein (beachten Sie das verschlüsselte `password` und die Werteliste
+für `protocol`, die später einige Eingabehilfen im Engine-Cockpit bereitstellen
+wird).
 
-Ob du möchtest Zusammenhang Loge sehen, aktiviert die `entwanzen` Schalter.\
-Ob eure Zusammenhang bedürft spezielle Lagen, du kannst definieren jene herein
-die `#Besitz` Sektion.
+Wenn Sie Verbindungsprotokolle anzeigen möchten, aktivieren Sie den
+Debug-Schalter „ `“`.\
+Wenn Ihre Verbindung spezielle Einstellungen erfordert, können Sie diese im
+Abschnitt „ `“` festlegen.
 
 
 ```yaml
@@ -173,18 +176,19 @@ Variables:
           # mail.imaps.ssl.trust: '*'
 ```
 
-OAuth 2.0 Unterstütz: Himmelblauer Kunde_#Berechtigungsnachweis/Passwort Grant
-Strömung
+OAuth 2.0-Unterstützung: Azure client_credential/password Grant Flow
 
-## Überblick
+## Übersicht
 
-Dieses Dokument skizziert die Stufen zu konfigurieren OAuth 2.0 Unterstützung
-benutzend den Himmelblauen Kunden #Berechtigungsnachweis Grant Strömung.
+Dieses Dokument beschreibt die Schritte zur Konfiguration der OAuth
+2.0-Unterstützung mithilfe des
+Azure-Client-Anmeldeinformations-Gewährungsflusses.
 
-### Konfiguration Stufen
-1. Sicher dass die nötigen #Besitz sind aktiviert für JavaMail zu unterstützen
-   OAuth 2.0. Für #mehr Details, übergebt zu die [JavaMail API
-   Dokumentation](https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html#:~:text=or%20confidentiality%20layer.-,OAuth%202.0%20Support,-Support%20for%20OAuth).
+### Konfigurationsschritte
+1. Stellen Sie sicher, dass die erforderlichen Eigenschaften für JavaMail
+   aktiviert sind, damit OAuth 2.0 unterstützt wird. Weitere Informationen
+   finden Sie in der
+   [JavaMail-API-Dokumentation](https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html#:~:text=or%20confidentiality%20layer.-,OAuth%202.0%20Support,-Support%20for%20OAuth).
 
 ```yaml
       properties:
@@ -194,9 +198,8 @@ benutzend den Himmelblauen Kunden #Berechtigungsnachweis Grant Strömung.
           mail.imaps.sasl.mechanisms: 'XOAUTH2'
 ```
 
-2. Füg zu #Berechtigungsnachweis für Himmelblau Authentifizierung Schließt ein
-   eure Himmelblauen #Berechtigungsnachweis in die Authentifizierung
-   Konfiguration.
+2. Hinzufügen von Anmeldeinformationen für die Azure-Authentifizierung Fügen Sie
+   Ihre Azure-Anmeldeinformationen in die Authentifizierungskonfiguration ein.
 ```yaml
       # Basic: username and password, AzureOauth2UserPasswordProvider: currently only support OAuth2 client credentials grant flow
       # com.axonivy.connector.oauth.BasicUserPasswordProvider for Basic Authentication
@@ -217,8 +220,9 @@ benutzend den Himmelblauen Kunden #Berechtigungsnachweis Grant Strömung.
       grantType: '
 ```
 
-3. Versieh ein Vollständiges YAML Konfiguration Datei Sichert dass eine vollauf
-   konfigurierte YAML Datei ist verfügbar für den Antrag.
+3. Stellen Sie eine vollständige YAML-Konfigurationsdatei bereit Stellen Sie
+   sicher, dass eine vollständig konfigurierte YAML-Datei für die Anwendung
+   verfügbar ist.
 ```yaml
 Variables:
   mailstoreConnector:
@@ -267,11 +271,11 @@ Variables:
   azureOAuth:
     loginUrl: 'login.microsoftonline.com'
 ```
-> [!BEACHTE] Den variablen Pfad `mailstore-Anschluss` ist #umbenennen zu
-> `mailstoreConnector` von 13.
+> [!HINWEIS] Der variable Pfad `mailstore-connector` wird ab Version 13 in
+> `mailstoreConnector` umbenannt.
 
-4. Stell auf den Authentifizierung Provider Vor rufen den mailstore Anschluss,
-   du brauchst zu versehen einen Authentifizierung Provider.
+4. Einrichten des Authentifizierungsanbieters Bevor Sie den Mailstore-Konnektor
+   aufrufen, müssen Sie einen Authentifizierungsanbieter angeben.
 ```java
   Class<?> clazz = Class.forName("com.axonivy.connector.oauth.AzureOauth2UserPasswordProvider");
 	UserPasswordProvider userPasswordProvider = (UserPasswordProvider) clazz.getDeclaredConstructor().newInstance();
