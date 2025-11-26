@@ -134,7 +134,7 @@ Zusätzliche Komfortfunktionen werden bereitgestellt, um
 * Extrahieren Sie alle Texte.
 * Binärinhalt eines Teils lesen
 
-## Einrichtung
+## Setup
 
 Konfigurieren Sie einen oder mehrere Mailstores in globalen Variablen. Ein
 Mailstore wird durch einen Namen und einen globalen Variablenabschnitt mit
