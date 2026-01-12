@@ -54,7 +54,7 @@
             "import ch.ivyteam.ivy.workflow.document.IDocument;",
             "import java.util.UUID;",
             "import com.axonivy.connector.mailstore.MailStoreService;",
-            "import javax.mail.Part;",
+            "import jakarta.mail.Part;",
             "import java.util.Collection;",
             "import com.axonivy.connector.mailstore.MessageService;",
             "",
