@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import javax.mail.Message;
-import javax.mail.Part;
+import jakarta.mail.Message;
+import jakarta.mail.Part;
 
 import org.junit.jupiter.api.Test;
 

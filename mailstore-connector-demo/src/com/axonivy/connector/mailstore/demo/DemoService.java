@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Part;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Part;
 
 import com.axonivy.connector.mailstore.MailStoreService;
 import com.axonivy.connector.mailstore.MailStoreService.MessageIterator;

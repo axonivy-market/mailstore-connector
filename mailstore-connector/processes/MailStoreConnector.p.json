@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "183EF449D1E50BCB",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -70,7 +70,7 @@
         "message"
       ],
       "config" : {
-        "processCall" : "MessageHandler:handleMessage(javax.mail.Message)",
+        "processCall" : "MessageHandler:handleMessage(jakarta.mail.Message)",
         "call" : {
           "map" : {
             "param.message" : "in.messageIterator.next()"
