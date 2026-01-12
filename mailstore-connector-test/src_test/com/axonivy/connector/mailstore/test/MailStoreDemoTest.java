@@ -104,8 +104,8 @@ class MailStoreDemoTest {
 	private void finishMailserverUserSetup(String userName) throws Exception {
 		Thread.sleep(Duration.ofSeconds(5)); // container still needs a few secs before accepting commands
 		mailContainer.execInContainer("setup", "email", "add", userName, "password123");
-		Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS)
-			.until(() -> logs.toString().contains("mailserver.test. mail.market.org is up and running"));
+		Awaitility.await().atMost(100, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS)
+			.until(() -> logs.toString().contains("mailserver.test.mail.market.org is up and running"));
 		Thread.sleep(Duration.ofSeconds(2)); // wait until created users are enacted; SSL stack fully running
 	}
 
