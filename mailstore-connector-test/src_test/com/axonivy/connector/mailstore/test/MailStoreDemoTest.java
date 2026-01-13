@@ -96,6 +96,7 @@ class MailStoreDemoTest {
 
 	private void configureDemo(AppFixture fixture, String userName) {
 		String imap = "mailstoreConnector.localhostImap";
+		fixture.var(imap + ".host", "mailserver");
 		fixture.var(imap + ".port", "993");
 		fixture.var(imap + ".user", userName);
 		fixture.var(imap + ".password", "password123");
