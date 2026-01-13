@@ -11,6 +11,7 @@ import java.security.cert.CertificateFactory;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 
 import com.github.dockerjava.api.model.Bind;
@@ -33,7 +35,6 @@ import ch.ivyteam.ivy.bpm.engine.client.element.BpmProcess;
 import ch.ivyteam.ivy.bpm.exec.client.IvyProcessTest;
 import ch.ivyteam.ivy.environment.AppFixture;
 import ch.ivyteam.ivy.environment.Ivy;
-import ch.ivyteam.util.WaitUtil;
 
 @Testcontainers
 @IvyProcessTest
@@ -103,19 +104,16 @@ class MailStoreDemoTest {
 	private void finishMailserverUserSetup(String userName) throws Exception {
 		Thread.sleep(Duration.ofSeconds(5)); // container still needs a few secs before accepting commands
 		mailContainer.execInContainer("setup", "email", "add", userName, "password123");
-		new WaitUtil(() -> logs.toString().contains("mailserver.test.mail.market.org is up and running"))
-			.interval(Duration.ofSeconds(1))
-			.timeout(Duration.ofSeconds(10))
-			.start();
+		Awaitility.await().atMost(100, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS)
+			.until(() -> logs.toString().contains("mailserver.test.mail.market.org is up and running"));
 		Thread.sleep(Duration.ofSeconds(2)); // wait until created users are enacted; SSL stack fully running
 	}
 
-	@SuppressWarnings("restriction")
 	private static void setIvyTrustStoreFile(Path trustP12) {
 		var ivyYaml = ch.ivyteam.ivy.configuration.restricted.IConfiguration.instance();
 		ivyYaml.set("SSL.Client.TrustStore.File", trustP12.toString());
 	}
-	
+
 	private static void trustCert(Path truststore, Path cert) throws Exception {
 		var password = "changeit";
 		var keyStore = KeyStore.getInstance("PKCS12");
@@ -132,5 +130,4 @@ class MailStoreDemoTest {
 			return certFactory.generateCertificate(inputStream);
 		}
 	}
-
 }

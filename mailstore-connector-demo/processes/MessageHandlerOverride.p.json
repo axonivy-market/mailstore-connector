@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "1840F78EA8FD1B41",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -13,7 +13,7 @@
         "signature" : "handleMessage",
         "input" : {
           "params" : [
-            { "name" : "message", "type" : "javax.mail.Message", "desc" : "" }
+            { "name" : "message", "type" : "jakarta.mail.Message", "desc" : "" }
           ],
           "map" : {
             "out.message" : "param.message"
@@ -54,7 +54,7 @@
             "import ch.ivyteam.ivy.workflow.document.IDocument;",
             "import java.util.UUID;",
             "import com.axonivy.connector.mailstore.MailStoreService;",
-            "import javax.mail.Part;",
+            "import jakarta.mail.Part;",
             "import java.util.Collection;",
             "import com.axonivy.connector.mailstore.MessageService;",
             "",

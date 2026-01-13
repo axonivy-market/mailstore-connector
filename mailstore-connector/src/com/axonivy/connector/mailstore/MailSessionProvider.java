@@ -4,7 +4,7 @@ import static com.axonivy.connector.mailstore.MailStoreService.LOG;
 
 import java.util.Properties;
 
-import javax.mail.Session;
+import jakarta.mail.Session;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang3.BooleanUtils;

@@ -2,7 +2,7 @@ package com.axonivy.connector.mailstore.demo;
 
 import java.util.Comparator;
 
-import javax.mail.Message;
+import jakarta.mail.Message;
 
 import ch.ivyteam.ivy.environment.Ivy;
 

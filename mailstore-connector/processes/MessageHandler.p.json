@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "183EF82269E7D570",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -13,7 +13,7 @@
         "signature" : "handleMessage",
         "input" : {
           "params" : [
-            { "name" : "message", "type" : "javax.mail.Message", "desc" : "" }
+            { "name" : "message", "type" : "jakarta.mail.Message", "desc" : "" }
           ],
           "map" : {
             "out.message" : "param.message"

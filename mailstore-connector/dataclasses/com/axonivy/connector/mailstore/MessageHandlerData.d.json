@@ -5,7 +5,7 @@
   "isBusinessCaseData" : false,
   "fields" : [ {
     "name" : "message",
-    "type" : "javax.mail.Message"
+    "type" : "jakarta.mail.Message"
   }, {
     "name" : "handled",
     "type" : "Boolean"
