@@ -1,1 +1,1 @@
-mailstore, starttls, checkserveridentity, microsoftonline, Mailserver, Mailstore, newkey, mailserver, virtua, devel, mypassword, checkserveridentity, microsoftonline, Fxdt
+mailstore, starttls, checkserveridentity, microsoftonline, Mailserver, Mailstore, newkey, mailserver, virtua, devel, mypassword, checkserveridentity, microsoftonline, Fxdt, mailstores
