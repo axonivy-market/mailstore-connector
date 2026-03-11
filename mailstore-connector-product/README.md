@@ -61,7 +61,7 @@ For each matching message, it:
 
 
 ```java
-MessageIteraor it = MailsStoreService.messageIterator("etherealImaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*"), new MessageComparator())
+MessageIterator it = MailsStoreService.messageIterator("etherealImaps", "INBOX", "archive", true, MailStoreService.subjectMatches(".*Request [0-9]+.*"), new MessageComparator())
 ```
 
 When you have successfully handled an email, you should call the `handledMessage(boolean)` function.  
@@ -76,7 +76,7 @@ All Email-handling can also be performed calling the provided sub-process `MailS
 
 ### Message handling
 
-Handling a single message is easily supported by the `com.axonivy.connector.mailstore.MessageService.getAllParts(Message, boolean, Predicate<Part>)` and other convenience functions. The funtions support old style mails with text only and also MIME mails which can contain many different parts and even email-attachments. The basic idea is to pass a message and a filter to this function and then get back a list of `parts` matching the filter. Again, filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
+Handling a single message is easily supported by the `com.axonivy.connector.mailstore.MessageService.getAllParts(Message, boolean, Predicate<Part>)` and other convenience functions. The functions support old style mails with text only and also MIME mails which can contain many different parts and even email-attachments. The basic idea is to pass a message and a filter to this function and then get back a list of `parts` matching the filter. Again, filters follow the standard Java `Predicate<Message>` interface and can be easily defined and combined with existing Java functionality (like `Predicate.and` or `Predicate.or`).
 
 A typical call, extracting all images from an Email would look like this:
 
@@ -211,7 +211,7 @@ Variables:
       scope: ''
       #[client_credentials/password]
       grantType: ''
-  # login url microsoft zure
+  # login url microsoft azure
   azureOAuth:
     loginUrl: 'login.microsoftonline.com'
 ```
