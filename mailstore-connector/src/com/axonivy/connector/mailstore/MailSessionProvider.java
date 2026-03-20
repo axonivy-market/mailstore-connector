@@ -60,25 +60,29 @@ public class MailSessionProvider {
 			if (tlsEnabled) {
 				properties.put(Property.SMTP.SSL_SOCKET_FACTORY, socketFactory);
 				// ensures that socket will only be created with our socket factory otherwise it will fail
-				properties.setProperty(Property.SMTP.SSL_SOCKET_FACTORY_FALLBACK, "false");
+				properties.setProperty(Property.SMTP.SSL_SOCKET_FACTORY_FALLBACK, BooleanUtils.FALSE);
 			}
 			
-			List<Object> imapProperties = properties.keySet().stream().filter(k -> k.toString().contains(IMAP_PROPERTY_PREFIX)).collect(Collectors.toList());
+			List<Object> imapProperties = properties.keySet().stream()
+					.filter(key -> key.toString().contains(IMAP_PROPERTY_PREFIX))
+					.collect(Collectors.toList());
 			if(!imapProperties.isEmpty()) {
 				boolean imapSsl = BooleanUtils.toBoolean(properties.getProperty(Property.IMAP.SSL_ENABLED));
 				if (imapSsl) {
-					Ivy.log().info("enabling imap SSL context");
+					LOG.info("enabling imap SSL context");
 					properties.put(Property.IMAP.SSL_SOCKET_FACTORY, socketFactory);
-					properties.put(Property.IMAP.SOCKET_FACTORY_FALLBACK, "false");
+					properties.put(Property.IMAP.SOCKET_FACTORY_FALLBACK, BooleanUtils.FALSE);
 				}
 				properties.put(Property.IMAP.SOCKET_FACTORY, socketFactory);
 			}
 			
-			List<Object> imapsProperties = properties.keySet().stream().filter(k -> k.toString().contains(IMAPS_PROPERTY_PREFIX)).collect(Collectors.toList());
+			List<Object> imapsProperties = properties.keySet().stream()
+					.filter(key -> key.toString().contains(IMAPS_PROPERTY_PREFIX))
+					.collect(Collectors.toList());
 			if(!imapsProperties.isEmpty()) {
-				Ivy.log().info("enabling imaps SSL context");
+				LOG.info("enabling imaps SSL context");
 				properties.put(Property.IMAPS.SSL_SOCKET_FACTORY, socketFactory);
-				properties.put(Property.IMAPS.SSL_SOCKET_FACTORY_FALLBACK, "false");
+				properties.put(Property.IMAPS.SSL_SOCKET_FACTORY_FALLBACK, BooleanUtils.FALSE);
 			}
 		}
 	}
