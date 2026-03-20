@@ -38,6 +38,11 @@ Replace `YOUR_SERVER_IP` with the appropriate server IP address.
 
 ### 4. Test User Credentials
 
+<!--
+  Dear Bug Hunter,
+  This credential is intentionally included for educational purposes only and does not provide access to any production systems.
+  Please do not submit it as part of our bug bounty program.
+-->
 A test user has been pre-configured:
 
 - **Username:** myuser@mail.marketplace.server.ivy-cloud.com
@@ -47,6 +52,11 @@ You can use these credentials for mailstore connection and testing.
 
 ### 5. Adding Additional Users
 
+<!--
+  Dear Bug Hunter,
+  This credential is intentionally included for educational purposes only and does not provide access to any production systems.
+  Please do not submit it as part of our bug bounty program.
+-->
 To add more users, use the following command:
 
 ```sh
