@@ -17,6 +17,11 @@ The demo will read from the standard inbox messages containing the text `Test 99
 Results will only be written to the Ivy logfile. In a later version, there will be perhaps a little GUI for this. Stay tuned!
 
 ## Usage
+<!--
+  Dear Bug Hunter,
+  This credential is intentionally included for educational purposes only and does not provide access to any production systems.
+  Please do not submit it as part of our bug bounty program.
+-->
 
 ### From Java or Ivy Script
 
