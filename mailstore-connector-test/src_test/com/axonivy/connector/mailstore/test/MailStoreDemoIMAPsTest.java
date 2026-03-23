@@ -37,6 +37,8 @@ class MailStoreDemoIMAPsTest extends MailStoreBaseTest {
 	protected void configureDemo(AppFixture fixture, String userName) {
 		configCommonVariable(fixture, userName);
 		fixture.var(LOCAL_IMAP + ".protocol", "imaps");
+		var propertyPrefix = LOCAL_IMAP + ".properties.mail.";
+		fixture.var(propertyPrefix + "imaps.ssl", "");
 	}
 
 }

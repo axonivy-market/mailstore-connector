@@ -36,6 +36,7 @@ class MailStoreDemoIMAPTest extends MailStoreBaseTest {
 	@Override
 	protected void configureDemo(AppFixture fixture, String userName) {
 		configCommonVariable(fixture, userName);
+		fixture.var(LOCAL_IMAP + ".protocol", "imap");
 		var propertyPrefix = LOCAL_IMAP + ".properties.mail.";
 		fixture.var(propertyPrefix + "imap.starttls.enable", "true");
 		fixture.var(propertyPrefix + "imap.starttls.required", "true");
