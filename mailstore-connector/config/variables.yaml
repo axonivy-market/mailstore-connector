@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://json-schema.axonivy.com/app/12.0.0/variables.json
+# yaml-language-server: $schema=https://json-schema.axonivy.com/14.0-dev/config/variables.json
 # == Variables ==
 # 
 # You can define here your project Variables.
@@ -60,7 +60,7 @@ Variables:
       # </ul>
       # Options: [append, copy]]
       movingMethod: ''
-      
+  
   # login microsoft azure
   azureOAuth:
     loginUrl: ''

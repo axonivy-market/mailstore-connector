@@ -1,6 +1,8 @@
+# yaml-language-server: $schema=https://json-schema.axonivy.com/14.0-dev/config/rest-clients-1.json
 RestClients:
   getTokenAzureOAuth:
-    UUID: a37c499d-82de-4d21-a021-06844835fb2d
+    Name: getTokenAzureOAuth
     Url: https://${ivy.var.azureOAuth.loginUrl}
     Features:
-    - ch.ivyteam.ivy.rest.client.mapper.JsonFeature
+      - ch.ivyteam.ivy.rest.client.mapper.JsonFeature
+    LegacyUUID: a37c499d-82de-4d21-a021-06844835fb2d
