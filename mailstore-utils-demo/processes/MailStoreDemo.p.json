@@ -1,0 +1,229 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
+  "id" : "183EF4C4DA38CCD9",
+  "config" : {
+    "data" : "com.axonivy.utils.mailstore.demo.Data"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "handleEmailsIvy.ivp",
+      "config" : {
+        "signature" : "handleEmailsIvy"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 48 }
+      },
+      "connect" : [
+        { "id" : "f7", "to" : "f3" }
+      ]
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 888, "y" : 48 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "SubProcessCall",
+      "name" : "Handle messages",
+      "config" : {
+        "processCall" : "MailStoreUtils:handleMessages(String,String,String,Boolean,java.util.function.Predicate,java.util.Comparator)",
+        "call" : {
+          "map" : {
+            "param.storeName" : "\"localhostImap\"",
+            "param.srcFolder" : "\"INBOX\"",
+            "param.dstFolder" : "null",
+            "param.delete" : "false",
+            "param.filter" : "com.axonivy.utils.mailstore.MailStoreService.subjectMatches(\".*test [0-9]+.*\");",
+            "param.sort" : "new com.axonivy.utils.mailstore.demo.MessageComparator()"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 624, "y" : 48 }
+      },
+      "connect" : [
+        { "id" : "f2", "to" : "f1" }
+      ]
+    }, {
+      "id" : "f4",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Read mails from standard INBOX.",
+        "",
+        "To simplify testing, Emails are not deleted or moved.",
+        "So you will always receive the same emails. Only",
+        "Emails containing the text \"test 999...\" in the",
+        "subject (where 999 is a number), will be",
+        "considered.",
+        "",
+        "To run the test, prepare some emails with",
+        "such subjects and inlined or attached",
+        "images in your inbox.",
+        "",
+        "The two processes show handling of messages in an",
+        "Ivy sub-process vs. directly in a Java service function."
+      ],
+      "visual" : {
+        "at" : { "x" : 155, "y" : 139 },
+        "size" : { "width" : 311, "height" : 223 }
+      }
+    }, {
+      "id" : "f5",
+      "type" : "RequestStart",
+      "name" : "handleEmailsJava.ivp",
+      "config" : {
+        "signature" : "handleEmailsJava"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 184 }
+      },
+      "connect" : [
+        { "id" : "f12", "to" : "f11" }
+      ]
+    }, {
+      "id" : "f6",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 888, "y" : 184 }
+      }
+    }, {
+      "id" : "f11",
+      "type" : "Script",
+      "name" : "Handle messages",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.mailstore.demo.DemoService;",
+            "",
+            "DemoService.handleMessages();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 624, "y" : 184 }
+      },
+      "connect" : [
+        { "id" : "f9", "to" : "f6" }
+      ]
+    }, {
+      "id" : "f8",
+      "type" : "RequestStart",
+      "name" : "handleMessagesMultipleDestinationFolder.ivp",
+      "config" : {
+        "signature" : "handleMessagesMultipleDestinationFolder"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 328 }
+      },
+      "connect" : [
+        { "id" : "f14", "to" : "f13" }
+      ]
+    }, {
+      "id" : "f10",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 888, "y" : 328 }
+      }
+    }, {
+      "id" : "f13",
+      "type" : "Script",
+      "name" : "Handle messages",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.mailstore.demo.DemoService;",
+            "",
+            "DemoService.handleMessagesMultiDestinationFolder();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 624, "y" : 328 }
+      },
+      "connect" : [
+        { "id" : "f15", "to" : "f10" }
+      ]
+    }, {
+      "id" : "f16",
+      "type" : "RequestStart",
+      "name" : "connectMailStoreWithBasicAuth.ivp",
+      "config" : {
+        "signature" : "connectMailStoreWithBasicAuth"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 560 }
+      },
+      "connect" : [
+        { "id" : "f19", "to" : "f18" }
+      ]
+    }, {
+      "id" : "f17",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 888, "y" : 560 }
+      }
+    }, {
+      "id" : "f18",
+      "type" : "Script",
+      "name" : "connectMailStoreWithBasicAuth",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.mailstore.demo.DemoService;",
+            "",
+            "DemoService.connectMailStoreWithBasicAuth();"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 632, "y" : 560 },
+        "size" : { "width" : 232, "height" : 66 }
+      },
+      "connect" : [
+        { "id" : "f20", "to" : "f17" }
+      ]
+    }, {
+      "id" : "f21",
+      "type" : "RequestStart",
+      "name" : "connectMailStoreWithAzureOauth2.ivp",
+      "config" : {
+        "signature" : "connectMailStoreWithAzureOauth2"
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 768 }
+      },
+      "connect" : [
+        { "id" : "f24", "to" : "f22" }
+      ]
+    }, {
+      "id" : "f22",
+      "type" : "Script",
+      "name" : "connectMailStoreWithAzureOauth2",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.mailstore.demo.DemoService;",
+            "",
+            "DemoService.connectMailStoreWithAzureOauth2();"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 632, "y" : 768 },
+        "size" : { "width" : 232 }
+      },
+      "connect" : [
+        { "id" : "f25", "to" : "f23" }
+      ]
+    }, {
+      "id" : "f23",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 888, "y" : 768 }
+      }
+    } ]
+}

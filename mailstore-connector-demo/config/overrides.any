@@ -1,6 +1,0 @@
-{
-  /HTML_DIALOG *
-  /PROCESS {
-    /MessageHandler "MessageHandlerOverride"
-  }
-}

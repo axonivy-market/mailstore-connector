@@ -1,0 +1,18 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/data-class/13.2.0/data-class.json",
+  "simpleName" : "MailStoreUtilsData",
+  "namespace" : "com.axonivy.utils.mailstore",
+  "fields" : [ {
+    "name" : "messageIterator",
+    "type" : "com.axonivy.utils.mailstore.MailStoreService.MessageIterator",
+    "modifiers" : [ ]
+  }, {
+    "name" : "message",
+    "type" : "jakarta.mail.Message",
+    "modifiers" : [ ]
+  }, {
+    "name" : "handled",
+    "type" : "Boolean",
+    "modifiers" : [ ]
+  } ]
+}

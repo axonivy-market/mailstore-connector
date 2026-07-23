@@ -1,20 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.axonivy.connector.mailstore</groupId>
-  <name>mailstore-connector</name>
-  <artifactId>mailstore-connector-modules</artifactId>
+  <groupId>com.axonivy.utils.mailstore</groupId>
+  <name>mailstore-utils</name>
+  <artifactId>mailstore-utils-modules</artifactId>
   <version>13.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>mailstore-connector</module>
-    <module>mailstore-connector-demo</module>
-    <module>mailstore-connector-test</module>
-    <module>mailstore-connector-product</module>
+    <module>mailstore-utils</module>
+    <module>mailstore-utils-demo</module>
+    <module>mailstore-utils-test</module>
+    <module>mailstore-utils-product</module>
   </modules>
 
   <scm>
-    <developerConnection>scm:git:https://github.com/axonivy-market/mailstore-connector.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/axonivy-market/mailstore-utils.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
