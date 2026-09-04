@@ -136,7 +136,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		GenericType<Map<String, Object>> map = new GenericType<>(Map.class);
 		Map<String, Object> values = response.readEntity(map);
 		
-		return Optional.ofNullable(values).map(value -> values.get(ResponseProperty.ACCESS_TOKEN).toString()).orElse(null); 
+		return Optional.ofNullable(values).map(_ -> values.get(ResponseProperty.ACCESS_TOKEN).toString()).orElse(null); 
 	}
 	
 	private static enum GrantType {
