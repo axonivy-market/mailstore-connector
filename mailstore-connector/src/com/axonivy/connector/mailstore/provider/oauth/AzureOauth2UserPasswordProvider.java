@@ -3,10 +3,10 @@ package com.axonivy.connector.mailstore.provider.oauth;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -136,7 +136,7 @@ public class AzureOauth2UserPasswordProvider implements UserPasswordProvider {
 		GenericType<Map<String, Object>> map = new GenericType<>(Map.class);
 		Map<String, Object> values = response.readEntity(map);
 		
-		return Optional.ofNullable(values).map(value -> values.get(ResponseProperty.ACCESS_TOKEN).toString()).orElse(null); 
+		return Optional.ofNullable(values).map(_ -> values.get(ResponseProperty.ACCESS_TOKEN).toString()).orElse(null); 
 	}
 	
 	private static enum GrantType {
